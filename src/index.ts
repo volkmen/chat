@@ -1,16 +1,8 @@
-import express, { type Request, type Response } from 'express';
 import { initConnection } from './services/mongo-db';
+import App from './server';
 
-const app = express();
+const app = new App();
 
-app.use(express.json());
-
-initConnection().then(() => {
-  app.listen(3000, () => {
-    console.log('Server running on port 3000');
-  });
-
-  app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!');
-  });
+initConnection().then(async () => {
+  app.listen(4000);
 });
