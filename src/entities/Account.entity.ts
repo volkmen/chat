@@ -1,7 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { IsDate, IsEmail } from 'class-validator';
 
 @Entity()
-export class User {
+export class AccountEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,17 +13,20 @@ export class User {
   last_name: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  email: number;
-
-  @Column({ type: 'int' })
-  age: number;
+  @IsEmail()
+  email: string;
 
   @Column({ type: 'boolean', default: false })
   is_verified: boolean;
 
   @CreateDateColumn()
+  @IsDate()
   created_at: Date;
 
   @CreateDateColumn()
+  @IsDate()
   updated_at: Date;
+
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  phone_number: number;
 }

@@ -1,15 +1,11 @@
 import { DataSource } from 'typeorm';
-import * as path from 'node:path';
+import dataSourceConfig from '../configs/typeorm-base.config';
 
 const dataSource = new DataSource({
+  ...dataSourceConfig,
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: 'wolf',
-  database: 'vid',
   logging: true,
-  entities: [path.join(__dirname, 'entities/**/*.entity.ts')]
+  synchronize: true
 });
 
 export function connectToDatabase() {

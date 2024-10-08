@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@apollo/server": "^4.11.0",
+    "class-validator": "^0.14.1",
     "express": "^4.21.0",
     "graphql": "^16.9.0",
     "graphql-tools": "^9.0.1",
@@ -31,9 +32,11 @@
     "typescript": "^5.6.2"
   },
   "scripts": {
-    "dev": "nodemon src/index.ts",
+    "dev": "NODE_ENV=DEVELOPMENT nodemon src/index.ts",
     "lint": "eslint .",
     "gql2types": "node mergeGraphqlSchemas.js",
-    "codegen": "graphql-codegen --config codegen.ts"
+    "codegen": "graphql-codegen --config codegen.ts",
+    "typeorm": "typeorm-ts-node-esm -d src/configs/typeorm-base.config.ts",
+    "generate-migration": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/migrations/config.ts"
   }
 }
