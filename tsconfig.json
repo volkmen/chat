@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+//    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "commonjs",
@@ -19,8 +19,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "baseUrl": "src",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "paths": {
-      "types": ["types"]
+      "types": ["types"],
+      "resolvers": ["resolvers"]
     }
   },
   "exclude": ["convertGraphql2Types.js", "src/types/graphql.d.ts"]

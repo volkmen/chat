@@ -1,17 +1,15 @@
 import { ApolloServer } from '@apollo/server'; // preserve-line
 import { startStandaloneServer } from '@apollo/server/standalone'; // preserve-line
-// import { mergedSchema } from './api_old';
-import { type Mongoose } from 'mongoose';
 import * as path from 'node:path';
 import { loadFilesSync } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
-import resolvers from './resolvers';
+import resolvers from '../resolvers';
 
 class App {
   private server: ApolloServer;
 
   private getTypeDefs() {
-    const loadedFiles = loadFilesSync(path.join(__dirname, 'schema.graphql'));
+    const loadedFiles = loadFilesSync(path.join(process.cwd(), 'src', 'schema.graphql'));
     return mergeTypeDefs(loadedFiles);
   }
 
@@ -24,7 +22,7 @@ class App {
     });
   }
 
-  public listen(port: number, db: Mongoose) {
+  public listen<T>(port: number, db: T) {
     return startStandaloneServer(this.server, {
       listen: { port },
       context: () => Promise.resolve({ db })

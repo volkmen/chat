@@ -1,3 +1,6 @@
+#!!! This file is being created by script. Do NOT touch it!!!!
+
+
 type Car {
   model: String!
   series: String!

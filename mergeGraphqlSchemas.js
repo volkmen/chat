@@ -9,5 +9,6 @@ const loadedFiles = loadFilesSync(path.join(__dirname, 'src/resolvers'), {
 });
 const typeDefs = mergeTypeDefs(loadedFiles);
 const printedTypeDefs = print(typeDefs);
+const prefix = '#!!! This file is being created by script. Do NOT touch it!!!!\n\n\n';
 
-fs.writeFileSync('src/schema.graphql', printedTypeDefs);
+fs.writeFileSync('src/schema.graphql', prefix + printedTypeDefs);
