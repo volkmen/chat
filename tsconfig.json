@@ -19,5 +19,6 @@
     "isolatedModules": true,
     "noEmit": true,
     "baseUrl": "src"
-  }
+  },
+  "exclude": ["convertGraphql2Types.js"]
 }

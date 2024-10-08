@@ -1,0 +1,22 @@
+type Car {
+  model: String!
+  series: String!
+  productionYear: Int!
+}
+
+type Query {
+  GetCars: [Car]
+  GetCar(id: Int!): Car
+  GetUsers: [User]
+  GetUser(id: Int!): User
+}
+
+type User {
+  firstName: String!
+  lastName: String!
+  age: Int
+}
+
+schema {
+  query: Query
+}

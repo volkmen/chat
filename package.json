@@ -11,6 +11,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@graphql-tools/load-files": "^7.0.0",
     "@types/express": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
@@ -26,6 +27,7 @@
   },
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "gql2types": "node convertGraphql2Types.js"
   }
 }
