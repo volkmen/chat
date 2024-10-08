@@ -4,7 +4,7 @@ const { print } = require('graphql');
 const path = require('path');
 const fs = require('fs');
 
-const loadedFiles = loadFilesSync(path.join(__dirname, 'src'), {
+const loadedFiles = loadFilesSync(path.join(__dirname, 'src/resolvers'), {
   extensions: ['.graphql']
 });
 const typeDefs = mergeTypeDefs(loadedFiles);
