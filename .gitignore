@@ -3,3 +3,8 @@ node_modules
 
 mongo-db
 postgres-db
+
+
+front-end/coverage
+front-end/build
+front-end/node_modules
