@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Providers from './contexts/Providers';
-import Signup from './pages/signup/Signup';
 import { Toaster } from 'react-hot-toast';
+import Router from './Router';
 
 import './css/tailwind-generated.css';
 import './css/index.scss';
@@ -13,7 +13,7 @@ root.render(
   <React.StrictMode>
     <Providers>
       <div className='container'>
-        <Signup />
+        <Router />
       </div>
     </Providers>
     <Toaster />
