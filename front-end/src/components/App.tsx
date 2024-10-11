@@ -1,9 +1,12 @@
-import SignUp from '../pages/signup/SignUp';
+import Signup from '../pages/signup/Signup';
+import Providers from './Providers';
 
 export default function App() {
   return (
-    <div className='container'>
-      <SignUp />
-    </div>
+    <Providers>
+      <div className='container'>
+        <Signup />
+      </div>
+    </Providers>
   );
 }

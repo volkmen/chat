@@ -2,8 +2,11 @@ import React from 'react';
 import Modal from 'components/Modal';
 import { noop } from 'lodash';
 import SignupBody from './SignupBody';
+import { Link } from 'react-router-dom';
+import { Routes } from 'consts/routes';
+import { ValidationCallback } from './types';
 
-const fields: any[] = [
+const fields = [
   {
     type: 'text',
     label: 'First name',
@@ -30,9 +33,9 @@ const fields: any[] = [
   }
 ];
 
-const SignUp = () => {
+const Signup = () => {
   const [inputsMap, setInputsMap] = React.useState<Record<string, string>>({});
-  const inputsRef = React.useRef<Record<string, any>>({});
+  const inputsRef = React.useRef<Record<string, ValidationCallback>>({});
 
   React.useEffect(() => {
     setInputsMap(
@@ -48,12 +51,9 @@ const SignUp = () => {
     setInputsMap({ ...inputsMap, [key]: event.target.value });
   };
 
-  const a = 10;
-
   const onSubmit = () => {
-    const validationsResult = Object.values(inputsRef.current).map(valiationCb => valiationCb());
+    const validationsResult = Object.values(inputsRef.current).map(validationCb => validationCb());
 
-    console.log(inputsRef.current, validationsResult);
     if (validationsResult.every(Boolean)) {
       console.log('submit', validationsResult);
     } else {
@@ -64,8 +64,14 @@ const SignUp = () => {
   return (
     <Modal isOpen={true} onClose={noop} onSubmit={onSubmit} title='SIGN UP'>
       <SignupBody forwardRef={inputsRef} onChangeValue={onChangeInputValue} inputs={fields} />
+      <p className='text-sm text-gray-400'>
+        You have an account? Pls{' '}
+        <Link to={Routes.signIn}>
+          <span className='uppercase text-blue-700 underline'>sign in</span>
+        </Link>
+      </p>
     </Modal>
   );
 };
 
-export default SignUp;
+export default Signup;

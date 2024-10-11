@@ -49,7 +49,7 @@ const FieldInput = forwardRef<Record<string, any>, InputProps>(
 
     return (
       <Field className='pb-5 mb-2.5 relative '>
-        <Label htmlFor='first-name' className='block text-sm font-semibold leading-6 text-gray-400 text-start'>
+        <Label htmlFor='first-name' className='block text-sm leading-6 text-gray-600 text-start'>
           {label}
         </Label>
         <div>
