@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from 'components/App';
-import './css/index.scss';
+import './css/tailwind-generated.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 

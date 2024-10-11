@@ -1,3 +1,9 @@
+import SignUp from '../pages/signup/SignUp';
+
 export default function App() {
-  return <div>Hello World!</div>;
+  return (
+    <div className='container'>
+      <SignUp />
+    </div>
+  );
 }
