@@ -5,41 +5,30 @@ import SignupBody from './SignupBody';
 import { Link } from 'react-router-dom';
 import { Routes } from 'consts/routes';
 import { ValidationCallback } from './types';
-
-const fields = [
-  {
-    type: 'text',
-    label: 'First name',
-    placeholder: 'First name',
-    id: 'firstName',
-    validation: (val: string) => val.length < 4,
-    errorMsg: 'Name should be more than 3 symbols'
-  },
-  {
-    type: 'password',
-    label: 'Password',
-    placeholder: 'Password',
-    id: 'password',
-    validation: (val: string) => val.length < 8,
-    errorMsg: 'Password should be not less than 8 symbols'
-  },
-  {
-    type: 'email',
-    label: 'Email',
-    placeholder: 'Email',
-    id: 'email',
-    validation: (val: string) => !Boolean(val.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)),
-    errorMsg: 'Incorrect email address'
-  }
-];
+import { useMutation } from '@apollo/client';
+import { SIGN_UP } from './api';
+import { FieldIds, signupFields } from './consts';
+import classNames from 'classnames';
+import { showToastError } from '../../services/toast';
 
 const Signup = () => {
   const [inputsMap, setInputsMap] = React.useState<Record<string, string>>({});
   const inputsRef = React.useRef<Record<string, ValidationCallback>>({});
 
+  const [makeSignUp, { data, loading, error }] = useMutation(SIGN_UP);
+
+  const signupFieldsWithDefaultValues = React.useMemo(
+    () =>
+      signupFields.map(f => ({
+        ...f,
+        defaultValue: inputsMap[f.id]
+      })),
+    [inputsMap]
+  );
+
   React.useEffect(() => {
     setInputsMap(
-      fields.reduce<Record<string, string>>((acc, field) => {
+      signupFields.reduce<Record<string, string>>((acc, field) => {
         acc[field.id] = '';
 
         return acc;
@@ -55,7 +44,20 @@ const Signup = () => {
     const validationsResult = Object.values(inputsRef.current).map(validationCb => validationCb());
 
     if (validationsResult.every(Boolean)) {
-      console.log('submit', validationsResult);
+      makeSignUp({
+        variables: {
+          username: inputsMap[FieldIds.email],
+          email: inputsMap[FieldIds.email],
+          password: inputsMap[FieldIds.password]
+        }
+      })
+        .then(() => {
+          console.log('successfully signed up');
+        })
+        .catch(() => {
+          showToastError('Error to sign up');
+          console.log('error to SIGN up');
+        });
     } else {
       console.log('error', validationsResult);
     }
@@ -63,13 +65,26 @@ const Signup = () => {
 
   return (
     <Modal isOpen={true} onClose={noop} onSubmit={onSubmit} title='SIGN UP'>
-      <SignupBody forwardRef={inputsRef} onChangeValue={onChangeInputValue} inputs={fields} />
-      <p className='text-sm text-gray-400'>
-        You have an account? Pls{' '}
-        <Link to={Routes.signIn}>
-          <span className='uppercase text-blue-700 underline'>sign in</span>
-        </Link>
-      </p>
+      {/*<div className='relative'>*/}
+      {loading && (
+        <div
+          className={classNames(
+            'h-full w-full flex flex-col justify-center items-center absolute top-0 text-center left-0'
+          )}
+        >
+          <div className='loader'></div>
+        </div>
+      )}
+      <div className={classNames(loading && 'opacity-20')}>
+        <SignupBody forwardRef={inputsRef} onChangeValue={onChangeInputValue} inputs={signupFieldsWithDefaultValues} />
+        <p className='text-sm text-gray-400'>
+          You have an account? Pls{' '}
+          <Link to={Routes.signIn}>
+            <span className='uppercase text-blue-700 underline'>sign in</span>
+          </Link>
+        </p>
+      </div>
+      {/*</div>*/}
     </Modal>
   );
 };

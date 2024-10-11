@@ -7,4 +7,5 @@ export type SignupInputModel = {
   id: string;
   validation: (val: string) => boolean;
   errorMsg: string;
+  defaultValue?: string;
 };

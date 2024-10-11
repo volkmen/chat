@@ -11,7 +11,7 @@ interface InputProps extends HTMLAttributes<HTMLInputElement> {
   errorMsg?: string;
 }
 
-const FieldInput = forwardRef<Record<string, any>, InputProps>(
+const FieldInput = forwardRef<Record<string, () => boolean>, InputProps>(
   ({ label, className, validation, id, errorMsg, ...htmlAttrs }, forwRef) => {
     const [error, setError] = React.useState<string | null>(null);
     const ref = React.useRef<HTMLInputElement>(null);

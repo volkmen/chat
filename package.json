@@ -1,11 +1,13 @@
 {
   "dependencies": {
+    "@apollo/client": "^3.11.8",
     "@apollo/server": "^4.11.0",
     "class-validator": "^0.14.1",
     "express": "^4.21.0",
     "graphql": "^16.9.0",
     "graphql-tools": "^9.0.1",
     "pg": "^8.13.0",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.26.2",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"

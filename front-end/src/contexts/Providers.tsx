@@ -1,9 +1,12 @@
 import React, { PropsWithChildren } from 'react';
 import { HashRouter } from 'react-router-dom';
+import { ApolloProviderComponent } from './ApolloContext';
 
 const Providers: React.FC<PropsWithChildren> = ({ children }) => (
   <div className='text-gray-400'>
-    <HashRouter>{children}</HashRouter>
+    <ApolloProviderComponent>
+      <HashRouter>{children}</HashRouter>
+    </ApolloProviderComponent>
   </div>
 );
 

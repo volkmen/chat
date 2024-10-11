@@ -23,6 +23,7 @@ const SignupBody: React.FC<SignupBodyProps> = ({ onChangeValue, inputs, forwardR
           onChange={onChangeValue(field.id)}
           validation={field.validation}
           errorMsg={field.errorMsg}
+          defaultValue={field.defaultValue}
           ref={forwardRef}
         />
       ))}
