@@ -1,21 +1,22 @@
 import React from 'react';
-import Modal from 'components/Modal';
 import { noop } from 'lodash';
-import SignupBody from './SignupBody';
 import { Link } from 'react-router-dom';
+import { useMutation } from '@apollo/client';
+import classNames from 'classnames';
+
 import { Routes } from 'consts/routes';
 import { ValidationCallback } from './types';
-import { useMutation } from '@apollo/client';
 import { SIGN_UP } from './api';
 import { FieldIds, signupFields } from './consts';
-import classNames from 'classnames';
-import { showToastError } from '../../services/toast';
+import { showToastError } from 'services/toast';
+import SignupBody from './SignupBody';
+import Modal from 'components/Modal';
 
 const Signup = () => {
   const [inputsMap, setInputsMap] = React.useState<Record<string, string>>({});
   const inputsRef = React.useRef<Record<string, ValidationCallback>>({});
 
-  const [makeSignUp, { data, loading, error }] = useMutation(SIGN_UP);
+  const [makeSignUp, { loading }] = useMutation(SIGN_UP);
 
   const signupFieldsWithDefaultValues = React.useMemo(
     () =>
@@ -67,11 +68,7 @@ const Signup = () => {
     <Modal isOpen={true} onClose={noop} onSubmit={onSubmit} title='SIGN UP'>
       {/*<div className='relative'>*/}
       {loading && (
-        <div
-          className={classNames(
-            'h-full w-full flex flex-col justify-center items-center absolute top-0 text-center left-0'
-          )}
-        >
+        <div className='h-full w-full flex flex-col justify-center items-center absolute top-0 text-center left-0'>
           <div className='loader'></div>
         </div>
       )}

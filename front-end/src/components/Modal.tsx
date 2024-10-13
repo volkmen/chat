@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
+import classNames from 'classnames';
 
 interface ModalProps extends PropsWithChildren {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface ModalProps extends PropsWithChildren {
   title: React.ReactNode;
   cancelBtn?: React.ReactNode;
   submitBtn?: React.ReactNode;
+  submitIsDisabled?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -17,7 +19,8 @@ const Modal: React.FC<ModalProps> = ({
   title,
   children,
   cancelBtn,
-  submitBtn = 'Submit'
+  submitBtn = 'Submit',
+  submitIsDisabled = false
 }) => (
   <Dialog open={isOpen} onClose={onClose} className='relative z-10'>
     <DialogBackdrop
@@ -53,10 +56,14 @@ const Modal: React.FC<ModalProps> = ({
                 </button>
               )}
               <button
+                disabled={submitIsDisabled}
                 type='button'
                 data-autofocus
                 onClick={onSubmit}
-                className='mt-3 inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-indigo-500 sm:mt-0 sm:w-auto'
+                className={classNames(
+                  'mt-3 inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-indigo-500 sm:mt-0 sm:w-auto',
+                  submitIsDisabled ? 'pointer-events-none opacity-50' : null
+                )}
               >
                 {submitBtn}
               </button>
