@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 import { Routes } from 'consts/routes';
 import { ValidationCallback } from './types';
-import { SIGN_UP } from './api';
+import { SIGN_UP } from 'api/signup';
 import { FieldIds, signupFields } from './consts';
 import { showToastError } from 'services/toast';
 import SignupBody from './SignupBody';

@@ -1,25 +1,37 @@
 #!!! This file is being created by script. Do NOT touch it!!!!
 
 
-type Car {
-  model: String!
-  series: String!
-  productionYear: Int!
+type Account {
+  id: ID!
+  username: String!
+  password: String!
+  email: String!
+  is_verified: Boolean
 }
 
 type Query {
-  GetCars: [Car]
-  GetCar(id: Int!): Car
-  GetUsers: [User]
-  GetUser(id: Int!): User
+  GetAccounts: [Account]
+  GetAccount(id: Int!): Account
 }
 
-type User {
-  firstName: String!
-  lastName: String!
-  age: Int
+input UpdateAccountInput {
+  is_verified: Boolean
+}
+
+input AddAccountInput {
+  username: String!
+  password: String!
+  email: String!
+  is_verified: Boolean
+}
+
+type Mutation {
+  AddAccount(email: String!, password: String!, username: String!): Account
+  UpdateAccount(id: Int!, input: UpdateAccountInput!): Account
+  DeleteAccount(id: Int!): ID!
 }
 
 schema {
   query: Query
+  mutation: Mutation
 }

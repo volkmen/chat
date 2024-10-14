@@ -7,12 +7,12 @@ export class AccountEntity {
   id: number;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  first_name: string;
-
-  @Column({ type: 'varchar', length: 255 })
-  last_name: string;
+  username: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
+  password: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
   @IsEmail()
   email: string;
 
@@ -26,7 +26,4 @@ export class AccountEntity {
   @CreateDateColumn()
   @IsDate()
   updated_at: Date;
-
-  @Column({ type: 'varchar', length: 255, nullable: false })
-  phone_number: number;
 }

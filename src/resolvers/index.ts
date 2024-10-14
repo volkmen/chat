@@ -1,4 +1,3 @@
-import carsResolver from './cars/cars.resolver';
-import usersResolver from './users/users.resolver';
+import accountResolver from './account/account.resolver';
 
-export default [carsResolver, usersResolver];
+export default [accountResolver];

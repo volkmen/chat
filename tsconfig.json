@@ -27,6 +27,5 @@
       "resolvers": ["resolvers"]
     }
   },
-  "exclude": ["convertGraphql2Types.js", "src/types/graphql.d.ts"],
-  "include": ["front-end/src"]
+  "exclude": ["convertGraphql2Types.js", "src/types/graphql.d.ts"]
 }

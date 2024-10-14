@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Routes } from 'consts/routes';
 import Modal from 'components/Modal';
 import { useMutation } from '@apollo/client';
-import { SIGN_IN } from './api';
+import { SIGN_IN } from 'api/siginin';
 import { showToastError } from 'services/toast';
 import { signinInputs, FieldIds } from './consts';
 import { ValidationCallback } from './types';

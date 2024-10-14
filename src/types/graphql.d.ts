@@ -14,34 +14,58 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type Car = {
-  __typename?: 'Car';
-  model: Scalars['String']['output'];
-  productionYear: Scalars['Int']['output'];
-  series: Scalars['String']['output'];
+export type Account = {
+  __typename?: 'Account';
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  is_verified?: Maybe<Scalars['Boolean']['output']>;
+  password: Scalars['String']['output'];
+  username: Scalars['String']['output'];
+};
+
+export type AddAccountInput = {
+  email: Scalars['String']['input'];
+  is_verified?: InputMaybe<Scalars['Boolean']['input']>;
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  AddAccount?: Maybe<Account>;
+  DeleteAccount: Scalars['ID']['output'];
+  UpdateAccount?: Maybe<Account>;
+};
+
+
+export type MutationAddAccountArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteAccountArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateAccountArgs = {
+  id: Scalars['Int']['input'];
+  input: UpdateAccountInput;
 };
 
 export type Query = {
   __typename?: 'Query';
-  GetCar?: Maybe<Car>;
-  GetCars?: Maybe<Array<Maybe<Car>>>;
-  GetUser?: Maybe<User>;
-  GetUsers?: Maybe<Array<Maybe<User>>>;
+  GetAccount?: Maybe<Account>;
+  GetAccounts?: Maybe<Array<Maybe<Account>>>;
 };
 
 
-export type QueryGetCarArgs = {
+export type QueryGetAccountArgs = {
   id: Scalars['Int']['input'];
 };
 
-
-export type QueryGetUserArgs = {
-  id: Scalars['Int']['input'];
-};
-
-export type User = {
-  __typename?: 'User';
-  age?: Maybe<Scalars['Int']['output']>;
-  firstName: Scalars['String']['output'];
-  lastName: Scalars['String']['output'];
+export type UpdateAccountInput = {
+  is_verified?: InputMaybe<Scalars['Boolean']['input']>;
 };
