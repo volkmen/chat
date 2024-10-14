@@ -3,9 +3,9 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import * as path from 'node:path';
 import { loadFilesSync } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
-import resolvers from '../resolvers';
+import resolvers from 'resolvers';
 import { DataSource as TypeormDatasource } from 'typeorm';
-import AccountDataSource from '../resolvers/account/AccountDataSource';
+import AccountDataSource from './resolvers/account/AccountDataSource';
 import { type IncomingMessage, type ServerResponse } from 'http';
 
 class App {
@@ -21,7 +21,8 @@ class App {
     const typeDefs = this.getTypeDefs();
     this.server = new ApolloServer({
       typeDefs,
-      resolvers
+      resolvers,
+      formatError: this.formatError
       // schema: mergedSchema
     });
   }
@@ -50,6 +51,12 @@ class App {
       console.log(`Listening on port: ${port}`);
     });
   }
+
+  private formatError = (err: Error) => {
+    console.error('!!!!!!!!!!!!!!!!!', err);
+
+    return err;
+  };
 }
 
 export default App;

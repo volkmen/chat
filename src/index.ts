@@ -1,6 +1,6 @@
 import 'module-alias/register';
 
-import App from './services/graphql-server';
+import App from './graphql-server';
 import { connectToDatabase } from './services/typeorm';
 
 const app = new App();
