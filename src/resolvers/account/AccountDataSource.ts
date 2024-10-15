@@ -31,4 +31,9 @@ export default class AccountDataSource {
     await this.repository.update({ id }, changes);
     return this.repository.findOneBy({ id });
   }
+
+  async verifyEmail(id: number) {
+    await this.repository.update({ id }, { is_verified: true });
+    return this.repository.findOneBy({ id });
+  }
 }

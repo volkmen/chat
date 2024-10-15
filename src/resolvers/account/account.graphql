@@ -9,6 +9,7 @@ type Account {
 type Query {
     GetAccounts: [Account]
     GetAccount(id: Int!): Account
+    VerifyEmail: Account
 }
 
 input UpdateAccountInput {

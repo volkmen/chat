@@ -11,6 +11,11 @@ const resolver = {
     GetAccounts: async (_, args, context, info): Promise<Account[]> => {
       const accountDataSource = context.dataSources.account;
       return accountDataSource.getAccounts();
+    },
+
+    VerifyEmail: async (_, args, context, info): Promise<Account> => {
+      const accountDataSource = context.dataSources.account;
+      return accountDataSource.verifyEmail(args.id);
     }
   },
 
