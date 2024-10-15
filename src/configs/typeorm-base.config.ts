@@ -1,6 +1,7 @@
 import path from 'node:path';
+import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 
-const typeORMBseConfig = {
+const typeORMBseConfig: DataSourceOptions = {
   type: 'postgres',
   host: process.env.DATABASE_HOST || 'localhost',
   port: +process.env.DATABASE_PORT || 5432,

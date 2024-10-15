@@ -52,7 +52,7 @@ export type MutationDeleteAccountArgs = {
 
 export type MutationUpdateAccountArgs = {
   id: Scalars['Int']['input'];
-  input: UpdateAccountInput;
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Query = {
@@ -67,5 +67,6 @@ export type QueryGetAccountArgs = {
 };
 
 export type UpdateAccountInput = {
+  UpdateAccount?: InputMaybe<Scalars['String']['input']>;
   is_verified?: InputMaybe<Scalars['Boolean']['input']>;
 };

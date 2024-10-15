@@ -16,6 +16,7 @@ type Query {
 
 input UpdateAccountInput {
   is_verified: Boolean
+  UpdateAccount: String
 }
 
 input AddAccountInput {
@@ -27,7 +28,7 @@ input AddAccountInput {
 
 type Mutation {
   AddAccount(email: String!, password: String!, username: String!): Account
-  UpdateAccount(id: Int!, input: UpdateAccountInput!): Account
+  UpdateAccount(id: Int!, username: String): Account
   DeleteAccount(id: Int!): ID!
 }
 

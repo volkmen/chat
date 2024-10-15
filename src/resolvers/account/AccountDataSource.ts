@@ -18,15 +18,17 @@ export default class AccountDataSource {
 
   async deleteAccount(id: number) {
     const account = await this.repository.findOneBy({ id });
-    return this.repository.remove(account);
+    await this.repository.remove(account);
+    return id;
   }
 
-  addAccount(account: AccountEntity) {
-    console.log(account);
-    return this.repository.insert(account);
+  async addAccount(account: AccountEntity) {
+    await this.repository.insert(account);
+    return account;
   }
 
-  updateAccount(id: number, changes: Partial<AccountEntity>) {
-    return this.repository.update({ id }, changes);
+  async updateAccount(id: number, changes: Partial<AccountEntity>) {
+    await this.repository.update({ id }, changes);
+    return this.repository.findOneBy({ id });
   }
 }
