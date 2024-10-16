@@ -1,9 +1,11 @@
 import { Account } from 'types/graphql';
+import EmailVerificationService from '../../services/emailer';
+import { Context } from '../../types/server';
+import { AccountEntity } from '../../entities/Account.entity';
 
 const resolver = {
   Query: {
     GetAccount: async (_, args, context, info): Promise<Account> => {
-      console.log('!!!!!!!!!!!!!!!!!!!!!');
       const accountDataSource = context.dataSources.account;
       return accountDataSource.getAccountById(args.id);
     },
@@ -11,18 +13,19 @@ const resolver = {
     GetAccounts: async (_, args, context, info): Promise<Account[]> => {
       const accountDataSource = context.dataSources.account;
       return accountDataSource.getAccounts();
-    },
-
-    VerifyEmail: async (_, args, context, info): Promise<Account> => {
-      const accountDataSource = context.dataSources.account;
-      return accountDataSource.verifyEmail(args.id);
     }
   },
 
   Mutation: {
-    AddAccount: async (_, args, context, info): Promise<number> => {
-      const accountDataSource = context.dataSources.account;
-      return accountDataSource.addAccount(args); // Using args.input based on the schema
+    AddAccount: async (_, args, context: Context): Promise<AccountEntity> => {
+      const {
+        dataSources: { account: accountDataSource },
+        emailVerificationService
+      } = context;
+      const account = await accountDataSource.addAccount(args);
+      emailVerificationService.sendEmailVerificationToken({ to: account.email, token: account.emailToken });
+
+      return account;
     },
 
     UpdateAccount: async (_, { id, username }: { id: number; username: string }, context, info): Promise<Account> => {
@@ -33,6 +36,11 @@ const resolver = {
     DeleteAccount: async (_, args, context, info): Promise<number> => {
       const accountDataSource = context.dataSources.account;
       return accountDataSource.deleteAccount(args.id); // Return the ID of the deleted account
+    },
+
+    VerifyEmail: async (_, args, context, info): Promise<Account> => {
+      const accountDataSource = context.dataSources.account;
+      return accountDataSource.verifyEmail(args.id);
     }
   }
 };

@@ -28,4 +28,5 @@ type Mutation {
     AddAccount(email: String!, password: String!, username: String!): Account
     UpdateAccount(id: Int!, username: String): Account
     DeleteAccount(id: Int!): ID!
+    VerifyEmail(token: String): Account
 }

@@ -35,6 +35,7 @@ export type Mutation = {
   AddAccount?: Maybe<Account>;
   DeleteAccount: Scalars['ID']['output'];
   UpdateAccount?: Maybe<Account>;
+  VerifyEmail?: Maybe<Account>;
 };
 
 
@@ -55,10 +56,16 @@ export type MutationUpdateAccountArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type MutationVerifyEmailArgs = {
+  token?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   GetAccount?: Maybe<Account>;
   GetAccounts?: Maybe<Array<Maybe<Account>>>;
+  VerifyEmail?: Maybe<Account>;
 };
 
 

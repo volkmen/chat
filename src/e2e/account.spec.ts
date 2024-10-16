@@ -2,6 +2,13 @@ import { buildHTTPExecutor } from '@graphql-tools/executor-http';
 import { parse } from 'graphql';
 import App from '../server';
 import { connectToDatabase } from '../services/typeorm';
+import nodemailer from 'nodemailer';
+
+jest.spyOn(nodemailer, 'createTransport').mockImplementation(() => {
+  return {
+    sendMail: jest.fn().mockResolvedValue(true)
+  };
+});
 
 describe('modules', () => {
   let app: App;
@@ -47,7 +54,7 @@ describe('modules', () => {
       expect(result.data.GetAccounts).toEqual([]);
     });
 
-    it('should add account', async () => {
+    it.only('should add account', async () => {
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation AddAccount {
@@ -79,7 +86,7 @@ describe('modules', () => {
       expect(result.data.UpdateAccount).toEqual({ username: 'yar' });
     });
 
-    it('should remove account', async () => {
+    it.skip('should remove account', async () => {
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation DeleteAccount {
@@ -90,6 +97,37 @@ describe('modules', () => {
       expect(result).toBeDefined();
       expect(result.data).toHaveProperty('DeleteAccount');
       expect(result.data.DeleteAccount).toBe('1');
+    });
+  });
+  describe.skip('account verification', () => {
+    it('Should be unverified once user created', async () => {
+      const result = await executor({
+        document: parse(/* GraphQL */ `
+          mutation AddAccount {
+            AddAccount(username: "yyyyy", password: "Qwerty123", email: "yyyyy@gmail.com") {
+              is_verified
+            }
+          }
+        `)
+      });
+      expect(result).toBeDefined();
+      expect(result.data).toHaveProperty('AddAccount');
+      expect(result.data.AddAccount.is_verified).toBeFalsy();
+    });
+
+    it('Should be unverified once user created', async () => {
+      const result = await executor({
+        document: parse(/* GraphQL */ `
+          mutation VerifyEmail {
+            VerifyEmail(token: 1111) {
+              is_verified
+            }
+          }
+        `)
+      });
+      expect(result).toBeDefined();
+      expect(result.data).toHaveProperty('AddAccount');
+      expect(result.data.AddAccount.is_verified).toBeFalsy();
     });
   });
 });

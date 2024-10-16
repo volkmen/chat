@@ -12,6 +12,7 @@ type Account {
 type Query {
   GetAccounts: [Account]
   GetAccount(id: Int!): Account
+  VerifyEmail: Account
 }
 
 input UpdateAccountInput {
@@ -30,6 +31,7 @@ type Mutation {
   AddAccount(email: String!, password: String!, username: String!): Account
   UpdateAccount(id: Int!, username: String): Account
   DeleteAccount(id: Int!): ID!
+  VerifyEmail(token: String): Account
 }
 
 schema {

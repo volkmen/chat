@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-import { IsDate, IsEmail } from 'class-validator';
+import { IsDate, IsEmail, IsInt } from 'class-validator';
 
 @Entity()
 export class AccountEntity {
@@ -15,6 +15,13 @@ export class AccountEntity {
   @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
   @IsEmail()
   email: string;
+
+  @Column({ type: 'int', nullable: false })
+  @IsInt()
+  emailToken: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  crsfToken: string;
 
   @Column({ type: 'boolean', default: false })
   is_verified: boolean;

@@ -1,5 +1,10 @@
 import { DataSource as ORMDataSource } from 'typeorm';
 import { AccountEntity } from 'entities/Account.entity';
+import bcrypt from 'bcrypt';
+import { promisify } from 'node:util';
+
+const genSalt = promisify(bcrypt.genSalt);
+const genHash = promisify(bcrypt.hash);
 
 export default class AccountDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -23,7 +28,13 @@ export default class AccountDataSource {
   }
 
   async addAccount(account: AccountEntity) {
+    const emailToken = Math.floor(Math.random() * 10000);
+    const salt = await bcrypt.genSalt(5);
+    account.password = await bcrypt.hash(account.password, salt);
+    account.emailToken = emailToken;
+
     await this.repository.insert(account);
+
     return account;
   }
 
