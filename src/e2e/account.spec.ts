@@ -15,6 +15,12 @@ describe('modules', () => {
   let dbConnection: any;
   let executor: any;
 
+  const mockUser = {
+    email: 'email.gmail.com',
+    username: 'John',
+    password: 'Qwerty123!'
+  };
+
   beforeAll(async () => {
     app = new App();
     dbConnection = await connectToDatabase({
@@ -54,11 +60,11 @@ describe('modules', () => {
       expect(result.data.GetAccounts).toEqual([]);
     });
 
-    it.only('should add account', async () => {
+    it('should add account', async () => {
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation AddAccount {
-            AddAccount(username: "volkman", email: "volkman@gmail.com", password: "Password") {
+            AddAccount(username: "${mockUser.username}", email: "${mockUser.email}", password: "${mockUser.password}") {
               username
             }
           }
@@ -67,7 +73,7 @@ describe('modules', () => {
 
       expect(result).toBeDefined();
       expect(result.data).toHaveProperty('AddAccount');
-      expect(result.data.AddAccount).toEqual({ username: 'volkman' });
+      expect(result.data.AddAccount).toEqual({ username: mockUser.username });
     });
 
     it('should update account', async () => {
@@ -86,7 +92,37 @@ describe('modules', () => {
       expect(result.data.UpdateAccount).toEqual({ username: 'yar' });
     });
 
-    it.skip('should remove account', async () => {
+    it('should NOT signin into this account', async () => {
+      const result = await executor({
+        document: parse(/* GraphQL */ `
+          mutation SignIn {
+            SignIn(email: "${mockUser.email}", password: "wrong password") {
+              email
+            }
+          }
+        `)
+      });
+      expect(result).toBeDefined();
+      expect(result.data).toHaveProperty('SignIn');
+      expect(result.data.SignIn).toBeFalsy();
+    });
+
+    it('should signin into this account', async () => {
+      const result = await executor({
+        document: parse(/* GraphQL */ `
+          mutation SignIn {
+            SignIn(email: "${mockUser.email}", password: "${mockUser.password}") {
+              email
+            }
+          }
+        `)
+      });
+      expect(result).toBeDefined();
+      expect(result.data).toHaveProperty('SignIn');
+      expect(result.data.SignIn).toBeTruthy();
+    });
+
+    it('should remove account', async () => {
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation DeleteAccount {
@@ -99,6 +135,7 @@ describe('modules', () => {
       expect(result.data.DeleteAccount).toBe('1');
     });
   });
+
   describe.skip('account verification', () => {
     it('Should be unverified once user created', async () => {
       const result = await executor({

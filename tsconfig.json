@@ -24,7 +24,8 @@
     "jsx": "react-jsx",
     "paths": {
       "types": ["types"],
-      "resolvers": ["resolvers"]
+      "resolvers": ["resolvers"],
+      "utils": ["utils"]
     }
   },
   "exclude": ["convertGraphql2Types.js", "src/types/graphql.d.ts"]

@@ -10,6 +10,7 @@ import { type IncomingMessage, type ServerResponse } from 'http';
 import AccountDataSource from './resolvers/account/AccountDataSource';
 import resolvers from './resolvers';
 import EmailVerificationService from './services/emailer';
+import JwtService from './services/jwtService';
 
 class App {
   yoga: YogaServerInstance<unknown, unknown>;
@@ -18,6 +19,7 @@ class App {
       account: AccountDataSource;
     };
     emailVerificationService: EmailVerificationService;
+    jwtService: JwtService;
   };
   server: Server;
 
@@ -30,6 +32,7 @@ class App {
   initContextServices(dbConnection: TypeormDatasource) {
     this.context = {
       emailVerificationService: new EmailVerificationService(),
+      jwtService: new JwtService(),
       dataSources: {
         account: new AccountDataSource(dbConnection)
       }

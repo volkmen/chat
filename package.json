@@ -6,6 +6,7 @@
     "graphql": "^16.9.0",
     "graphql-tools": "^9.0.1",
     "graphql-yoga": "^5.7.0",
+    "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.15",
     "pg": "^8.13.0",
     "react-hot-toast": "^2.4.1",
@@ -52,6 +53,7 @@
   "_moduleAliases": {
     "resolvers": "src/resolvers",
     "entities": "src/entities",
-    "types": "src/types"
+    "types": "src/types",
+    "utils": "src/utils"
   }
 }

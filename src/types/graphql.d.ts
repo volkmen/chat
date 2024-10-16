@@ -34,6 +34,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   AddAccount?: Maybe<Account>;
   DeleteAccount: Scalars['ID']['output'];
+  SignIn?: Maybe<Account>;
   UpdateAccount?: Maybe<Account>;
   VerifyEmail?: Maybe<Account>;
 };
@@ -48,6 +49,12 @@ export type MutationAddAccountArgs = {
 
 export type MutationDeleteAccountArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type MutationSignInArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
 

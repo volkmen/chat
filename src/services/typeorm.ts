@@ -1,7 +1,8 @@
 import { DataSource } from 'typeorm';
 import dataSourceConfig from '../configs/typeorm-base.config';
+import { getIsDevelopment } from '../utils/env';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = getIsDevelopment();
 export function connectToDatabase(dataSourceOptions = {}) {
   const dataSource = new DataSource({
     ...dataSourceConfig,

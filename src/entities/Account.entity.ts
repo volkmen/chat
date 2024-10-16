@@ -16,7 +16,7 @@ export class AccountEntity {
   @IsEmail()
   email: string;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int' })
   @IsInt()
   emailToken: number;
 

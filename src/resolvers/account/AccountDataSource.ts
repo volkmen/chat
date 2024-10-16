@@ -2,9 +2,12 @@ import { DataSource as ORMDataSource } from 'typeorm';
 import { AccountEntity } from 'entities/Account.entity';
 import bcrypt from 'bcrypt';
 import { promisify } from 'node:util';
+import { UnAuthorisedError } from 'utils/errors';
+import { SignInInput } from './types';
 
 const genSalt = promisify(bcrypt.genSalt);
 const genHash = promisify(bcrypt.hash);
+const comparePassword = promisify(bcrypt.compare);
 
 export default class AccountDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -27,10 +30,28 @@ export default class AccountDataSource {
     return id;
   }
 
+  async signin({ email, password }: SignInInput): Promise<AccountEntity> {
+    const account = await this.repository.findOne({ where: { email } });
+
+    if (!account) {
+      throw new UnAuthorisedError('User or password invalid');
+    }
+    try {
+      const result = await comparePassword(password, account.password);
+      if (result) {
+        return account;
+      } else {
+        throw new UnAuthorisedError('User or password invalid');
+      }
+    } catch (error) {
+      throw new UnAuthorisedError('User or password invalid');
+    }
+  }
+
   async addAccount(account: AccountEntity) {
     const emailToken = Math.floor(Math.random() * 10000);
-    const salt = await bcrypt.genSalt(5);
-    account.password = await bcrypt.hash(account.password, salt);
+    const salt = await genSalt(5);
+    account.password = await genHash(account.password, salt);
     account.emailToken = emailToken;
 
     await this.repository.insert(account);
