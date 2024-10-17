@@ -11,3 +11,15 @@ export class UnAuthorisedError extends GraphQLError {
     });
   }
 }
+
+export class BadRequestError extends GraphQLError {
+  constructor(msg: string) {
+    super(msg, {
+      extensions: {
+        http: {
+          status: 403
+        }
+      }
+    });
+  }
+}

@@ -22,6 +22,7 @@ class App {
     jwtService: JwtService;
   };
   server: Server;
+  dbConnection: TypeormDatasource;
 
   private async getTypeDefs() {
     const loadedFiles = await loadFiles(path.join(process.cwd(), 'src', 'schema.graphql'));
@@ -53,14 +54,20 @@ class App {
     return this.yoga;
   }
 
-  private getContext = ({ req, res }: { req: IncomingMessage; res: ServerResponse }) => {
-    return this.context;
+  private getContext = async ({ request }: any) => {
+    const tokenPayload = await this.context.jwtService.parsePayload(request);
+    return {
+      ...this.context,
+      tokenPayload
+    };
   };
 
   public async listen(port: number, dbConnection: TypeormDatasource) {
     this.initContextServices(dbConnection);
+    this.dbConnection = dbConnection;
 
     this.server = createServer(this.yoga);
+
     this.server.listen(port, () => {
       console.log(`Server is listening on port ${port}`);
     });

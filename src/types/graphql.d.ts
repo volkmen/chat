@@ -19,36 +19,18 @@ export type Account = {
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   is_verified?: Maybe<Scalars['Boolean']['output']>;
+  jwtToken?: Maybe<Scalars['String']['output']>;
   password: Scalars['String']['output'];
   username: Scalars['String']['output'];
 };
 
-export type AddAccountInput = {
-  email: Scalars['String']['input'];
-  is_verified?: InputMaybe<Scalars['Boolean']['input']>;
-  password: Scalars['String']['input'];
-  username: Scalars['String']['input'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
-  AddAccount?: Maybe<Account>;
-  DeleteAccount: Scalars['ID']['output'];
+  DeleteMe: Scalars['ID']['output'];
   SignIn?: Maybe<Account>;
-  UpdateAccount?: Maybe<Account>;
+  SignUp?: Maybe<Account>;
+  UpdateMe?: Maybe<Account>;
   VerifyEmail?: Maybe<Account>;
-};
-
-
-export type MutationAddAccountArgs = {
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-  username: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteAccountArgs = {
-  id: Scalars['Int']['input'];
 };
 
 
@@ -58,8 +40,14 @@ export type MutationSignInArgs = {
 };
 
 
-export type MutationUpdateAccountArgs = {
-  id: Scalars['Int']['input'];
+export type MutationSignUpArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateMeArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -70,17 +58,7 @@ export type MutationVerifyEmailArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  GetAccount?: Maybe<Account>;
   GetAccounts?: Maybe<Array<Maybe<Account>>>;
+  Me?: Maybe<Account>;
   VerifyEmail?: Maybe<Account>;
-};
-
-
-export type QueryGetAccountArgs = {
-  id: Scalars['Int']['input'];
-};
-
-export type UpdateAccountInput = {
-  UpdateAccount?: InputMaybe<Scalars['String']['input']>;
-  is_verified?: InputMaybe<Scalars['Boolean']['input']>;
 };

@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { IncomingMessage } from 'http';
 import { promisify } from 'node:util';
-import { UnAuthorisedError } from '../utils/errors';
 
 const verify = promisify(jwt.verify);
 
@@ -15,14 +13,22 @@ class JwtService {
     });
   };
 
-  async verify(req: IncomingMessage) {
-    const token = req.headers.authorization.slice('Bearer '.length);
+  getTokenFromRequest(req: Request) {
+    const authorization = req.headers.get('Authorization');
+    if (!authorization) {
+      return null;
+    }
 
+    return authorization.slice('Bearer '.length);
+  }
+
+  async parsePayload(req: Request) {
+    const token = this.getTokenFromRequest(req);
     try {
-      const payload = await verify(token, this.secret);
+      const payload: { id: number } = await verify(token, this.secret);
       return payload;
     } catch (e) {
-      throw new UnAuthorisedError('Token expires');
+      return null;
     }
   }
 }

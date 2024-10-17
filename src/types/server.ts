@@ -8,4 +8,7 @@ export type Context = {
   };
   emailVerificationService: EmailVerificationService;
   jwtService: JwtService;
+  tokenPayload: {
+    id: number;
+  } | null;
 };

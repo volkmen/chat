@@ -2,7 +2,7 @@ import { DataSource as ORMDataSource } from 'typeorm';
 import { AccountEntity } from 'entities/Account.entity';
 import bcrypt from 'bcrypt';
 import { promisify } from 'node:util';
-import { UnAuthorisedError } from 'utils/errors';
+import { BadRequestError, UnAuthorisedError } from 'utils/errors';
 import { SignInInput } from './types';
 
 const genSalt = promisify(bcrypt.genSalt);
@@ -30,7 +30,7 @@ export default class AccountDataSource {
     return id;
   }
 
-  async signin({ email, password }: SignInInput): Promise<AccountEntity> {
+  async signIn({ email, password }: SignInInput): Promise<AccountEntity> {
     const account = await this.repository.findOne({ where: { email } });
 
     if (!account) {
@@ -64,8 +64,12 @@ export default class AccountDataSource {
     return this.repository.findOneBy({ id });
   }
 
-  async verifyEmail(id: number) {
-    await this.repository.update({ id }, { is_verified: true });
-    return this.repository.findOneBy({ id });
+  async verifyEmail(id: number, token: number) {
+    const account = await this.repository.findOneBy({ id });
+    if (account && account.emailToken === token) {
+      await this.repository.update({ id }, { is_verified: true });
+      return this.repository.findOneBy({ id });
+    }
+    throw new BadRequestError('wrong token');
   }
 }

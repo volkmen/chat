@@ -4,30 +4,19 @@ type Account {
     password: String!
     email: String!
     is_verified: Boolean
+    jwtToken: String
 }
 
 type Query {
     GetAccounts: [Account]
-    GetAccount(id: Int!): Account
+    Me: Account
     VerifyEmail: Account
 }
 
-input UpdateAccountInput {
-    is_verified: Boolean
-    UpdateAccount: String
-}
-
-input AddAccountInput {
-    username: String!
-    password: String!
-    email: String!
-    is_verified: Boolean
-}
-
 type Mutation {
-    AddAccount(email: String!, password: String!, username: String!): Account
-    UpdateAccount(id: Int!, username: String): Account
-    DeleteAccount(id: Int!): ID!
+    SignUp(email: String!, password: String!, username: String!): Account
+    UpdateMe(username: String): Account
+    DeleteMe: ID!
     VerifyEmail(token: String): Account
     SignIn(email: String!, password: String!): Account
 }
