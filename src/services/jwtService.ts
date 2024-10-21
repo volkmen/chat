@@ -7,7 +7,6 @@ class JwtService {
   secret = 'SECRET';
 
   createToken = payload => {
-    console.log(this.secret);
     return jwt.sign(payload, this.secret, {
       expiresIn: '1d'
     });

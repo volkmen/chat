@@ -10,21 +10,36 @@ jest.spyOn(nodemailer, 'createTransport').mockImplementation(() => {
     sendMail: jest.fn().mockResolvedValue(true)
   };
 });
+const mockUser = {
+  email: 'email.gmail.com',
+  username: 'John',
+  password: 'Qwerty123!'
+};
+
+function getExecutor(app, jwtToken?: string) {
+  const addFields = jwtToken
+    ? {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      }
+    : {};
+
+  return buildHTTPExecutor({
+    fetch: app.yoga.fetch,
+    endpoint: `/graphiql`,
+    ...addFields
+  });
+}
 
 describe('modules', () => {
-  let app: App;
+  const app = new App();
   let dbConnection: any;
-  let executor: any;
   let graph_builder: any;
-
-  const mockUser = {
-    email: 'email.gmail.com',
-    username: 'John',
-    password: 'Qwerty123!'
-  };
+  let executor: any;
+  let jwtToken: string;
 
   beforeAll(async () => {
-    app = new App();
     dbConnection = await connectToDatabase({
       database: 'test',
       dropSchema: true,
@@ -32,11 +47,6 @@ describe('modules', () => {
     });
 
     await app.initServer();
-    executor = buildHTTPExecutor({
-      fetch: app.yoga.fetch,
-      endpoint: `/graphiql`
-    });
-
     await app.listen(3300, dbConnection);
   });
 
@@ -46,34 +56,20 @@ describe('modules', () => {
   });
 
   describe('account', () => {
-    it('Get accounts should exist', async () => {
-      const result = await executor({
-        document: parse(/* GraphQL */ `
-          query GetAccounts {
-            GetAccounts {
-              username
-            }
-          }
-        `)
-      });
-
-      expect(result).toBeDefined();
-      expect(result.data).toHaveProperty('GetAccounts');
-      expect(result.data.GetAccounts).toEqual([]);
-    });
-
     it('should SIGN UP', async () => {
+      executor = getExecutor(app);
+
       const result = await executor({
         document: parse(/* GraphQL */ `
-          mutation SignUp {
-            SignUp(username: "${mockUser.username}", email: "${mockUser.email}", password: "${mockUser.password}") {
-              username
-              is_verified
-              jwtToken
-              id
-            }
+        mutation SignUp {
+          SignUp(username: "${mockUser.username}", email: "${mockUser.email}", password: "${mockUser.password}") {
+            username
+            is_verified
+            jwtToken
+            id
           }
-        `),
+        }
+      `),
         operationName: 'SignUp'
       });
 
@@ -83,19 +79,19 @@ describe('modules', () => {
 
       expect(result.data.SignUp.is_verified).toBeFalsy();
       expect(result.data.SignUp.jwtToken).toBeTruthy();
-      const jwtToken = result.data.SignUp.jwtToken;
-      const repository = app.dbConnection.getRepository(AccountEntity);
-      const id = result.data.SignUp.id;
-      const user = await repository.findOneBy({ id });
-      const token = user.emailToken;
+      jwtToken = result.data.SignUp.jwtToken;
 
-      executor = buildHTTPExecutor({
-        fetch: app.yoga.fetch,
-        endpoint: `/graphiql`,
-        headers: {
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
+      // const repository = app.dbConnection.getRepository(AccountEntity);
+      // const id = result.data.SignUp.id;
+      // const user = await repository.findOneBy({ id });
+      // const token = user.emailToken;
+    });
+
+    it('should verify email', async () => {
+      executor = getExecutor(app, jwtToken);
+      const repository = app.dbConnection.getRepository(AccountEntity);
+      const user = await repository.findOneBy({ id: 1 });
+      const token = user.emailToken;
       //
       const resultVerifyEmail = await executor({
         document: parse(/* GraphQL */ `
@@ -112,7 +108,26 @@ describe('modules', () => {
       expect(resultVerifyEmail.data.VerifyEmail.is_verified).toBeTruthy();
     });
 
+    it('Get accounts should exist', async () => {
+      executor = getExecutor(app, jwtToken);
+      const result = await executor({
+        document: parse(/* GraphQL */ `
+          query GetAccounts {
+            GetAccounts {
+              username
+            }
+          }
+        `)
+      });
+
+      expect(result).toBeDefined();
+      expect(result.data).toHaveProperty('GetAccounts');
+      expect(result.data.GetAccounts).toEqual([{ username: mockUser.username }]);
+    });
+
     it('should update account', async () => {
+      executor = getExecutor(app, jwtToken);
+
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation UpdateMe {
@@ -127,7 +142,8 @@ describe('modules', () => {
       expect(result.data.UpdateMe).toEqual({ username: 'yar' });
     });
 
-    it('should NOT signin into this account', async () => {
+    it('should NOT signin into this account if wrong password', async () => {
+      executor = getExecutor(app);
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation SignIn {
@@ -142,7 +158,7 @@ describe('modules', () => {
       expect(result.data.SignIn).toBeFalsy();
     });
 
-    it('should signin into this account', async () => {
+    it('should signin into this account if correct password', async () => {
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation SignIn {
@@ -158,6 +174,7 @@ describe('modules', () => {
     });
 
     it('should remove account', async () => {
+      const executor = getExecutor(app, jwtToken);
       const result = await executor({
         document: parse(/* GraphQL */ `
           mutation DeleteMe {
@@ -165,6 +182,7 @@ describe('modules', () => {
           }
         `)
       });
+
       expect(result).toBeDefined();
       expect(result.data).toHaveProperty('DeleteMe');
       expect(result.data.DeleteMe).toBe('1');
@@ -172,34 +190,34 @@ describe('modules', () => {
   });
 
   describe.skip('account verification', () => {
-    it('Should be unverified once user created', async () => {
-      const result = await executor({
-        document: parse(/* GraphQL */ `
-          mutation SignUp {
-            SignUp(username: "yyyyy", password: "Qwerty123", email: "yyyyy@gmail.com") {
-              is_verified
-            }
-          }
-        `)
-      });
-      expect(result).toBeDefined();
-      expect(result.data).toHaveProperty('SignUp');
-      expect(result.data.SignUp.is_verified).toBeFalsy();
-    });
-
-    it('Should be unverified once user created', async () => {
-      const result = await executor({
-        document: parse(/* GraphQL */ `
-          mutation VerifyEmail {
-            VerifyEmail(token: 1111) {
-              is_verified
-            }
-          }
-        `)
-      });
-      expect(result).toBeDefined();
-      expect(result.data).toHaveProperty('SignUp');
-      expect(result.data.SignUp.is_verified).toBeFalsy();
-    });
+    // it('Should be unverified once user created', async () => {
+    //   const result = await executor({
+    //     document: parse(/* GraphQL */ `
+    //       mutation SignUp {
+    //         SignUp(username: "yyyyy", password: "Qwerty123", email: "yyyyy@gmail.com") {
+    //           is_verified
+    //         }
+    //       }
+    //     `)
+    //   });
+    //   expect(result).toBeDefined();
+    //   expect(result.data).toHaveProperty('SignUp');
+    //   expect(result.data.SignUp.is_verified).toBeFalsy();
+    // });
+    //
+    // it('Should be unverified once user created', async () => {
+    //   const result = await executor({
+    //     document: parse(/* GraphQL */ `
+    //       mutation VerifyEmail {
+    //         VerifyEmail(token: 1111) {
+    //           is_verified
+    //         }
+    //       }
+    //     `)
+    //   });
+    //   expect(result).toBeDefined();
+    //   expect(result.data).toHaveProperty('SignUp');
+    //   expect(result.data.SignUp.is_verified).toBeFalsy();
+    // });
   });
 });

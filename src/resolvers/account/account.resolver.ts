@@ -26,8 +26,6 @@ const resolver = {
         jwtService
       } = context;
 
-      console.log('SIGN UP', jwtService);
-
       const account = await accountDataSource.addAccount(args);
       emailVerificationService.sendEmailVerificationToken({ to: account.email, token: account.emailToken });
 
@@ -36,16 +34,17 @@ const resolver = {
       return { ...account, jwtToken };
     },
 
-    UpdateMe: createAuthResolver(
-      async (_, { id, username }: { id: number; username: string }, context): Promise<AccountEntity> => {
-        const accountDataSource = getAccountResource(context);
-        return accountDataSource.updateAccount(id, { username }); // Using args.input for updated data
-      }
-    ),
+    UpdateMe: createAuthResolver(async (_, { username }: { username: string }, context): Promise<AccountEntity> => {
+      const accountDataSource = getAccountResource(context);
+      const userId = getUserIdFromContext(context);
+
+      return accountDataSource.updateAccount(userId, { username }); // Using args.input for updated data
+    }),
 
     DeleteMe: createAuthResolver<{ id: number }, Promise<number>>(async (_, args, context: Context) => {
       const accountDataSource = context.dataSources.account;
-      return accountDataSource.deleteAccount(args.id); // Return the ID of the deleted account
+      const userId = getUserIdFromContext(context);
+      return accountDataSource.deleteAccount(userId); // Return the ID of the deleted account
     }),
 
     VerifyEmail: createAuthResolver(async (_, args: { token: number }, context): Promise<AccountEntity> => {

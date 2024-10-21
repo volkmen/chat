@@ -7,7 +7,6 @@ export function createAuthResolver<Args, Return = any>(
   callbackResolverFunction: Func<Args, Return>
 ): Func<Args, Return> {
   return (_: Parent, args: Args, context: Context, info: any) => {
-    console.log(args, context.tokenPayload, _);
     if (!context.tokenPayload) {
       throw new UnAuthorisedError('Token is missing');
     }

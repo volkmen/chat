@@ -61,7 +61,6 @@ const Signin = () => {
         });
     } else {
       setSubmitIsDisabled(true);
-      console.log('error', validationsResult);
     }
   };
 
