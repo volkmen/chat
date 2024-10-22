@@ -1,7 +1,7 @@
 import { SigninInputModel } from './types';
 
 export enum FieldIds {
-  Username = 'username',
+  Email = 'email',
   Password = 'password'
 }
 
@@ -10,7 +10,7 @@ export const signinInputs: SigninInputModel[] = [
     type: 'text',
     label: 'Username',
     placeholder: 'username',
-    id: FieldIds.Username,
+    id: FieldIds.Email,
     validation: (val: string) => val.length < 4,
     errorMsg: 'Name should be more than 3 symbols'
   },

@@ -5,3 +5,9 @@ export function showToastError(msg: string) {
     position: 'top-right'
   });
 }
+
+export function showToastSuccess(msg: string) {
+  toast.success(msg, {
+    position: 'top-right'
+  });
+}

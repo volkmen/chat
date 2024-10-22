@@ -1,12 +1,12 @@
 import React from 'react';
 import { noop } from 'lodash';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
-import { Routes } from 'consts/routes';
+import { Link, useNavigate } from 'react-router-dom';
+import { PageRoutes } from 'consts/routes';
 import Modal from 'components/Modal';
 import { useMutation } from '@apollo/client';
-import { SIGN_IN } from 'api/siginin';
-import { showToastError } from 'services/toast';
+import { SIGN_IN } from 'api/account';
+import { showToastError, showToastSuccess } from 'services/toast';
 import { signinInputs, FieldIds } from './consts';
 import { ValidationCallback } from './types';
 import SignInBody from './SignInBody';
@@ -14,6 +14,7 @@ import SignInBody from './SignInBody';
 const Signin = () => {
   const [makesignin, { loading }] = useMutation(SIGN_IN);
   const [submitIsDisabled, setSubmitIsDisabled] = React.useState(false);
+  const navigate = useNavigate();
 
   const [inputsMap, setInputsMap] = React.useState<Record<string, string>>({});
   const inputsRef = React.useRef<Record<string, ValidationCallback>>({});
@@ -46,18 +47,23 @@ const Signin = () => {
     const validationsResult = Object.values(inputsRef.current).map(validationCb => validationCb());
 
     if (validationsResult.every(Boolean)) {
+      console.log({
+        email: inputsMap[FieldIds.Email],
+        password: inputsMap[FieldIds.Password]
+      });
       makesignin({
         variables: {
-          username: inputsMap[FieldIds.Username],
+          email: inputsMap[FieldIds.Email],
           password: inputsMap[FieldIds.Password]
         }
       })
-        .then(() => {
-          console.log('successfully signed in');
+        .then(response => {
+          localStorage.setItem('token', response.data.SignIn.jwtToken);
+          navigate(PageRoutes.Home);
+          showToastSuccess('successfully signed in');
         })
-        .catch(() => {
+        .catch(e => {
           showToastError('Error to sign in');
-          console.log('error to SIGN in');
         });
     } else {
       setSubmitIsDisabled(true);
@@ -76,7 +82,7 @@ const Signin = () => {
         <SignInBody forwardRef={inputsRef} onChangeValue={onChangeInputValue} inputs={signinFieldsWithDefaultValues} />
         <p className='text-sm text-gray-400'>
           You not have an account? Pls register{' '}
-          <Link to={Routes.signUp}>
+          <Link to={PageRoutes.SignUp}>
             <span className='uppercase text-blue-700 underline'>sign up</span>
           </Link>
         </p>

@@ -4,7 +4,7 @@ import typeORMBseConfig from '../configs/typeorm-base.config';
 
 const dataSourceConfig = new DataSource({
   ...typeORMBseConfig,
-  type: 'postgres',
+  // type: 'postgres',
   migrations: [path.join(process.cwd(), 'src/migrations')]
 });
 

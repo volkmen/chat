@@ -13,7 +13,7 @@ interface InputProps extends HTMLAttributes<HTMLInputElement> {
 
 const FieldInput = forwardRef<Record<string, () => boolean>, InputProps>(
   ({ label, className, validation, id, errorMsg, ...htmlAttrs }, forwRef) => {
-    const [error, setError] = React.useState<string | null>(null);
+    const [error, setError] = React.useState<string | undefined | null>(errorMsg);
     const ref = React.useRef<HTMLInputElement>(null);
 
     useImperativeHandle(

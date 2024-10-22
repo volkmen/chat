@@ -1,20 +1,21 @@
 import React from 'react';
 import { noop } from 'lodash';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import classNames from 'classnames';
 
-import { Routes } from 'consts/routes';
 import { ValidationCallback } from './types';
-import { SIGN_UP } from 'api/signup';
+import { SIGN_UP } from 'api/account';
 import { FieldIds, signupFields } from './consts';
-import { showToastError } from 'services/toast';
+import { showToastError, showToastSuccess } from 'services/toast';
 import SignupBody from './SignupBody';
 import Modal from 'components/Modal';
+import { PageRoutes } from 'consts/routes';
 
 const Signup = () => {
   const [inputsMap, setInputsMap] = React.useState<Record<string, string>>({});
   const inputsRef = React.useRef<Record<string, ValidationCallback>>({});
+  const navigate = useNavigate();
 
   const [makeSignUp, { loading }] = useMutation(SIGN_UP);
 
@@ -52,12 +53,13 @@ const Signup = () => {
           password: inputsMap[FieldIds.password]
         }
       })
-        .then(() => {
-          console.log('successfully signed up');
+        .then(result => {
+          localStorage.setItem('token', result.data.SignUp.jwtToken);
+          showToastSuccess('successfully signed up');
+          navigate(PageRoutes.Verify);
         })
         .catch(() => {
           showToastError('Error to sign up');
-          console.log('error to SIGN up');
         });
     } else {
       console.log('error', validationsResult);
@@ -76,7 +78,7 @@ const Signup = () => {
         <SignupBody forwardRef={inputsRef} onChangeValue={onChangeInputValue} inputs={signupFieldsWithDefaultValues} />
         <p className='text-sm text-gray-400'>
           You have an account? Pls{' '}
-          <Link to={Routes.signIn}>
+          <Link to={PageRoutes.SignIn}>
             <span className='uppercase text-blue-700 underline'>sign in</span>
           </Link>
         </p>
