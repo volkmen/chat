@@ -53,7 +53,7 @@ export type MutationUpdateMeArgs = {
 
 
 export type MutationVerifyEmailArgs = {
-  token?: InputMaybe<Scalars['String']['input']>;
+  token: Scalars['Int']['input'];
 };
 
 export type Query = {

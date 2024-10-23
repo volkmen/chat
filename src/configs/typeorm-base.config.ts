@@ -8,7 +8,8 @@ const typeORMBseConfig: DataSourceOptions = {
   username: process.env.DATABASE_USERNAME || 'postgres',
   password: process.env.DATABASE_PASSWORD || 'wolf',
   database: process.env.DATABASE_NAME || 'vid',
-  entities: [path.join(process.cwd(), 'src/entities/**/*.entity.ts')]
+  entities: [path.join(process.cwd(), 'src/entities/**/*.entity.ts')],
+  migrations: [path.join(process.cwd(), 'src/migrations/*.ts')]
 };
 
 export default typeORMBseConfig;

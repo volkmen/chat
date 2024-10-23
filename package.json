@@ -39,15 +39,18 @@
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.6.2"
   },
   "scripts": {
-    "dev": "NODE_ENV=DEVELOPMENT nodemon src/index.ts",
+    "dev": "NODE_ENV=DEVELOPMENT nodemon --ignore 'front-end/**/*' src/index.ts",
     "lint": "eslint .",
     "gql2types": "node mergeGraphqlSchemas.js",
     "codegen": "graphql-codegen --config codegen.ts",
     "typeorm": "typeorm-ts-node-esm -d src/configs/typeorm-base.config.ts",
-    "generate-migration": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/migrations/config.ts",
+    "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d typeorm.migration.config.ts",
+    "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d typeorm.migration.config.ts",
+    "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d typeorm.migration.config.ts",
     "test": "NODE_ENV=testing jest"
   },
   "_moduleAliases": {

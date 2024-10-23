@@ -5,7 +5,6 @@ import { loadFiles } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { type YogaServerInstance } from 'graphql-yoga/typings/server';
 import { DataSource as TypeormDatasource } from 'typeorm';
-import { type IncomingMessage, type ServerResponse } from 'http';
 
 import AccountDataSource from './resolvers/account/AccountDataSource';
 import resolvers from './resolvers';
@@ -56,6 +55,7 @@ class App {
 
   private getContext = async ({ request }: any) => {
     const tokenPayload = await this.context.jwtService.parsePayload(request);
+    console.log(tokenPayload);
     return {
       ...this.context,
       tokenPayload

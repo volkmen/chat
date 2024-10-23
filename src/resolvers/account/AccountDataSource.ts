@@ -16,8 +16,10 @@ export default class AccountDataSource {
     return this.dbConnection.getRepository(AccountEntity);
   }
 
-  getAccountById(id: number) {
-    return this.repository.findOneBy({ id });
+  async getAccountById(id: number) {
+    const account = await this.repository.findOneBy({ id });
+    console.log(id, account);
+    return account;
   }
 
   getAccounts() {
@@ -48,7 +50,12 @@ export default class AccountDataSource {
     }
   }
 
-  async addAccount(account: AccountEntity) {
+  async signUp(account: AccountEntity) {
+    const accountExistedAccounted = await this.repository.findBy({ email: account.email });
+    if (!accountExistedAccounted) {
+      throw new BadRequestError('Such account exist');
+    }
+
     const emailToken = Math.floor(Math.random() * 10000);
     const salt = await genSalt(5);
     account.password = await genHash(account.password, salt);
@@ -66,6 +73,8 @@ export default class AccountDataSource {
 
   async verifyEmail(id: number, token: number) {
     const account = await this.repository.findOneBy({ id });
+
+    console.log(account);
     if (account && account.emailToken === token) {
       await this.repository.update({ id }, { is_verified: true });
       return this.repository.findOneBy({ id });

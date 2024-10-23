@@ -1,12 +1,16 @@
-import React, { FormEvent } from 'react';
-import Modal from 'components/Modal';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
 import { useMutation } from '@apollo/client';
 import { VERIFY_EMAIL } from 'api/account';
+import Modal from 'components/Modal';
 import FieldInput from 'components/FieldInput';
+import SignOut from 'components/SignOut';
 import { showToastError, showToastSuccess } from 'services/toast';
-import SignOut from '../../components/SignOut';
+
+const preventDefault = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+};
 
 const Verify = () => {
   const location = useLocation();
@@ -33,15 +37,17 @@ const Verify = () => {
 
   return (
     <Modal isOpen={isOpened} onSubmit={onSubmit} title='Verify Modal'>
-      <FieldInput
-        id='verify_email'
-        label='Fill the code that was sent into your email'
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
-        defaultValue={inputValue}
-      />
-      <div className='text-end'>
-        <SignOut />
-      </div>
+      <form action='/' onSubmit={preventDefault}>
+        <FieldInput
+          id='verify_email'
+          label='Fill the code that was sent into your email'
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
+          defaultValue={inputValue}
+        />
+        <div className='text-end'>
+          <SignOut />
+        </div>
+      </form>
     </Modal>
   );
 };

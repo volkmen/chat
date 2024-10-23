@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { ME_QUERY } from 'api/account';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
@@ -12,20 +12,14 @@ export const useIsAuthenticated = () => {
   const [fetchMe, { loading, data, error }] = useLazyQuery(ME_QUERY);
   const location = useLocation();
   const navigate = useNavigate();
-  const isLoaded = !loading;
-  const isSuccess = !error && !loading && data;
+  const isSuccess = data && !error && !loading;
   const isError = Boolean(error);
   const isVerified = getAccountVerified(data);
 
   const token = localStorage.getItem('token');
 
-  // console.log(token, data);
-
-  // console.log(token);
   React.useEffect(() => {
-    console.log('BEFORE REFETCH', token);
     fetchMe({ fetchPolicy: 'network-only' });
-    console.log('AFTER REFETCH', token);
   }, [token]);
 
   const shouldRenderVerifyPage = isSuccess && !isVerified && location.pathname !== PageRoutes.Verify;
@@ -34,8 +28,6 @@ export const useIsAuthenticated = () => {
 
   const shouldRenderHomePage =
     isSuccess && isVerified && (location.pathname === PageRoutes.SignIn || location.pathname === PageRoutes.SignUp);
-
-  console.log(shouldRenderVerifyPage, shouldRenderSignInPage, shouldRenderHomePage, data);
 
   if (shouldRenderVerifyPage) {
     navigate(PageRoutes.Verify);

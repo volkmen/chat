@@ -17,6 +17,6 @@ type Mutation {
     SignUp(email: String!, password: String!, username: String!): Account
     UpdateMe(username: String): Account
     DeleteMe: ID!
-    VerifyEmail(token: String): Account
+    VerifyEmail(token: Int!): Account
     SignIn(email: String!, password: String!): Account
 }

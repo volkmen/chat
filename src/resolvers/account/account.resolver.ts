@@ -9,6 +9,7 @@ const resolver = {
     Me: createAuthResolver((_, args, context: Context): Promise<AccountEntity> => {
       const accountDataSource = getAccountResource(context);
       const userId = getUserIdFromContext(context);
+      console.log(userId);
       return accountDataSource.getAccountById(userId);
     }),
 
@@ -26,7 +27,7 @@ const resolver = {
         jwtService
       } = context;
 
-      const account = await accountDataSource.addAccount(args);
+      const account = await accountDataSource.signUp(args);
       emailVerificationService.sendEmailVerificationToken({ to: account.email, token: account.emailToken });
 
       const jwtToken = await jwtService.createToken({ id: account.id });
@@ -51,12 +52,20 @@ const resolver = {
       const accountDataSource = getAccountResource(context);
       const userId = getUserIdFromContext(context);
 
-      return accountDataSource.verifyEmail(userId, +args.token);
+      return accountDataSource.verifyEmail(userId, args.token);
     }),
 
-    SignIn: async (_, args: SignInInput, context: Context): Promise<AccountEntity> => {
-      const accountDataSource = getAccountResource(context);
-      return accountDataSource.signIn(args);
+    SignIn: async (_, args: SignInInput, context: Context): Promise<AccountEntity & { jwtToken: string }> => {
+      const {
+        dataSources: { account: accountDataSource },
+        jwtService
+      } = context;
+      console.log('!!!!!!!!!!');
+      const account = await accountDataSource.signIn(args);
+      if (account) {
+        const jwtToken = await jwtService.createToken({ id: account.id });
+        return { ...account, jwtToken };
+      }
     }
   }
 };
