@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import Providers from './contexts/Providers';
 import { Toaster } from 'react-hot-toast';
 import Router from './Router';
+import SidebarComponent from './components/SidebarComponent';
 
 import './css/tailwind-generated.css';
 import './css/index.scss';
@@ -12,7 +13,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <Providers>
-      <div className='container'>
+      <div className='container mx-auto bg-gray-50'>
         <Router />
       </div>
     </Providers>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PageRoutes } from '../consts/routes';
+import { Button } from 'flowbite-react';
 
 const SignOut = () => {
   const onSignOut = () => {
@@ -8,11 +9,9 @@ const SignOut = () => {
   };
 
   return (
-    <p className='text-sm text-gray-400' onClick={onSignOut}>
-      <Link to={PageRoutes.SignIn}>
-        <span className='uppercase text-blue-700 underline'>sign out</span>
-      </Link>
-    </p>
+    <Button onClick={onSignOut} className='uppercase' color='light' size='xs'>
+      <Link to={PageRoutes.SignIn}>sign out</Link>
+    </Button>
   );
 };
 

@@ -1,12 +1,12 @@
 import React from 'react';
-import SignOut from 'components/SignOut';
-import Sidebar from 'components/Sidebar';
+import Header from 'components/Header';
 
-const Home = () => (
-  <div className='text-red-600'>
-    {/*<Sidebar />*/}
-    <SignOut />
-  </div>
-);
+function HomeComponent() {
+  return (
+    <div>
+      <Header />
+    </div>
+  );
+}
 
-export default Home;
+export default HomeComponent;
