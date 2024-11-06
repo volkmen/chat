@@ -2,6 +2,8 @@ import React, { RefObject } from 'react';
 import FieldInput from 'components/FieldInput';
 import { signinInputs } from './consts';
 import { SigninInputModel, ValidationCallback } from './types';
+import { Link } from 'react-router-dom';
+import { PageRoutes } from 'consts/routes';
 
 interface SignInBodyProps {
   inputs: SigninInputModel[];
@@ -10,10 +12,7 @@ interface SignInBodyProps {
 }
 
 const SignInBody: React.FC<SignInBodyProps> = ({ onChangeValue, forwardRef }) => (
-  <div className='isolate bg-white px-6  lg:px-8 flex-col justify-center flex'>
-    <div className='mx-auto max-w-2xl text-center'>
-      <p className='text-base leading-8 text-gray-600'>Please fill the form below</p>
-    </div>
+  <div className='space-y-4 md:space-y-6'>
     <div>
       {signinInputs.map(field => (
         <FieldInput
@@ -29,6 +28,14 @@ const SignInBody: React.FC<SignInBodyProps> = ({ onChangeValue, forwardRef }) =>
         />
       ))}
     </div>
+    <p className='text-sm font-light text-gray-500 dark:text-gray-400'>
+      Don’t have an account yet?{' '}
+      <Link to={PageRoutes.SignUp}>
+        <span className='font-medium text-primary-600 text-blue-900 uppercase hover:underline dark:text-primary-500'>
+          sign up
+        </span>
+      </Link>
+    </p>
   </div>
 );
 

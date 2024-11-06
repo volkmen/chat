@@ -1,24 +1,18 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
 import { useMutation } from '@apollo/client';
 import { VERIFY_EMAIL } from 'api/account';
-import Modal from 'components/Modal';
+import Modal from 'components/Modalv2';
 import FieldInput from 'components/FieldInput';
-import SignOut from 'components/SignOut';
 import { showToastError, showToastSuccess } from 'services/toast';
 
-const preventDefault = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-};
-
 const Verify = () => {
-  const location = useLocation();
   const [makeVerify, { error }] = useMutation(VERIFY_EMAIL);
   const [inputValue, setInputValue] = React.useState('');
   const navigate = useNavigate();
 
-  const isOpened = location.pathname === PageRoutes.Verify;
+  console.log(error?.message);
 
   const onSubmit = () =>
     makeVerify({
@@ -36,18 +30,22 @@ const Verify = () => {
       });
 
   return (
-    <Modal isOpen={isOpened} onSubmit={onSubmit} title='Verify Modal'>
-      <form action='/' onSubmit={preventDefault}>
-        <FieldInput
-          id='verify_email'
-          label='Fill the code that was sent into your email'
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
-          defaultValue={inputValue}
-        />
-        <div className='text-end'>
-          <SignOut />
-        </div>
-      </form>
+    <Modal
+      submit={{ onSubmit }}
+      title='Verify Modal'
+      disableCloseBtn
+      cancel={{
+        name: <Link to={PageRoutes.SignIn}>sign out</Link>
+      }}
+    >
+      <FieldInput
+        id='verify_email'
+        label='Fill the code that was sent into your email'
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
+        defaultValue={inputValue}
+        wrapperStyle={{ marginBottom: 0 }}
+        errorMsg={error?.message}
+      />
     </Modal>
   );
 };

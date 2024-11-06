@@ -1,4 +1,4 @@
-import React, { forwardRef, type HTMLAttributes, useImperativeHandle } from 'react';
+import React, { CSSProperties, forwardRef, type HTMLAttributes, useImperativeHandle } from 'react';
 import classNames from 'classnames';
 import { Input as HeadlessInput, Field, Label } from '@headlessui/react';
 import { isNil } from 'lodash';
@@ -9,10 +9,12 @@ interface InputProps extends HTMLAttributes<HTMLInputElement> {
   type?: string;
   validation?: (val: string) => boolean;
   errorMsg?: string;
+  wrapperStyle?: CSSProperties;
+  apiError?: string;
 }
 
 const FieldInput = forwardRef<Record<string, () => boolean>, InputProps>(
-  ({ label, className, validation, id, errorMsg, ...htmlAttrs }, forwRef) => {
+  ({ label, className, validation, id, apiError, wrapperStyle, errorMsg, ...htmlAttrs }, forwRef) => {
     const [error, setError] = React.useState<string | null>(null);
     const ref = React.useRef<HTMLInputElement>(null);
 
@@ -25,6 +27,12 @@ const FieldInput = forwardRef<Record<string, () => boolean>, InputProps>(
       }),
       []
     );
+
+    React.useEffect(() => {
+      if (!error && apiError) {
+        setError(apiError);
+      }
+    }, [apiError]);
 
     const checkValidation = (value?: string) => {
       const isError = isNil(value) ? true : validation?.(value);
@@ -48,8 +56,8 @@ const FieldInput = forwardRef<Record<string, () => boolean>, InputProps>(
     };
 
     return (
-      <Field className='pb-5 mb-2.5 relative '>
-        <Label htmlFor='first-name' className='block text-sm leading-6 text-gray-600 text-start'>
+      <Field className='pb-5 mb-2.5 relative' style={wrapperStyle}>
+        <Label htmlFor='first-name' className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
           {label}
         </Label>
         <div>

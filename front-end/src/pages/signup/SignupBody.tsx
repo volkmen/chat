@@ -9,25 +9,22 @@ interface SignupBodyProps {
 }
 
 const SignupBody: React.FC<SignupBodyProps> = ({ onChangeValue, inputs, forwardRef }) => (
-  <div className='isolate bg-white px-6  lg:px-8 flex-col justify-center flex'>
-    <div className='mx-auto max-w-2xl text-center'>
-      <p className='text-base leading-8 text-gray-600'>Please fill the form below</p>
-    </div>
-    <div>
-      {inputs.map(field => (
-        <FieldInput
-          key={field.id}
-          id={field.id}
-          label={field.label}
-          type={field.type}
-          onChange={onChangeValue(field.id)}
-          validation={field.validation}
-          errorMsg={field.errorMsg}
-          defaultValue={field.defaultValue}
-          ref={forwardRef}
-        />
-      ))}
-    </div>
+  <div className='space-y-4 md:space-y-6'>
+    <p className='text-sm font-light text-gray-500 dark:text-gray-400'>Please fill the form below</p>
+    {inputs.map(field => (
+      <FieldInput
+        key={field.id}
+        id={field.id}
+        label={field.label}
+        type={field.type}
+        onChange={onChangeValue(field.id)}
+        validation={field.validation}
+        errorMsg={field.errorMsg}
+        defaultValue={field.defaultValue}
+        ref={forwardRef}
+        wrapperStyle={{ marginTop: '0.5rem' }}
+      />
+    ))}
   </div>
 );
 

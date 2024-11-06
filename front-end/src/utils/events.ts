@@ -1,5 +1,5 @@
-import React from 'react';
+import React, { EventHandler } from 'react';
 
-export const preventDefault = (e: React.MouseEvent<HTMLElement>) => {
+export const preventDefault: EventHandler<any> = e => {
   e.preventDefault();
 };

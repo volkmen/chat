@@ -1,15 +1,15 @@
 import React from 'react';
-import { noop } from 'lodash';
-import classNames from 'classnames';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
-import Modal from 'components/Modal';
 import { useMutation } from '@apollo/client';
 import { SIGN_IN } from 'api/account';
 import { showToastError, showToastSuccess } from 'services/toast';
 import { signinInputs, FieldIds } from './consts';
 import { ValidationCallback } from './types';
 import SignInBody from './SignInBody';
+import Modal from 'components/Modalv2';
+import { Spinner } from 'flowbite-react';
+import { useModal } from '../../contexts/ModalContext';
 
 const Signin = () => {
   const [makesignin, { loading }] = useMutation(SIGN_IN);
@@ -71,23 +71,17 @@ const Signin = () => {
   };
 
   return (
-    <Modal isOpen={true} onClose={noop} onSubmit={onSubmit} submitIsDisabled={submitIsDisabled} title='SIGN IN'>
-      {/*<div className='relative'>*/}
-      {loading && (
-        <div className='h-full w-full flex flex-col justify-center items-center absolute top-0 text-center left-0'>
-          <div className='loader'></div>
-        </div>
-      )}
-      <div className={classNames(loading && 'opacity-20')}>
-        <SignInBody forwardRef={inputsRef} onChangeValue={onChangeInputValue} inputs={signinFieldsWithDefaultValues} />
-        <p className='text-sm text-gray-400'>
-          You not have an account? Pls register{' '}
-          <Link to={PageRoutes.SignUp}>
-            <span className='uppercase text-blue-700 underline'>sign up</span>
-          </Link>
-        </p>
-      </div>
-      {/*</div>*/}
+    <Modal
+      show={true}
+      isLoading={loading}
+      disableCloseBtn
+      title='Sign in to your account'
+      submit={{
+        onClick: onSubmit,
+        disabled: submitIsDisabled
+      }}
+    >
+      <SignInBody forwardRef={inputsRef} onChangeValue={onChangeInputValue} inputs={signinFieldsWithDefaultValues} />
     </Modal>
   );
 };
