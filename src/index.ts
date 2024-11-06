@@ -5,6 +5,11 @@ import { connectToDatabase } from './services/typeorm';
 
 const app = new App();
 
-Promise.all([connectToDatabase({ migrationsRun: true }), app.initServer()]).then(([dbConnection]) => {
+Promise.all([
+  connectToDatabase({
+    migrationsRun: true
+  }),
+  app.initServer()
+]).then(([dbConnection]) => {
   app.listen(4000, dbConnection);
 });

@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
 import { IsDate, IsEmail, IsInt } from 'class-validator';
+import { ChatEntity } from './Chat.entity';
 
 @Entity()
-export class AccountEntity {
+export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,10 +19,7 @@ export class AccountEntity {
 
   @Column({ type: 'int' })
   @IsInt()
-  emailToken: number;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  crsfToken: string;
+  email_token: number;
 
   @Column({ type: 'boolean', default: false })
   is_verified: boolean;
@@ -33,4 +31,7 @@ export class AccountEntity {
   @CreateDateColumn()
   @IsDate()
   updated_at: Date;
+
+  @OneToMany(() => ChatEntity, chat => chat.user)
+  chats: ChatEntity[];
 }

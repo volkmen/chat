@@ -23,11 +23,16 @@ export const useIsAuthenticated = () => {
   }, [token]);
 
   const shouldRenderVerifyPage = isSuccess && !isVerified && location.pathname !== PageRoutes.Verify;
+
   const shouldRenderSignInPage =
     isError && location.pathname !== PageRoutes.SignIn && location.pathname !== PageRoutes.SignUp;
 
   const shouldRenderHomePage =
-    isSuccess && isVerified && (location.pathname === PageRoutes.SignIn || location.pathname === PageRoutes.SignUp);
+    isSuccess &&
+    isVerified &&
+    (location.pathname === PageRoutes.SignIn ||
+      location.pathname === PageRoutes.SignUp ||
+      location.pathname === PageRoutes.Verify);
 
   if (shouldRenderVerifyPage) {
     navigate(PageRoutes.Verify);

@@ -12,8 +12,6 @@ const Verify = () => {
   const [inputValue, setInputValue] = React.useState('');
   const navigate = useNavigate();
 
-  console.log(error?.message);
-
   const onSubmit = () =>
     makeVerify({
       variables: {

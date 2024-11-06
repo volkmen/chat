@@ -8,7 +8,6 @@ import { useIsAuthenticated } from './hooks/useAuth';
 import Spinner from './components/Spinner';
 import Verify from './pages/verify/Verify';
 import UsersComponent from './pages/users/UsersComponent';
-import GroupsComponent from './pages/groups/GroupsComponent';
 
 const Router = () => {
   const { isLoading, isVerified } = useIsAuthenticated();
@@ -28,7 +27,7 @@ const Router = () => {
       <Route path={PageRoutes.SignUp} element={<SignUp />} />
       <Route path={PageRoutes.Verify} element={<Verify />} />
       <Route path={PageRoutes.Users} element={<UsersComponent />} />
-      <Route path={PageRoutes.Groups} element={<GroupsComponent />} />
+      {/*<Route path={PageRoutes.Groups} element={<GroupsComponent />} />*/}
       <Route path='*' element={<Navigate to='/' replace />} />
 
       {/*<Route path='*' element={<Navigate to={Routes.home} />} />*/}

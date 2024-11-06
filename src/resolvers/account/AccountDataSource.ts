@@ -1,5 +1,5 @@
 import { DataSource as ORMDataSource } from 'typeorm';
-import { AccountEntity } from 'entities/Account.entity';
+import { UserEntity } from 'entities/User.entity';
 import bcrypt from 'bcrypt';
 import { promisify } from 'node:util';
 import { BadRequestError, UnAuthorisedError } from 'utils/errors';
@@ -13,12 +13,14 @@ export default class AccountDataSource {
   constructor(private dbConnection: ORMDataSource) {}
 
   private get repository() {
-    return this.dbConnection.getRepository(AccountEntity);
+    return this.dbConnection.getRepository(UserEntity);
   }
 
   async getAccountById(id: number) {
     const account = await this.repository.findOneBy({ id });
-    console.log(id, account);
+    if (!account) {
+      throw new UnAuthorisedError('Unauthorised');
+    }
     return account;
   }
 
@@ -32,7 +34,7 @@ export default class AccountDataSource {
     return id;
   }
 
-  async signIn({ email, password }: SignInInput): Promise<AccountEntity> {
+  async signIn({ email, password }: SignInInput): Promise<UserEntity> {
     const account = await this.repository.findOne({ where: { email } });
 
     if (!account) {
@@ -50,23 +52,23 @@ export default class AccountDataSource {
     }
   }
 
-  async signUp(account: AccountEntity) {
+  async signUp(account: UserEntity) {
     const accountExistedAccounted = await this.repository.findBy({ email: account.email });
     if (!accountExistedAccounted) {
       throw new BadRequestError('Such account exist');
     }
 
-    const emailToken = Math.floor(Math.random() * 10000);
+    const email_token = Math.floor(Math.random() * 10000);
     const salt = await genSalt(5);
     account.password = await genHash(account.password, salt);
-    account.emailToken = emailToken;
+    account.email_token = email_token;
 
     await this.repository.insert(account);
 
     return account;
   }
 
-  async updateAccount(id: number, changes: Partial<AccountEntity>) {
+  async updateAccount(id: number, changes: Partial<UserEntity>) {
     await this.repository.update({ id }, changes);
     return this.repository.findOneBy({ id });
   }
@@ -75,7 +77,7 @@ export default class AccountDataSource {
     const account = await this.repository.findOneBy({ id });
 
     console.log(account);
-    if (account && account.emailToken === token) {
+    if (account && account.email_token === token) {
       await this.repository.update({ id }, { is_verified: true });
       return this.repository.findOneBy({ id });
     }

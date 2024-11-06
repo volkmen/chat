@@ -8,11 +8,6 @@ const pages = [
     label: 'users',
     path: PageRoutes.Users,
     Icon: <BiUser size={20} />
-  },
-  {
-    label: 'groups',
-    path: PageRoutes.Groups,
-    Icon: <BiGroup size={20} />
   }
 ];
 
@@ -23,7 +18,7 @@ const SidebarComponent = () => (
       className='w-64 h-screen transition-transform -translate-x-full sm:translate-x-0'
       aria-label='Sidenav'
     >
-      <div className='overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
+      <div className='overflow-y-auto py-5 px-3 h-full border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
         <ul className='space-y-2'>
           {pages.map(page => (
             <Link to={page.path} key={page.path}>
