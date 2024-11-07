@@ -4,8 +4,8 @@ import { ME_QUERY } from 'api/account';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
 
-function getAccountVerified(data?: { Me: { is_verified: boolean } }) {
-  return Boolean(data?.Me.is_verified);
+function getAccountVerified(data?: { GetMe: { is_verified: boolean } }) {
+  return Boolean(data?.GetMe.is_verified);
 }
 
 export const useIsAuthenticated = () => {

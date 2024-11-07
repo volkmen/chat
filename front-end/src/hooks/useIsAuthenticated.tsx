@@ -4,5 +4,5 @@ import { ME_QUERY } from '../api/account';
 export default function useIsAuthenticated() {
   const { data } = useQuery(ME_QUERY);
 
-  return data?.Me.is_verified === true || data?.Me.is_verified === false;
+  return data?.GetMe.is_verified === true || data?.GetMe.is_verified === false;
 }

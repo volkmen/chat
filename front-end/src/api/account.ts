@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const ME_QUERY = gql`
-  query me {
-    Me {
+  query GetMe {
+    GetMe {
       username
       is_verified
       email
