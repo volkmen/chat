@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
-import { useMutation, useQuery } from '@apollo/client';
-import { ME_QUERY, VERIFY_EMAIL } from 'api/account';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { ME_QUERY, RESEND_VERIFICATION_TOKEN, VERIFY_EMAIL } from 'api/account';
 import Modal from 'components/Modalv2';
 import FieldInput from 'components/FieldInput';
 import { showToastError, showToastSuccess } from 'services/toast';
 
 const Verify = () => {
   const [makeVerify, { error }] = useMutation(VERIFY_EMAIL);
+  const [resendVerificationToken] = useLazyQuery(RESEND_VERIFICATION_TOKEN);
   const { refetch: refetchMe } = useQuery(ME_QUERY);
   const [inputValue, setInputValue] = React.useState('');
   const navigate = useNavigate();
@@ -29,6 +30,16 @@ const Verify = () => {
         showToastError('error to verify verification');
       });
 
+  const onResendVerification = () => {
+    resendVerificationToken()
+      .then(() => {
+        showToastSuccess('Token sent successfully successfully');
+      })
+      .catch(e => {
+        showToastError('error to send verification token');
+      });
+  };
+
   return (
     <Modal
       submit={{ onSubmit }}
@@ -46,6 +57,12 @@ const Verify = () => {
         wrapperStyle={{ marginBottom: 0 }}
         errorMsg={error?.message}
       />
+      <p>
+        Did not receive the token?{' '}
+        <span className='hover:cursor-pointer text-blue-800 underline text-sm' onClick={onResendVerification}>
+          Resend the token
+        </span>
+      </p>
     </Modal>
   );
 };

@@ -82,4 +82,11 @@ export default class AccountDataSource {
     }
     throw new BadRequestError('wrong token');
   }
+
+  async updateEmailToken(id: number) {
+    const email_token = Math.floor(Math.random() * 10000);
+    await this.repository.update({ id }, { email_token });
+
+    return this.repository.findOneBy({ id });
+  }
 }

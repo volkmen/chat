@@ -3,6 +3,7 @@ import { UserEntity } from '../../entities/User.entity';
 import { SignInInput } from './types';
 import { getAccountResource, getUserIdFromContext } from 'utils/context';
 import { createAuthResolver } from 'utils/resolvers';
+import { NotImplementedError } from 'utils/errors';
 
 const resolver = {
   Query: {
@@ -15,6 +16,23 @@ const resolver = {
     GetAccounts: createAuthResolver(async (_, args, context: Context): Promise<UserEntity[]> => {
       const accountDataSource = getAccountResource(context);
       return accountDataSource.getAccounts();
+    }),
+
+    ResetPassword: createAuthResolver((_, args, context: Context) => {
+      throw new NotImplementedError('Not implemented');
+    }),
+
+    ResendVerificationToken: createAuthResolver(async (_, args, context: Context) => {
+      const userId = getUserIdFromContext(context);
+      const {
+        dataSources: { account: accountDataSource },
+        emailVerificationService
+      } = context;
+
+      const account = await accountDataSource.updateEmailToken(userId);
+      emailVerificationService.sendEmailVerificationToken({ to: account.email, token: account.email_token });
+
+      return userId;
     })
   },
 

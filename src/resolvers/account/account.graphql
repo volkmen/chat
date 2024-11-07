@@ -11,6 +11,8 @@ type Query {
     GetAccounts: [Account]
     Me: Account
     VerifyEmail: Account
+    ResetPassword: ID!
+    ResendVerificationToken: ID!
 }
 
 type Mutation {

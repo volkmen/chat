@@ -23,3 +23,15 @@ export class BadRequestError extends GraphQLError {
     });
   }
 }
+
+export class NotImplementedError extends GraphQLError {
+  constructor(msg: string) {
+    super(msg, {
+      extensions: {
+        http: {
+          status: 501
+        }
+      }
+    });
+  }
+}

@@ -40,3 +40,9 @@ export const VERIFY_EMAIL = gql`
     }
   }
 `;
+
+export const RESEND_VERIFICATION_TOKEN = gql`
+  query ResendVerificationToken {
+    ResendVerificationToken
+  }
+`;

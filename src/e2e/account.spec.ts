@@ -86,10 +86,28 @@ describe('modules', () => {
       // const token = user.email_token;
     });
 
+    it('should resend verification token', async () => {
+      const repository = app.dbConnection.getRepository(UserEntity);
+      const user = await repository.findOneBy({ id: 1 });
+      const token = user.email_token;
+
+      executor = getExecutor(app, jwtToken);
+      const resultVerifyEmail = await executor({
+        document: parse(/* GraphQL */ `
+          query ResendVerificationToken {
+            ResendVerificationToken
+          }
+        `)
+      });
+
+      const userUpdated = await repository.findOneBy({ id: 1 });
+      expect(token).not.toEqual(userUpdated.email_token);
+      expect(resultVerifyEmail.data.ResendVerificationToken).toBeTruthy();
+    });
+
     it('should verify email', async () => {
       const repository = app.dbConnection.getRepository(UserEntity);
       const user = await repository.findOneBy({ id: 1 });
-
       const token = user.email_token;
 
       executor = getExecutor(app, jwtToken);
@@ -104,7 +122,6 @@ describe('modules', () => {
         `)
       });
 
-      console.log(token, resultVerifyEmail);
       expect(resultVerifyEmail.data.VerifyEmail).toBeTruthy();
       expect(resultVerifyEmail.data.VerifyEmail.is_verified).toBeTruthy();
     });
