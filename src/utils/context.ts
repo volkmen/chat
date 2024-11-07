@@ -4,6 +4,10 @@ export function getUserIdFromContext(ctx: Context) {
   return +ctx.tokenPayload.id;
 }
 
-export function getAccountResource(context: Context) {
-  return context.dataSources.account;
+export function getAuthResource(context: Context) {
+  return context.dataSources.auth;
+}
+
+export function getUsersResource(context: Context) {
+  return context.dataSources.users;
 }

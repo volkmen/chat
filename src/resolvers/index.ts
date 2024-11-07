@@ -1,3 +1,4 @@
-import accountResolver from './account/account.resolver';
+import accountResolver from './auth/auth.resolver';
+import usersResolver from './users/users.resolver';
 
-export default [accountResolver];
+export default [accountResolver, usersResolver];

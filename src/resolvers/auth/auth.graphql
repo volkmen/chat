@@ -1,0 +1,19 @@
+type User {
+    id: ID!
+    username: String!
+    password: String!
+    email: String!
+    is_verified: Boolean
+    jwtToken: String
+}
+
+type Query {
+    ResetPassword: ID!
+    ResendVerificationToken: ID!
+}
+
+type Mutation {
+    SignUp(email: String!, password: String!, username: String!): User
+    VerifyEmail(token: Int!): User
+    SignIn(email: String!, password: String!): User
+}

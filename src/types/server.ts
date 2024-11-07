@@ -1,10 +1,12 @@
-import type AccountDataSource from '../resolvers/account/AccountDataSource';
 import type EmailVerificationService from '../services/emailer';
 import type JwtService from '../services/jwtService';
+import AuthDataSource from '../resolvers/auth/AuthDataSource';
+import UsersDataSource from '../resolvers/users/UsersDataSource';
 
 export type Context = {
   dataSources: {
-    account: AccountDataSource;
+    auth: AuthDataSource;
+    users: UsersDataSource;
   };
   emailVerificationService: EmailVerificationService;
   jwtService: JwtService;

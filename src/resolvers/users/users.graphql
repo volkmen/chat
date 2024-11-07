@@ -1,0 +1,18 @@
+type User {
+	id: ID!
+	username: String!
+	password: String!
+	email: String!
+	is_verified: Boolean
+	jwtToken: String
+}
+
+type Query {
+	GetMe: User!
+	GetUsers: [User!]!
+	DeleteMe: ID!
+}
+
+type Mutation {
+	UpdateMe(username: String): User
+}

@@ -6,7 +6,8 @@ import { mergeTypeDefs } from '@graphql-tools/merge';
 import { type YogaServerInstance } from 'graphql-yoga/typings/server';
 import { DataSource as TypeormDatasource } from 'typeorm';
 
-import AccountDataSource from './resolvers/account/AccountDataSource';
+import AuthDataSource from './resolvers/auth/AuthDataSource';
+import UsersDataSource from './resolvers/users/UsersDataSource';
 import resolvers from './resolvers';
 import EmailVerificationService from './services/emailer';
 import JwtService from './services/jwtService';
@@ -15,7 +16,8 @@ class App {
   yoga: YogaServerInstance<unknown, unknown>;
   context: {
     dataSources: {
-      account: AccountDataSource;
+      auth: AuthDataSource;
+      users: UsersDataSource;
     };
     emailVerificationService: EmailVerificationService;
     jwtService: JwtService;
@@ -34,7 +36,8 @@ class App {
       emailVerificationService: new EmailVerificationService(),
       jwtService: new JwtService(),
       dataSources: {
-        account: new AccountDataSource(dbConnection)
+        auth: new AuthDataSource(dbConnection),
+        users: new UsersDataSource(dbConnection)
       }
     };
   }
@@ -55,6 +58,7 @@ class App {
 
   private getContext = async ({ request }: any) => {
     const tokenPayload = await this.context.jwtService.parsePayload(request);
+
     return {
       ...this.context,
       tokenPayload

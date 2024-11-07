@@ -6,6 +6,8 @@ import { users } from 'api/users';
 const UsersComponent = () => {
   const { data, loading } = useQuery(users);
 
+  console.log(users);
+
   return <PageLayout loading={loading}>Users page</PageLayout>;
 };
 

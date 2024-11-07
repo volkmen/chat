@@ -1,7 +1,7 @@
 #!!! This file is being created by script. Do NOT touch it!!!!
 
 
-type Account {
+type User {
   id: ID!
   username: String!
   password: String!
@@ -11,19 +11,18 @@ type Account {
 }
 
 type Query {
-  GetAccounts: [Account]
-  Me: Account
-  VerifyEmail: Account
   ResetPassword: ID!
   ResendVerificationToken: ID!
+  GetMe: User
+  GetUsers: [User!]!
+  DeleteMe: ID!
 }
 
 type Mutation {
-  SignUp(email: String!, password: String!, username: String!): Account
-  UpdateMe(username: String): Account
-  DeleteMe: ID!
-  VerifyEmail(token: Int!): Account
-  SignIn(email: String!, password: String!): Account
+  SignUp(email: String!, password: String!, username: String!): User
+  VerifyEmail(token: Int!): User
+  SignIn(email: String!, password: String!): User
+  UpdateMe(username: String): User
 }
 
 schema {

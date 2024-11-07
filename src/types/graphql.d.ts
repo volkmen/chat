@@ -14,23 +14,12 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type Account = {
-  __typename?: 'Account';
-  email: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  is_verified?: Maybe<Scalars['Boolean']['output']>;
-  jwtToken?: Maybe<Scalars['String']['output']>;
-  password: Scalars['String']['output'];
-  username: Scalars['String']['output'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
-  DeleteMe: Scalars['ID']['output'];
-  SignIn?: Maybe<Account>;
-  SignUp?: Maybe<Account>;
-  UpdateMe?: Maybe<Account>;
-  VerifyEmail?: Maybe<Account>;
+  SignIn?: Maybe<User>;
+  SignUp?: Maybe<User>;
+  UpdateMe?: Maybe<User>;
+  VerifyEmail?: Maybe<User>;
 };
 
 
@@ -58,7 +47,19 @@ export type MutationVerifyEmailArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  GetAccounts?: Maybe<Array<Maybe<Account>>>;
-  Me?: Maybe<Account>;
-  VerifyEmail?: Maybe<Account>;
+  DeleteMe: Scalars['ID']['output'];
+  GetMe: User;
+  GetUsers: Array<User>;
+  ResendVerificationToken: Scalars['ID']['output'];
+  ResetPassword: Scalars['ID']['output'];
+};
+
+export type User = {
+  __typename?: 'User';
+  email: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  is_verified?: Maybe<Scalars['Boolean']['output']>;
+  jwtToken?: Maybe<Scalars['String']['output']>;
+  password: Scalars['String']['output'];
+  username: Scalars['String']['output'];
 };
