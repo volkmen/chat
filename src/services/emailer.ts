@@ -1,22 +1,27 @@
 import { createTransport } from 'nodemailer';
+import type Mail from 'nodemailer/lib/mailer';
+import type SMTPPool from 'nodemailer/lib/smtp-pool';
 
 class EmailVerificationService {
-  private transporter: ReturnType<typeof createTransport>;
+  private transporter: Mail<SMTPPool.SentMessageInfo, SMTPPool.Options>;
 
   constructor() {
     this.transporter = this.getTransporter();
   }
 
   private getTransporter() {
-    return createTransport({
+    const options: SMTPPool.Options = {
       host: process.env.SMTP_HOST || 'smtp.ukr.net',
-      port: process.env.SMTP_PORT || 465,
+      port: +(process.env.SMTP_PORT || 465),
       secure: true,
+      pool: true,
       auth: {
         user: process.env.SMTP_AUTH_USER || 'yardev@ukr.net',
         pass: process.env.SMTP_AUTH_PASSWORD || 'YmpdWI9MtDGCHAC6'
       }
-    });
+    };
+
+    return createTransport(options);
   }
 
   private sendMessage({

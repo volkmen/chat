@@ -3,9 +3,9 @@ import { parse } from 'graphql';
 import App from '../server';
 import { connectToDatabase } from '../services/typeorm';
 import nodemailer from 'nodemailer';
-import { UserEntity } from '../entities/User.entity';
+import { UserEntity } from 'entities/User.entity';
 
-jest.spyOn(nodemailer, 'createTransport').mockImplementation(() => {
+jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
   return {
     sendMail: jest.fn().mockResolvedValue(true)
   };
@@ -35,7 +35,6 @@ function getExecutor(app, jwtToken?: string) {
 describe('modules', () => {
   const app = new App();
   let dbConnection: any;
-  let graph_builder: any;
   let executor: any;
   let jwtToken: string;
 
@@ -88,15 +87,16 @@ describe('modules', () => {
     });
 
     it('should verify email', async () => {
-      executor = getExecutor(app, jwtToken);
       const repository = app.dbConnection.getRepository(UserEntity);
       const user = await repository.findOneBy({ id: 1 });
+
       const token = user.email_token;
-      //
+
+      executor = getExecutor(app, jwtToken);
       const resultVerifyEmail = await executor({
         document: parse(/* GraphQL */ `
           mutation VerifyEmail {
-            VerifyEmail(token: "${token}") {
+            VerifyEmail(token: ${token}) {
               is_verified
               id
             }
@@ -104,6 +104,7 @@ describe('modules', () => {
         `)
       });
 
+      console.log(token, resultVerifyEmail);
       expect(resultVerifyEmail.data.VerifyEmail).toBeTruthy();
       expect(resultVerifyEmail.data.VerifyEmail.is_verified).toBeTruthy();
     });

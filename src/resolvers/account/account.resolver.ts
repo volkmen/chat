@@ -59,7 +59,6 @@ const resolver = {
         dataSources: { account: accountDataSource },
         jwtService
       } = context;
-      console.log('!!!!!!!!!!');
       const account = await accountDataSource.signIn(args);
       if (account) {
         const jwtToken = await jwtService.createToken({ id: account.id });

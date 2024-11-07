@@ -5,8 +5,8 @@ import { promisify } from 'node:util';
 import { BadRequestError, UnAuthorisedError } from 'utils/errors';
 import { SignInInput } from './types';
 
-const genSalt = promisify(bcrypt.genSalt);
-const genHash = promisify(bcrypt.hash);
+const genSalt: (n: number) => Promise<string> = promisify(bcrypt.genSalt);
+const genHash: (pass: string, salt: string) => Promise<string> = promisify(bcrypt.hash);
 const comparePassword = promisify(bcrypt.compare);
 
 export default class AccountDataSource {
@@ -76,7 +76,6 @@ export default class AccountDataSource {
   async verifyEmail(id: number, token: number) {
     const account = await this.repository.findOneBy({ id });
 
-    console.log(account);
     if (account && account.email_token === token) {
       await this.repository.update({ id }, { is_verified: true });
       return this.repository.findOneBy({ id });

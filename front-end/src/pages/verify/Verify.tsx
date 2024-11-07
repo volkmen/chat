@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
-import { useMutation } from '@apollo/client';
-import { VERIFY_EMAIL } from 'api/account';
+import { useMutation, useQuery } from '@apollo/client';
+import { ME_QUERY, VERIFY_EMAIL } from 'api/account';
 import Modal from 'components/Modalv2';
 import FieldInput from 'components/FieldInput';
 import { showToastError, showToastSuccess } from 'services/toast';
 
 const Verify = () => {
   const [makeVerify, { error }] = useMutation(VERIFY_EMAIL);
+  const { refetch: refetchMe } = useQuery(ME_QUERY);
   const [inputValue, setInputValue] = React.useState('');
   const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const Verify = () => {
         token: +inputValue
       }
     })
+      .then(refetchMe)
       .then(() => {
         showToastSuccess('Verify successfully');
         navigate(PageRoutes.Home);

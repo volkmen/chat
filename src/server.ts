@@ -55,7 +55,6 @@ class App {
 
   private getContext = async ({ request }: any) => {
     const tokenPayload = await this.context.jwtService.parsePayload(request);
-    console.log(tokenPayload);
     return {
       ...this.context,
       tokenPayload
@@ -74,8 +73,6 @@ class App {
   }
 
   private formatError = (err: Error) => {
-    console.error('!!!!!!!!!!!!!!!!!', err);
-
     return err;
   };
 

@@ -9,7 +9,9 @@ function getAccountVerified(data?: { Me: { is_verified: boolean } }) {
 }
 
 export const useIsAuthenticated = () => {
-  const [fetchMe, { loading, data, error }] = useLazyQuery(ME_QUERY);
+  const [fetchMe, { loading, data, error }] = useLazyQuery(ME_QUERY, {
+    fetchPolicy: 'cache-and-network'
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const isSuccess = data && !error && !loading;
@@ -27,6 +29,7 @@ export const useIsAuthenticated = () => {
   const shouldRenderSignInPage =
     isError && location.pathname !== PageRoutes.SignIn && location.pathname !== PageRoutes.SignUp;
 
+  console.log(isSuccess, isVerified);
   const shouldRenderHomePage =
     isSuccess &&
     isVerified &&
