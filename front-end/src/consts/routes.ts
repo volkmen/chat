@@ -4,5 +4,6 @@ export enum PageRoutes {
   SignUp = '/sign-up',
   Verify = '/verify-email',
   Users = '/users',
+  Channels = '/channels',
   Groups = '/groups'
 }

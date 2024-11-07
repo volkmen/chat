@@ -1,14 +1,17 @@
 import React, { PropsWithChildren } from 'react';
 import { Spinner } from 'flowbite-react';
 import SidebarComponent from './SidebarComponent';
+import SearchComponent from './SearchComponent';
 
 interface PageLayoutProps extends PropsWithChildren {
   loading: boolean;
+  error?: any;
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => (
   <div>
-    <div className='flex'>
+    <div className='flex relative'>
+      <SearchComponent />
       <SidebarComponent />
       <div className='w-full'>
         {loading ? (

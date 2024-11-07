@@ -1,13 +1,13 @@
 import React from 'react';
 import { PageRoutes } from '../consts/routes';
 import { Link } from 'react-router-dom';
-import { BiGroup, BiUser } from 'react-icons/bi';
+import { TiMessages } from 'react-icons/ti';
 
 const pages = [
   {
-    label: 'users',
-    path: PageRoutes.Users,
-    Icon: <BiUser size={20} />
+    label: 'channels',
+    path: PageRoutes.Channels,
+    Icon: <TiMessages size={20} />
   }
 ];
 
