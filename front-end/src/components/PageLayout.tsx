@@ -1,8 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 import { Spinner } from 'flowbite-react';
 import SidebarComponent from './SidebarComponent';
-import SearchPeopleComponent from './search-people/SearchPeopleComponent';
 import Header from './Header';
+import { throttle } from 'lodash';
 
 interface PageLayoutProps extends PropsWithChildren {
   loading: boolean;
@@ -14,11 +14,20 @@ const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => {
   const [height, setHeight] = React.useState(0);
 
   React.useEffect(() => {
-    if (ref.current) {
-      const bounds = ref.current.getBoundingClientRect();
+    const cb = throttle(() => {
+      if (ref.current) {
+        const bounds = ref.current.getBoundingClientRect();
 
-      setHeight(bounds.top);
-    }
+        setHeight(bounds.top);
+      }
+    }, 100);
+
+    cb();
+    window.addEventListener('resize', cb);
+
+    return () => {
+      window.removeEventListener('resize', cb);
+    };
   }, []);
 
   return (

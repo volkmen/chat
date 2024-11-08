@@ -8,6 +8,7 @@ const Channels = () => {
 
   return (
     <PageLayout loading={loading} error={error}>
+      {/*<AddUser />*/}
       Channels page
     </PageLayout>
   );

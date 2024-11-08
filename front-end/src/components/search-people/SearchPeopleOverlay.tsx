@@ -51,8 +51,8 @@ const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern
           <li className='p-2 cursor-pointer hover:bg-gray-50 flex w-full justify-between items-center' key={user.id}>
             <div>{user.username}</div>
             <div className='flex gap-1 items-center'>
-              <BiMessageRounded size={20} className='hover:text-cyan-700 text-gray-500' />
-              <BiVideo size={24} className='hover:text-cyan-700 text-gray-500' />
+              {/*<BiMessageRounded size={20} className='hover:text-cyan-700 text-gray-500' />*/}
+              {/*<BiVideo size={24} className='hover:text-cyan-700 text-gray-500' />*/}
             </div>
           </li>
         ))}

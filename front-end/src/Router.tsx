@@ -6,7 +6,6 @@ import { PageRoutes } from 'consts/routes';
 import { useIsAuthenticated } from './hooks/useAuth';
 import Spinner from './components/Spinner';
 import Verify from './pages/verify/Verify';
-// import UsersComponent from './pages/users/UsersComponent';
 import Channels from './pages/channels/Channels';
 
 const Router = () => {
