@@ -9,7 +9,7 @@ import Verify from './pages/verify/Verify';
 import Channels from './pages/channels/Channels';
 
 const Router = () => {
-  const { isLoading, isVerified } = useIsAuthenticated();
+  const { isLoading } = useIsAuthenticated();
 
   if (isLoading) {
     return (

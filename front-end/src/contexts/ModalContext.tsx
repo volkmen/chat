@@ -7,7 +7,7 @@ const ModalContext = React.createContext({
 });
 
 export const ModalContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
-  const [modal, setModal] = React.useState<any>(null);
+  const [modal, setModal] = React.useState<React.ReactNode | null>(null);
 
   const openModal = React.useCallback((newModal: React.ReactNode) => {
     setModal(() => newModal);
@@ -23,7 +23,7 @@ export const ModalContextProvider: React.FC<PropsWithChildren> = ({ children }) 
 
   return (
     <ModalContext.Provider value={value}>
-      {modal && React.cloneElement(modal)}
+      {typeof modal === 'function' ? React.cloneElement(modal) : null}
       {children}
     </ModalContext.Provider>
   );

@@ -60,7 +60,7 @@ const Signin = () => {
           navigate(PageRoutes.Home);
           showToastSuccess('successfully signed in');
         })
-        .catch(e => {
+        .catch(() => {
           showToastError('Error to sign in');
         });
     } else {

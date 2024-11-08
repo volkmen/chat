@@ -35,7 +35,7 @@ const Verify = () => {
       .then(() => {
         showToastSuccess('Token sent successfully successfully');
       })
-      .catch(e => {
+      .catch(() => {
         showToastError('error to send verification token');
       });
   };

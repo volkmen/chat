@@ -32,7 +32,6 @@ const Modal: React.FC<Modalv2Props> = ({
   modalProps = {},
   submit,
   cancel,
-  show,
   isLoading
 }) => (
   <ModalFlowbite size='lg' show {...modalProps}>

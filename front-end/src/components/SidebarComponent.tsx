@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageRoutes } from '../consts/routes';
 import { Link } from 'react-router-dom';
-import { TiMessages, TiUser } from 'react-icons/ti';
+import { TiMessages } from 'react-icons/ti';
 
 const pages = [
   // {

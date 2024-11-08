@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { IsDate, IsEmail, IsInt } from 'class-validator';
 import { ChatEntity } from './Chat.entity';
+import { PublicKeyEntity } from './PublicKey.entity';
+import { MessageEntity } from './Message.entity';
 
 @Entity()
 export class UserEntity {
@@ -32,6 +34,13 @@ export class UserEntity {
   @IsDate()
   updated_at: Date;
 
-  @OneToMany(() => ChatEntity, chat => chat.user)
+  @OneToMany(() => PublicKeyEntity, pbKey => pbKey.user)
+  pbKeys: ChatEntity[];
+
+  @OneToMany(() => MessageEntity, msg => msg.owner)
+  messages: MessageEntity[];
+
+  @ManyToMany(() => ChatEntity)
+  @JoinTable()
   chats: ChatEntity[];
 }

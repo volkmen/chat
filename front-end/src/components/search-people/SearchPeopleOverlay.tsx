@@ -3,7 +3,7 @@ import { useSuspenseQuery } from '@apollo/client';
 import { GET_USERS } from 'api/users';
 import { GetUsersResponse, User } from 'types/users';
 import Fuse from 'fuse.js';
-import { BiMessageRounded, BiVideo } from 'react-icons/bi';
+// import { BiMessageRounded, BiVideo } from 'react-icons/bi';
 
 const fuseOptions = {
   isCaseSensitive: false,

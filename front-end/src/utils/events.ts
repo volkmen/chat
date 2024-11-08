@@ -1,5 +1,5 @@
-import React, { EventHandler } from 'react';
+import { ReactEventHandler } from 'react';
 
-export const preventDefault: EventHandler<any> = e => {
+export const preventDefault: ReactEventHandler = e => {
   e.preventDefault();
 };

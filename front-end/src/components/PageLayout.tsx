@@ -6,11 +6,11 @@ import { throttle } from 'lodash';
 
 interface PageLayoutProps extends PropsWithChildren {
   loading: boolean;
-  error?: any;
+  error?: unknown;
 }
 
 const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => {
-  const ref = React.useRef<HTMLDivElement>(null);
+  const ref = React.useRef<HTMLDivElement | null>(null);
   const [height, setHeight] = React.useState(0);
 
   React.useEffect(() => {

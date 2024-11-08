@@ -1,11 +1,10 @@
 import SearchPeopleComponent from './search-people/SearchPeopleComponent';
 import React from 'react';
-import { FcVoicePresentation } from 'react-icons/fc';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../api/account';
 
 function Header() {
-  const { loading, data, error } = useQuery(ME_QUERY);
+  const { data } = useQuery(ME_QUERY);
 
   return (
     <div

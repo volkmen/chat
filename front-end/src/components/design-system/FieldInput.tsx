@@ -21,7 +21,7 @@ const FieldInput = forwardRef<Record<string, () => boolean>, InputProps>(
     useImperativeHandle(
       forwRef,
       () => ({
-        //@ts-ignore
+        // @ts-ignore
         ...forwRef?.current,
         [id]: () => checkValidation(ref.current?.value)
       }),
