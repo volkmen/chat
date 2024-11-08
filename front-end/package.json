@@ -9,6 +9,7 @@
     "@types/lodash": "^4.17.10",
     "classnames": "^2.5.1",
     "flowbite-react": "^0.10.2",
+    "fuse.js": "^7.0.0",
     "graphql": "^16.9.0",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
@@ -16,7 +17,8 @@
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "usehooks-ts": "^3.1.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -43,6 +45,7 @@
   },
   "scripts": {
     "dev": "concurrently \"yarn react-scripts start\" \"yarn start:css\"",
+    "dev:react": "yarn react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

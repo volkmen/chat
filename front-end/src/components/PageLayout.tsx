@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { Spinner } from 'flowbite-react';
 import SidebarComponent from './SidebarComponent';
-import SearchComponent from './SearchComponent';
+import SearchPeopleComponent from './search-people/SearchPeopleComponent';
 
 interface PageLayoutProps extends PropsWithChildren {
   loading: boolean;
@@ -11,7 +11,7 @@ interface PageLayoutProps extends PropsWithChildren {
 const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => (
   <div>
     <div className='flex justify-end sticky top-2 z-20'>
-      <SearchComponent />
+      <SearchPeopleComponent />
     </div>
     <div className='flex relative'>
       <SidebarComponent />

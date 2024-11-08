@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from '../consts/routes';
 import { Button } from 'flowbite-react';
 
@@ -11,7 +11,7 @@ const SignOut = () => {
   };
 
   return (
-    <Button onClick={onSignOut} className='uppercase' color='light' size='xs'>
+    <Button onClick={onSignOut} className='uppercase' color='light hover:cyan' size='xs'>
       sign out
     </Button>
   );

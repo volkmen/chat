@@ -50,9 +50,9 @@
     "typescript": "^5.6.2"
   },
   "scripts": {
-    "dev": "concurrently \"yarn dev:be\" \"yarn dev:fe\"",
+    "dev": "concurrently \"yarn dev:be\" \"cd front-end && yarn dev:react\" \"cd front-end && yarn start:css\"",
     "dev:be": "NODE_ENV=DEVELOPMENT nodemon --ignore 'front-end/**/*' src/index.ts",
-    "dev:fe": "cd front-end && yarn dev",
+    "dev:fe": "concurrently \"cd front-end && yarn dev:react\" \"cd front-end && yarn start:css\"",
     "lint": "eslint .",
     "gql2types": "node mergeGraphqlSchemas.js",
     "codegen": "graphql-codegen --config codegen.ts",

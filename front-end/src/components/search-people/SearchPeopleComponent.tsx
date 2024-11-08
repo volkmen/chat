@@ -1,14 +1,25 @@
-import React from 'react';
-import { TextInput } from 'flowbite-react';
+import React, { Suspense } from 'react';
+import { Spinner, TextInput } from 'flowbite-react';
 import { MdOutlineSearch } from 'react-icons/md';
-import { useLazyQuery } from '@apollo/client';
-import { GET_USERS } from 'api/users';
 import classNames from 'classnames';
+import DropdownPlaceholder from '../design-system/DropdownPlaceholder';
+import SearchPeopleOverlay from './SearchPeopleOverlay';
 
-const SearchComponent = () => {
+const SearchPeopleComponent = () => {
   const [searchValue, setSearchValue] = React.useState('');
   const [isFocused, setIsFocused] = React.useState(false);
-  const [fetchUsers, { data: users }] = useLazyQuery(GET_USERS);
+  const dropdownIsVisible = isFocused && searchValue.length > 0;
+
+  const onBlur = () => {
+    setSearchValue('');
+    setIsFocused(false);
+  };
+
+  const overlay = (
+    <Suspense fallback={<Spinner />}>
+      <SearchPeopleOverlay searchPattern={searchValue} />
+    </Suspense>
+  );
 
   return (
     <div className='relative hover:cursor-pointer'>
@@ -23,11 +34,13 @@ const SearchComponent = () => {
         placeholder='Search people'
         style={searchValue ? undefined : { textIndent: '20px' }}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onBlur={onBlur}
         className={classNames(isFocused ? 'w-96' : 'w-48', 'transition-all')}
       />
+
+      <DropdownPlaceholder placement='bottomLeft' visible={dropdownIsVisible} overlay={overlay} />
     </div>
   );
 };
 
-export default SearchComponent;
+export default SearchPeopleComponent;

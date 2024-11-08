@@ -1,0 +1,9 @@
+.rc-tooltip.dropdown-overlay {
+  background: transparent;
+  opacity: 1;
+
+  .rc-tooltip-inner {
+    border-color: transparent !important;
+    background: transparent !important;
+  }
+}
