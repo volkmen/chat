@@ -2,8 +2,10 @@ import React from 'react';
 import { useSuspenseQuery } from '@apollo/client';
 import { GET_USERS } from 'api/users';
 import { Card } from 'flowbite-react';
-import { User } from 'types/users';
+import { GetUsersResponse, User } from 'types/users';
 import Fuse from 'fuse.js';
+import { mockUsers } from '../../mocks/users';
+import { BiMessageRounded, BiVideo } from 'react-icons/bi';
 
 const fuseOptions = {
   isCaseSensitive: false,
@@ -22,14 +24,14 @@ const fuseOptions = {
   keys: ['username', 'email']
 };
 
-const extractUsers = (data?: { GetUsers: Array<User> }) => data?.GetUsers;
+const extractUsers = (data?: GetUsersResponse) => data?.GetUsers;
 
 interface SearchPeopleOverlayProps {
   searchPattern: string;
 }
 
 const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern }) => {
-  const { data } = useSuspenseQuery<{ GetUsers: Array<User> }>(GET_USERS);
+  const { data } = useSuspenseQuery<GetUsersResponse>(GET_USERS);
   const users = extractUsers(data);
 
   const filteredUsers = React.useMemo(() => {
@@ -37,19 +39,27 @@ const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern
       return [];
     }
 
-    const fuse = new Fuse(users, fuseOptions);
+    const fuse = new Fuse<User>(users, fuseOptions);
 
     return fuse.search(searchPattern);
   }, [searchPattern]);
 
   return (
-    <Card className='w-60'>
+    <div className='w-80 px-0 overflow-hidden border border-gray-200 shadow-2xl rounded-xl bg-white'>
+      <div className='py-2 ps-3 italic text-sm bg-gray-100'>Found {filteredUsers?.length} results...</div>
+      <hr />
       <ul>
         {filteredUsers.map(({ item: user }) => (
-          <li key={user.id}>{user.username}</li>
+          <li className='p-2 cursor-pointer hover:bg-gray-50 flex w-full justify-between items-center' key={user.id}>
+            <div>{user.username}</div>
+            <div className='flex gap-1 items-center'>
+              <BiMessageRounded size={20} className='hover:text-cyan-700 text-gray-500' />
+              <BiVideo size={24} className='hover:text-cyan-700 text-gray-500' />
+            </div>
+          </li>
         ))}
       </ul>
-    </Card>
+    </div>
   );
 };
 
