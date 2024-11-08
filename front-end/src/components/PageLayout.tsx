@@ -10,8 +10,10 @@ interface PageLayoutProps extends PropsWithChildren {
 
 const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => (
   <div>
-    <div className='flex relative'>
+    <div className='flex justify-end sticky top-2 z-20'>
       <SearchComponent />
+    </div>
+    <div className='flex relative'>
       <SidebarComponent />
       <div className='w-full'>
         {loading ? (

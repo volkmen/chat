@@ -46,7 +46,7 @@ const Signup = () => {
     if (validationsResult.every(Boolean)) {
       makeSignUp({
         variables: {
-          username: inputsMap[FieldIds.email],
+          username: inputsMap[FieldIds.username],
           email: inputsMap[FieldIds.email],
           password: inputsMap[FieldIds.password]
         }

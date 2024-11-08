@@ -6,12 +6,12 @@ export enum FieldIds {
 
 export const signupFields = [
   {
-    type: 'text',
-    label: 'First name',
-    placeholder: 'First name',
-    id: FieldIds.username,
-    validation: (val: string) => val.length < 4,
-    errorMsg: 'Name should be more than 3 symbols'
+    type: 'email',
+    label: 'Email',
+    placeholder: 'Email',
+    id: FieldIds.email,
+    validation: (val: string) => !Boolean(val.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)),
+    errorMsg: 'Incorrect email address'
   },
   {
     type: 'password',
@@ -22,11 +22,11 @@ export const signupFields = [
     errorMsg: 'Password should be not less than 8 symbols'
   },
   {
-    type: 'email',
-    label: 'Email',
-    placeholder: 'Email',
-    id: FieldIds.email,
-    validation: (val: string) => !Boolean(val.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)),
-    errorMsg: 'Incorrect email address'
+    type: 'text',
+    label: 'First name',
+    placeholder: 'First name',
+    id: FieldIds.username,
+    validation: (val: string) => val.length < 2,
+    errorMsg: 'Name should be 3 or more symbols'
   }
 ];

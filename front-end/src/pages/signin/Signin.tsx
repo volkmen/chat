@@ -8,8 +8,6 @@ import { signinInputs, FieldIds } from './consts';
 import { ValidationCallback } from './types';
 import SignInBody from './SignInBody';
 import Modal from 'components/Modalv2';
-import { Spinner } from 'flowbite-react';
-import { useModal } from '../../contexts/ModalContext';
 
 const Signin = () => {
   const [makesignin, { loading }] = useMutation(SIGN_IN);

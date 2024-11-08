@@ -1211,6 +1211,10 @@ input[type="range"]::-ms-fill-lower {
   position: relative;
 }
 
+.sticky {
+  position: sticky;
+}
+
 .inset-0 {
   inset: 0px;
 }
@@ -1335,6 +1339,10 @@ input[type="range"]::-ms-fill-lower {
 
 .top-4 {
   top: 1rem;
+}
+
+.top-5 {
+  top: 1.25rem;
 }
 
 .-z-10 {
@@ -1750,6 +1758,14 @@ input[type="range"]::-ms-fill-lower {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-56 {
+  width: 14rem;
+}
+
+.w-96 {
+  width: 24rem;
 }
 
 .min-w-11 {
@@ -3577,6 +3593,10 @@ input[type="range"]::-ms-fill-lower {
 
 .opacity-50 {
   opacity: 0.5;
+}
+
+.opacity-70 {
+  opacity: 0.7;
 }
 
 .mix-blend-lighten {

@@ -1,13 +1,11 @@
 import React from 'react';
 import PageLayout from 'components/PageLayout';
 import { useQuery } from '@apollo/client';
-import { users } from 'api/users';
 import AddUser from 'mocks/AddUser';
+import { GET_USERS } from 'api/users';
 
 const UsersComponent = () => {
-  const { data, loading } = useQuery(users);
-
-  console.log(users);
+  const { data, loading } = useQuery(GET_USERS);
 
   return (
     <PageLayout loading={loading}>

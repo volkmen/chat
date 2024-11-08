@@ -50,7 +50,7 @@ const Modalv2: React.FC<Modalv2Props> = ({
                 {cancel.name || 'Cancel'}
               </Button>
             )}
-            <Button color='blue' type='submit' onClick={submit.onSubmit} {...omit(submit, 'name')}>
+            <Button type='submit' onClick={submit.onSubmit} {...omit(submit, 'name')}>
               {submit.name || 'Submit'}
             </Button>
           </Modal.Footer>

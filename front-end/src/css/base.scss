@@ -4,3 +4,10 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+.absolute-centered-y {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
