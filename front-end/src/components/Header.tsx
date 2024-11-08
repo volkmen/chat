@@ -1,36 +1,23 @@
-import { Button, MegaMenu, Navbar } from 'flowbite-react';
-import { Link } from 'react-router-dom';
-import useIsAuthenticated from 'hooks/useIsAuthenticated';
-import SignOut from 'components/SignOut';
-import { PageRoutes } from 'consts/routes';
+import SearchPeopleComponent from './search-people/SearchPeopleComponent';
+import React from 'react';
+import { FcVoicePresentation } from 'react-icons/fc';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { ME_QUERY } from '../api/account';
 
 function Header() {
-  const isAuthenticated = useIsAuthenticated();
+  const { loading, data, error } = useQuery(ME_QUERY);
 
   return (
-    <MegaMenu className='w-full'>
-      <div className='w-100 w-full mx-auto flex max-w-screen-xl flex-wrap items-baseline md-items-center justify-between md:space-x-8'>
-        <div className='md:flex items-center gap-12'>
-          <Link to='/'>
-            <span className='self-center whitespace-nowrap text-xl font-semibold dark:text-white'>ClipChat</span>
-          </Link>
-        </div>
-        {isAuthenticated ? (
-          <SignOut />
-        ) : (
-          <div className='order-2 hidden items-center md:flex gap-2'>
-            <Button color='light'>
-              <Link to={PageRoutes.SignIn}>Login</Link>
-            </Button>
-
-            <Button>
-              <Link to={PageRoutes.SignUp}>Sign up</Link>
-            </Button>
-          </div>
-        )}
-        <Navbar.Toggle />
+    <div
+      className='flex justify-between items-center sticky z-20 bg-cyan-50 top-0 p-2'
+      style={{ boxShadow: '0 3px 3px -3px gray' }}
+    >
+      <div className='ps-3 flex gap-x-2.5 items-center'>
+        <img src={process.env.PUBLIC_URL + '/logo.png'} alt='logo' className='w-1/12' />
+        <div className='text-gray-800'>{data?.GetMe.username}</div>
       </div>
-    </MegaMenu>
+      <SearchPeopleComponent />
+    </div>
   );
 }
 

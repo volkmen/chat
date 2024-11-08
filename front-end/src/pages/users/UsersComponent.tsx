@@ -9,7 +9,7 @@ const UsersComponent = () => {
 
   return (
     <PageLayout loading={loading}>
-      <AddUser />
+      {/*<AddUser />*/}
       Users page
     </PageLayout>
   );

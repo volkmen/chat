@@ -7,7 +7,7 @@ import { showToastError, showToastSuccess } from 'services/toast';
 import { signinInputs, FieldIds } from './consts';
 import { ValidationCallback } from './types';
 import SignInBody from './SignInBody';
-import Modal from 'components/Modalv2';
+import Modal from 'components/Modal';
 
 const Signin = () => {
   const [makesignin, { loading }] = useMutation(SIGN_IN);

@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import FieldInput from 'components/FieldInput';
+import FieldInput from '../../components/design-system/FieldInput';
 import { signinInputs } from './consts';
 import { SigninInputModel, ValidationCallback } from './types';
 import { Link } from 'react-router-dom';

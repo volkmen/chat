@@ -7,7 +7,7 @@ import { SIGN_UP } from 'api/account';
 import { FieldIds, signupFields } from './consts';
 import { showToastError, showToastSuccess } from 'services/toast';
 import SignupBody from './SignupBody';
-import Modal from 'components/Modalv2';
+import Modal from 'components/Modal';
 import { PageRoutes } from 'consts/routes';
 
 const Signup = () => {

@@ -6,7 +6,7 @@ import { PageRoutes } from 'consts/routes';
 import { useIsAuthenticated } from './hooks/useAuth';
 import Spinner from './components/Spinner';
 import Verify from './pages/verify/Verify';
-import UsersComponent from './pages/users/UsersComponent';
+// import UsersComponent from './pages/users/UsersComponent';
 import Channels from './pages/channels/Channels';
 
 const Router = () => {
@@ -26,7 +26,7 @@ const Router = () => {
       <Route path={PageRoutes.SignUp} element={<SignUp />} />
       <Route path={PageRoutes.Verify} element={<Verify />} />
       <Route path={PageRoutes.Channels} element={<Channels />} />
-      <Route path={PageRoutes.Users} element={<UsersComponent />} />
+      {/*<Route path={PageRoutes.Users} element={<UsersComponent />} />*/}
       {/*<Route path={PageRoutes.Groups} element={<GroupsComponent />} />*/}
       <Route path='*' element={<Navigate to={PageRoutes.Channels} replace />} />
 

@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ME_QUERY, RESEND_VERIFICATION_TOKEN, VERIFY_EMAIL } from 'api/account';
-import Modal from 'components/Modalv2';
-import FieldInput from 'components/FieldInput';
+import Modal from 'components/Modal';
+import FieldInput from 'components/design-system/FieldInput';
 import { showToastError, showToastSuccess } from 'services/toast';
 
 const Verify = () => {

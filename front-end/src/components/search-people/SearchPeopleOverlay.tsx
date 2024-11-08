@@ -1,10 +1,8 @@
 import React from 'react';
 import { useSuspenseQuery } from '@apollo/client';
 import { GET_USERS } from 'api/users';
-import { Card } from 'flowbite-react';
 import { GetUsersResponse, User } from 'types/users';
 import Fuse from 'fuse.js';
-import { mockUsers } from '../../mocks/users';
 import { BiMessageRounded, BiVideo } from 'react-icons/bi';
 
 const fuseOptions = {

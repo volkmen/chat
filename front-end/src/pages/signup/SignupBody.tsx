@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import FieldInput from 'components/FieldInput';
+import FieldInput from '../../components/design-system/FieldInput';
 import { SignupInputModel, ValidationCallback } from './types';
 
 interface SignupBodyProps {

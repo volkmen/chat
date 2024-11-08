@@ -21,8 +21,6 @@ export const ModalContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     []
   );
 
-  console.log(modal);
-
   return (
     <ModalContext.Provider value={value}>
       {modal && React.cloneElement(modal)}
