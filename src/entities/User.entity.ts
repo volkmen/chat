@@ -4,7 +4,7 @@ import { ChatEntity } from './Chat.entity';
 import { PublicKeyEntity } from './PublicKey.entity';
 import { MessageEntity } from './Message.entity';
 
-@Entity()
+@Entity({ name: 'Users' })
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -41,6 +41,8 @@ export class UserEntity {
   messages: MessageEntity[];
 
   @ManyToMany(() => ChatEntity)
-  @JoinTable()
+  @JoinTable({
+    name: 'UsersChats'
+  })
   chats: ChatEntity[];
 }

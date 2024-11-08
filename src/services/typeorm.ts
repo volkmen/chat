@@ -7,8 +7,8 @@ export function connectToDatabase(dataSourceOptions = {}) {
   const dataSource = new DataSource({
     ...dataSourceConfig,
     logging: isDevelopment,
-    // synchronize: isDevelopment,
-    // dropSchema: false,
+    synchronize: true,
+    dropSchema: true,
     ...dataSourceOptions
   });
   return dataSource.connect();

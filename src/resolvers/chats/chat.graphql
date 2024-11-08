@@ -1,0 +1,22 @@
+type Message {
+    id: ID!
+    content: String!
+    is_read: Boolean!
+    created_at: String!
+    updated_at: String!
+}
+
+type Chat {
+    id: ID!
+    messages: [Message!]!
+    is_group: Boolean!
+}
+
+type Query {
+    GetChats: [Chat!]!
+    GetChatPbKey: String!
+}
+
+type Mutation {
+    AddChat(pbKey: String!, receiverId: ID!): ID!
+}

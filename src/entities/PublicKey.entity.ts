@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 import { ChatEntity } from './Chat.entity';
 import { UserEntity } from './User.entity';
 
-@Entity()
+@Entity({ name: 'PbKeys' })
 export class PublicKeyEntity {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;

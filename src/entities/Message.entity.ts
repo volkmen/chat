@@ -3,7 +3,7 @@ import { IsDate } from 'class-validator';
 import { ChatEntity } from './Chat.entity';
 import { UserEntity } from './User.entity';
 
-@Entity()
+@Entity({ name: 'Messages' })
 export class MessageEntity {
   @PrimaryGeneratedColumn()
   id: number;

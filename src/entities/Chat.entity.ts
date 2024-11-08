@@ -1,25 +1,13 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  OneToMany,
-  ManyToMany,
-  JoinTable
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToMany, Column, CreateDateColumn, OneToMany, JoinTable } from 'typeorm';
 import { IsDate } from 'class-validator';
-import { UserEntity } from './User.entity';
 import { MessageEntity } from './Message.entity';
 import { PublicKeyEntity } from './PublicKey.entity';
+import { UserEntity } from './User.entity';
 
-@Entity()
+@Entity({ name: 'Chats' })
 export class ChatEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ type: 'varchar', length: 255, nullable: false })
-  name: string;
 
   @Column({ type: 'boolean', default: false })
   is_group: boolean;
@@ -37,4 +25,7 @@ export class ChatEntity {
 
   @OneToMany(() => PublicKeyEntity, pbKey => pbKey.chat, { onDelete: 'CASCADE' })
   pbKeys: PublicKeyEntity[];
+
+  @ManyToMany(() => UserEntity)
+  users: UserEntity[];
 }
