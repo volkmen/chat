@@ -29,7 +29,6 @@ export const useIsAuthenticated = () => {
   const shouldRenderSignInPage =
     isError && location.pathname !== PageRoutes.SignIn && location.pathname !== PageRoutes.SignUp;
 
-  console.log(isSuccess, isVerified);
   const shouldRenderHomePage =
     isSuccess &&
     isVerified &&
