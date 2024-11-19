@@ -1,7 +1,7 @@
 import { parse } from 'graphql';
 import nodemailer from 'nodemailer';
 
-jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
+jest.spyOn<any, 'createTransport'>(nodemailer, 'createTransport').mockImplementation(() => {
   return {
     sendMail: jest.fn().mockResolvedValue(true)
   };

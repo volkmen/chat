@@ -41,7 +41,6 @@ export type Mutation = {
 
 
 export type MutationAddChatArgs = {
-  pbKey: Scalars['String']['input'];
   receiverId: Scalars['ID']['input'];
 };
 
@@ -71,12 +70,17 @@ export type MutationVerifyEmailArgs = {
 export type Query = {
   __typename?: 'Query';
   DeleteMe: Scalars['ID']['output'];
-  GetChatPbKey: Scalars['String']['output'];
+  GetChat?: Maybe<Chat>;
   GetChats: Array<Chat>;
   GetMe: User;
   GetUsers: Array<User>;
   ResendVerificationToken: Scalars['ID']['output'];
   ResetPassword: Scalars['ID']['output'];
+};
+
+
+export type QueryGetChatArgs = {
+  id: Scalars['ID']['input'];
 };
 
 export type User = {

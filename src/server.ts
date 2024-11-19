@@ -12,6 +12,7 @@ import ChatsDataSource from './resolvers/chats/ChatDataSource';
 import resolvers from './resolvers';
 import EmailVerificationService from './services/emailer';
 import JwtService from './services/jwtService';
+import { Context } from './types/server';
 
 class App {
   yoga: YogaServerInstance<unknown, unknown>;
@@ -49,14 +50,16 @@ class App {
 
   async initServer() {
     const typeDefs = await this.getTypeDefs();
-    this.yoga = createYoga({
-      schema: createSchema({
+    this.yoga = createYoga<Context>({
+      schema: createSchema<Context>({
         typeDefs,
         resolvers
       }),
       context: this.getContext,
       graphqlEndpoint: '/graphiql'
     });
+
+    this.server = createServer(this.yoga);
 
     return this.yoga;
   }

@@ -1,7 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, ManyToMany, Column, CreateDateColumn, OneToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToMany, Column, CreateDateColumn, OneToMany } from 'typeorm';
 import { IsDate } from 'class-validator';
 import { MessageEntity } from './Message.entity';
-import { PublicKeyEntity } from './PublicKey.entity';
 import { UserEntity } from './User.entity';
 
 @Entity({ name: 'Chats' })
@@ -22,9 +21,6 @@ export class ChatEntity {
 
   @OneToMany(() => MessageEntity, message => message.chat, { onDelete: 'CASCADE' })
   messages: MessageEntity[];
-
-  @OneToMany(() => PublicKeyEntity, pbKey => pbKey.chat, { onDelete: 'CASCADE' })
-  pbKeys: PublicKeyEntity[];
 
   @ManyToMany(() => UserEntity)
   users: UserEntity[];

@@ -1,8 +1,7 @@
 import { DataSource as ORMDataSource } from 'typeorm/data-source/DataSource';
 import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
-import { PublicKeyEntity } from '../../entities/PublicKey.entity';
-import { BadRequestError } from '../../utils/errors';
+import { BadRequestError } from 'utils/errors';
 
 export default class ChatDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -32,25 +31,7 @@ export default class ChatDataSource {
     });
   };
 
-  getChatPbKeys = async (userId: number, chatId: number) => {
-    const pbKeyEntity = await this.dbConnection.getRepository(PublicKeyEntity).findOne({
-      where: {
-        chat: {
-          id: chatId
-        },
-        user: {
-          id: userId
-        }
-      },
-      select: {
-        publicKey: true
-      }
-    });
-
-    return pbKeyEntity.publicKey;
-  };
-
-  async addChat(userId: number, { pbKey, receiverId }: { pbKey: string; receiverId: number }) {
+  async addChat(userId: number, { receiverId }: { receiverId: number }) {
     return this.dbConnection.transaction(async entityManager => {
       const chats = await entityManager
         .createQueryBuilder(ChatEntity, 'chat')
@@ -84,21 +65,6 @@ export default class ChatDataSource {
         .where('c.id = :newChatId', { newChatId })
         .getOne();
 
-      const pbKeyInsertResult = await entityManager
-        .createQueryBuilder()
-        .insert()
-        .into(PublicKeyEntity) // The table name, as defined in your entity
-        .values({
-          publicKey: pbKey
-        })
-        .execute();
-
-      const pbKeyEntity = await entityManager
-        .createQueryBuilder(PublicKeyEntity, 'pb')
-        .where('pb.id = :pbKey', { pbKey: pbKeyInsertResult.identifiers[0].id })
-        .getOne();
-
-      await entityManager.createQueryBuilder().relation(PublicKeyEntity, 'chat').of(pbKeyEntity).set(newChat);
       await entityManager.createQueryBuilder().relation(UserEntity, 'chats').of(userA).add(newChat);
       await entityManager.createQueryBuilder().relation(UserEntity, 'chats').of(userB).add(newChat);
 

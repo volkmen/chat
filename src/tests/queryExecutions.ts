@@ -9,7 +9,7 @@ export function addChatExecution(
   return executor({
     document: parse(/* GraphQL */ `
         mutation AddChat {
-            AddChat(pbKey: "Some pbKey", receiverId: "${receiverId}")
+            AddChat(receiverId: "${receiverId}")
         }
     `)
   });

@@ -15,7 +15,7 @@ type Query {
   ResetPassword: ID!
   ResendVerificationToken: ID!
   GetChats: [Chat!]!
-  GetChatPbKey: String!
+  GetChat(id: ID!): Chat
   GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
@@ -25,7 +25,7 @@ type Mutation {
   SignUp(email: String!, password: String!, username: String!): User
   VerifyEmail(token: Int!): User
   SignIn(email: String!, password: String!): User
-  AddChat(pbKey: String!, receiverId: ID!): ID!
+  AddChat(receiverId: ID!): ID!
   UpdateMe(username: String): User
 }
 

@@ -14,9 +14,9 @@ type Chat {
 
 type Query {
     GetChats: [Chat!]!
-    GetChatPbKey: String!
+    GetChat(id: ID!): Chat
 }
 
 type Mutation {
-    AddChat(pbKey: String!, receiverId: ID!): ID!
+    AddChat(receiverId: ID!): ID!
 }

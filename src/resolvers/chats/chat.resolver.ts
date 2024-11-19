@@ -12,12 +12,12 @@ const resolver = {
       const userId = getUserIdFromContext(context);
       return chatsDataSource.getChats(userId);
     }),
-    GetChatPbKey: createAuthResolver((_, args, context: Context) => {
-      throw new NotImplementedError('Not implemented');
+    GetChat: createAuthResolver((_, args, context: Context) => {
+      throw new NotImplementedError('not impl');
     })
   },
   Mutation: {
-    AddChat: createAuthResolver<{ pbKey: string; receiverId: number }>((_, args, context: Context) => {
+    AddChat: createAuthResolver<{ receiverId: number }>((_, args, context: Context) => {
       const {
         dataSources: { chats: chatsDataSource }
       } = context;
