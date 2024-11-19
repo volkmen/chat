@@ -9,16 +9,24 @@ export default class UsersDataSource {
     return this.dbConnection.getRepository(UserEntity);
   }
 
-  async getUserById(id: number) {
-    const User = await this.repository.findOneBy({ id });
+  async getUserById(id: number, fieldsMap: object) {
+    const includeChats = fieldsMap['chats'] === true;
+    const User = await this.repository.findOne({ where: { id }, relations: { chats: includeChats } });
+
     if (!User) {
       throw new UnAuthorisedError('Unauthorised');
     }
     return User;
   }
 
-  getUsers() {
-    return this.repository.find();
+  getUsers(fieldsMap: object) {
+    const includeChats = fieldsMap['chats'] === true;
+
+    return this.repository.find({
+      relations: {
+        chats: includeChats
+      }
+    });
   }
 
   async deleteUser(id: number) {

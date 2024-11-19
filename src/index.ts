@@ -11,5 +11,6 @@ Promise.all([
   }),
   app.initServer()
 ]).then(([dbConnection]) => {
-  app.listen(4000, dbConnection);
+  app.initContext(dbConnection);
+  app.listen(4000);
 });

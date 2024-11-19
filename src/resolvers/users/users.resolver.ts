@@ -1,20 +1,23 @@
-import { createAuthResolver } from 'utils/resolvers';
+import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
 import type { Context } from 'types/server';
 import { UserEntity } from 'entities/User.entity';
 import { getUserIdFromContext, getUsersResource } from 'utils/context';
 
 const resolver = {
   Query: {
-    GetMe: createAuthResolver((_, args, context: Context): Promise<UserEntity> => {
+    GetMe: createAuthResolver((_, args, context: Context, info): Promise<UserEntity> => {
+      const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
       const usersDataSource = getUsersResource(context);
       const userId = getUserIdFromContext(context);
 
-      return usersDataSource.getUserById(userId);
+      return usersDataSource.getUserById(userId, fieldsMap);
     }),
 
-    GetUsers: createAuthResolver(async (_, args, context: Context): Promise<UserEntity[]> => {
+    GetUsers: createAuthResolver(async (_, args, context: Context, info): Promise<UserEntity[]> => {
+      const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
+
       const usersDataSource = getUsersResource(context);
-      return usersDataSource.getUsers();
+      return usersDataSource.getUsers(fieldsMap);
     }),
 
     DeleteMe: createAuthResolver<{ id: number }, Promise<number>>(async (_, args, context: Context) => {

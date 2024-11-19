@@ -1,10 +1,15 @@
+type Chat {
+	id: ID!
+}
+
 type User {
 	id: ID!
 	username: String!
 	password: String!
 	email: String!
 	is_verified: Boolean
-	jwtToken: String
+	jwtToken: String,
+	chats: [Chat]
 }
 
 type Query {

@@ -1,5 +1,5 @@
 import { type Context } from 'types/server';
-import { UserEntity } from '../../entities/User.entity';
+import { UserEntity } from 'entities/User.entity';
 import { SignInInput } from './types';
 import { getAuthResource, getUserIdFromContext } from 'utils/context';
 import { createAuthResolver } from 'utils/resolvers';
@@ -26,7 +26,7 @@ const resolver = {
   },
 
   Mutation: {
-    SignUp: async (_, args, context: Context, info): Promise<UserEntity & { jwtToken: string }> => {
+    SignUp: async (_, args, context: Context): Promise<UserEntity & { jwtToken: string }> => {
       const {
         dataSources: { auth: authDataResource },
         emailVerificationService,

@@ -8,6 +8,7 @@ import { DataSource as TypeormDatasource } from 'typeorm';
 
 import AuthDataSource from './resolvers/auth/AuthDataSource';
 import UsersDataSource from './resolvers/users/UsersDataSource';
+import ChatsDataSource from './resolvers/chats/ChatDataSource';
 import resolvers from './resolvers';
 import EmailVerificationService from './services/emailer';
 import JwtService from './services/jwtService';
@@ -18,12 +19,15 @@ class App {
     dataSources: {
       auth: AuthDataSource;
       users: UsersDataSource;
+      chats: ChatsDataSource;
     };
     emailVerificationService: EmailVerificationService;
     jwtService: JwtService;
   };
   server: Server;
   dbConnection: TypeormDatasource;
+
+  jwtService = new JwtService();
 
   private async getTypeDefs() {
     const loadedFiles = await loadFiles(path.join(process.cwd(), 'src', 'schema.graphql'));
@@ -34,10 +38,11 @@ class App {
   initContextServices(dbConnection: TypeormDatasource) {
     this.context = {
       emailVerificationService: new EmailVerificationService(),
-      jwtService: new JwtService(),
+      jwtService: this.jwtService,
       dataSources: {
         auth: new AuthDataSource(dbConnection),
-        users: new UsersDataSource(dbConnection)
+        users: new UsersDataSource(dbConnection),
+        chats: new ChatsDataSource(dbConnection)
       }
     };
   }
@@ -65,15 +70,15 @@ class App {
     };
   };
 
-  public async listen(port: number, dbConnection: TypeormDatasource) {
-    this.initContextServices(dbConnection);
-    this.dbConnection = dbConnection;
-
-    this.server = createServer(this.yoga);
-
+  public listen(port: number) {
     this.server.listen(port, () => {
       console.log(`Server is listening on port ${port}`);
     });
+  }
+
+  public async initContext(dbConnection: TypeormDatasource) {
+    this.initContextServices(dbConnection);
+    this.dbConnection = dbConnection;
   }
 
   private formatError = (err: Error) => {

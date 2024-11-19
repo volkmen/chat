@@ -28,5 +28,5 @@
       "utils": ["utils"]
     }
   },
-  "exclude": ["convertGraphql2Types.js", "src/types/graphql.d.ts"]
+  "exclude": ["convertGraphql2Types.js", "src/types/graphql.d.ts", "front-end/**/*"]
 }

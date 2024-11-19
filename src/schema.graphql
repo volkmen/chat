@@ -8,12 +8,15 @@ type User {
   email: String!
   is_verified: Boolean
   jwtToken: String
+  chats: [Chat]
 }
 
 type Query {
   ResetPassword: ID!
   ResendVerificationToken: ID!
-  GetMe: User
+  GetChats: [Chat!]!
+  GetChatPbKey: String!
+  GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
 }
@@ -22,7 +25,22 @@ type Mutation {
   SignUp(email: String!, password: String!, username: String!): User
   VerifyEmail(token: Int!): User
   SignIn(email: String!, password: String!): User
+  AddChat(pbKey: String!, receiverId: ID!): ID!
   UpdateMe(username: String): User
+}
+
+type Message {
+  id: ID!
+  content: String!
+  is_read: Boolean!
+  created_at: String!
+  updated_at: String!
+}
+
+type Chat {
+  id: ID!
+  messages: [Message!]!
+  is_group: Boolean!
 }
 
 schema {

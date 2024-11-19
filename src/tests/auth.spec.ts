@@ -1,6 +1,6 @@
 import { parse } from 'graphql';
 import nodemailer from 'nodemailer';
-import { UserEntity } from 'entities/User.entity';
+import { UserEntity } from '../entities/User.entity';
 import { faker } from '@faker-js/faker';
 
 jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
@@ -9,24 +9,23 @@ jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
   };
 });
 
-const dummy = {
-  username: faker.internet.username(),
+const mockUser = {
+  username: faker.internet.username(), // before version 9.1.0, use userName()
   email: faker.internet.email(),
   password: faker.internet.password()
 };
-
 let executor;
 
 describe('AUTH apis', () => {
-  beforeEach(() => {
-    executor = global.defaultUserExecutor;
+  beforeAll(() => {
+    executor = globalThis.defaultUserExecutor;
   });
 
   it('should SIGN UP', async () => {
-    const result = await global.signedOutExecutor({
+    const result = await globalThis.signedOutExecutor({
       document: parse(/* GraphQL */ `
         mutation SignUp {
-          SignUp(username: "${dummy.username}", email: "${dummy.email}", password: "${dummy.password}") {
+          SignUp(username: "${mockUser.username}", email: "${mockUser.email}", password: "${mockUser.password}") {
             username
             is_verified
             jwtToken
@@ -46,11 +45,11 @@ describe('AUTH apis', () => {
   });
 
   it('should resend verification token', async () => {
-    const repository = global.dbConnection.getRepository(UserEntity);
+    const repository = globalThis.dbConnection.getRepository(UserEntity);
     const user = await repository.findOneBy({ id: 1 });
     const token = user.email_token;
 
-    const resultVerifyEmail = await global.defaultUserExecutor({
+    const resultVerifyEmail = await executor({
       document: parse(/* GraphQL */ `
         query ResendVerificationToken {
           ResendVerificationToken
@@ -64,11 +63,11 @@ describe('AUTH apis', () => {
   });
 
   it('should verify email', async () => {
-    const repository = global.dbConnection.getRepository(UserEntity);
+    const repository = globalThis.dbConnection.getRepository(UserEntity);
     const user = await repository.findOneBy({ id: 1 });
     const token = user.email_token;
 
-    const resultVerifyEmail = await global.defaultUserExecutor({
+    const resultVerifyEmail = await executor({
       document: parse(/* GraphQL */ `
           mutation VerifyEmail {
             VerifyEmail(token: ${token}) {
@@ -84,10 +83,10 @@ describe('AUTH apis', () => {
   });
 
   it('should NOT signin into this auth if wrong password', async () => {
-    const result = await global.signedOutExecutor({
+    const result = await globalThis.signedOutExecutor({
       document: parse(/* GraphQL */ `
           mutation SignIn {
-            SignIn(email: "${dummy.email}", password: "wrong password") {
+            SignIn(email: "${mockUser.email}", password: "wrong password") {
               email
             }
           }
@@ -99,10 +98,10 @@ describe('AUTH apis', () => {
   });
 
   it('should signin into this auth if correct password', async () => {
-    const result = await global.signedOutExecutor({
+    const result = await globalThis.signedOutExecutor({
       document: parse(/* GraphQL */ `
           mutation SignIn {
-            SignIn(email: "${dummy.email}", password: "${dummy.password}") {
+            SignIn(email: "${mockUser.email}", password: "${mockUser.password}") {
               email
             }
           }

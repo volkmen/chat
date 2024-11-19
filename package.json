@@ -10,6 +10,7 @@
     "graphql-tools": "^9.0.1",
     "graphql-yoga": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
+    "kill-port": "^2.0.1",
     "nodemailer": "^6.9.15",
     "pg": "^8.13.0",
     "react-hot-toast": "^2.4.1",
@@ -60,7 +61,8 @@
     "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d typeorm.migration.config.ts",
     "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d typeorm.migration.config.ts",
     "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d typeorm.migration.config.ts",
-    "test": "NODE_ENV=testing jest"
+    "test": "NODE_ENV=testing jest",
+    "test:teardown": "npx kill-port 3300"
   },
   "_moduleAliases": {
     "resolvers": "src/resolvers",

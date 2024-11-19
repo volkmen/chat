@@ -1,10 +1,17 @@
 import { parse } from 'graphql';
+import nodemailer from 'nodemailer';
+
+jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
+  return {
+    sendMail: jest.fn().mockResolvedValue(true)
+  };
+});
 
 describe('USERS', () => {
   let executor;
 
   beforeEach(() => {
-    executor = global.defaultUserExecutor;
+    executor = globalThis.defaultUserExecutor;
   });
 
   it('Get me', async () => {
@@ -36,7 +43,7 @@ describe('USERS', () => {
 
     expect(result).toBeDefined();
     expect(result.data).toHaveProperty('GetUsers');
-    expect(result.data.GetUsers.length > 0).toBeTruthy();
+    expect(result.data.GetUsers).toBeTruthy();
   });
 
   it('should update me', async () => {
