@@ -20,7 +20,8 @@ jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
 
 beforeAll(async () => {
   dbConnection = await connectToDatabase({
-    database: 'test'
+    database: 'test',
+    synchronize: true
   });
 
   const server = new Server();
@@ -43,6 +44,7 @@ beforeAll(async () => {
   });
 
   global.dbConnection = dbConnection;
+  global.server = server;
 });
 
 afterAll(async () => {

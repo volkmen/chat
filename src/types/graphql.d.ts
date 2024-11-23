@@ -16,9 +16,16 @@ export type Scalars = {
 
 export type Chat = {
   __typename?: 'Chat';
+  correspondent?: Maybe<Correspondent>;
   id: Scalars['ID']['output'];
   is_group: Scalars['Boolean']['output'];
   messages: Array<Message>;
+};
+
+export type Correspondent = {
+  __typename?: 'Correspondent';
+  id: Scalars['ID']['output'];
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type Message = {
@@ -33,6 +40,8 @@ export type Message = {
 export type Mutation = {
   __typename?: 'Mutation';
   AddChat: Scalars['ID']['output'];
+  AddMessage?: Maybe<Message>;
+  DeleteMessage: Scalars['ID']['output'];
   SignIn?: Maybe<User>;
   SignUp?: Maybe<User>;
   UpdateMe?: Maybe<User>;
@@ -42,6 +51,17 @@ export type Mutation = {
 
 export type MutationAddChatArgs = {
   receiverId: Scalars['ID']['input'];
+};
+
+
+export type MutationAddMessageArgs = {
+  chatId: Scalars['ID']['input'];
+  content: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteMessageArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -73,6 +93,8 @@ export type Query = {
   GetChat?: Maybe<Chat>;
   GetChats: Array<Chat>;
   GetMe: User;
+  GetMessage?: Maybe<Message>;
+  GetMessages?: Maybe<Message>;
   GetUsers: Array<User>;
   ResendVerificationToken: Scalars['ID']['output'];
   ResetPassword: Scalars['ID']['output'];
@@ -81,6 +103,12 @@ export type Query = {
 
 export type QueryGetChatArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMessageArgs = {
+  chatId: Scalars['ID']['input'];
+  messageId: Scalars['ID']['input'];
 };
 
 export type User = {

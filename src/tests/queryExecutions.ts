@@ -1,11 +1,29 @@
 import { parse } from 'graphql/index';
 import { buildHTTPExecutor } from '@graphql-tools/executor-http';
 import { faker } from '@faker-js/faker';
+import { SyncExecutor } from '@graphql-tools/utils';
+import { HTTPExecutorOptions } from '@graphql-tools/executor-http/typings';
+
+export function getChatsExecution(executor = global.defaultUserExecutor) {
+  return executor({
+    document: parse(/* GraphQL */ `
+      query GetChats {
+        GetChats {
+          id
+          correspondent {
+            id
+            username
+          }
+        }
+      }
+    `)
+  });
+}
 
 export function addChatExecution(
   receiverId: number,
-  executor: ReturnType<typeof buildHTTPExecutor> = global.defaultUserExecutor
-): any {
+  executor: SyncExecutor<any, HTTPExecutorOptions> = global.defaultUserExecutor
+) {
   return executor({
     document: parse(/* GraphQL */ `
         mutation AddChat {
@@ -30,5 +48,15 @@ export function makeSignUpExecution(
         }
     `),
     operationName: 'SignUp'
+  });
+}
+
+export function getExecutor(jwtToken) {
+  return buildHTTPExecutor({
+    fetch: global.server.yoga.fetch,
+    endpoint: `/graphiql`,
+    headers: {
+      Authorization: `Bearer ${jwtToken}`
+    }
   });
 }

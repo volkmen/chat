@@ -40,13 +40,19 @@ const Verify = () => {
       });
   };
 
+  const onSignOut = () => {
+    localStorage.removeItem('token');
+    navigate(PageRoutes.SignIn);
+  };
+
   return (
     <Modal
       submit={{ onSubmit }}
       title='Verify Modal'
       disableCloseBtn
       cancel={{
-        name: <Link to={PageRoutes.SignIn}>sign out</Link>
+        name: 'sign out',
+        onClick: onSignOut
       }}
     >
       <FieldInput
@@ -57,6 +63,7 @@ const Verify = () => {
         wrapperStyle={{ marginBottom: 0 }}
         errorMsg={error?.message}
       />
+
       <p>
         Did not receive the token?{' '}
         <span className='hover:cursor-pointer text-blue-800 underline text-sm' onClick={onResendVerification}>

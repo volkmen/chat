@@ -6,17 +6,27 @@ type Message {
     updated_at: String!
 }
 
+type Correspondent {
+    id: ID!
+    username: String
+}
+
 type Chat {
     id: ID!
     messages: [Message!]!
     is_group: Boolean!
+    correspondent: Correspondent
 }
 
 type Query {
     GetChats: [Chat!]!
     GetChat(id: ID!): Chat
+    GetMessages: Message
+    GetMessage(chatId: ID!, messageId: ID!): Message
 }
 
 type Mutation {
     AddChat(receiverId: ID!): ID!
+    AddMessage(content: String!, chatId: ID!): Message
+    DeleteMessage(id: ID!): ID!
 }
