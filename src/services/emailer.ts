@@ -44,7 +44,7 @@ class EmailVerificationService {
         html // html body
       })
       .then(res => {
-        console.log('SUCCESSFULLY sent', res);
+        // console.log('SUCCESSFULLY sent', res);
       })
       .catch(e => {
         console.error(e);

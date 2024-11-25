@@ -28,7 +28,7 @@ type Mutation {
   VerifyEmail(token: Int!): User
   SignIn(email: String!, password: String!): User
   AddChat(receiverId: ID!): ID!
-  AddMessage(content: String!, chatId: ID!): Message
+  AddMessage(chatId: ID!, content: String!): Message
   DeleteMessage(id: ID!): ID!
   UpdateMe(username: String): User
 }

@@ -11,10 +11,6 @@ export default class ChatDataSource {
     return this.dbConnection.getRepository(ChatEntity);
   }
 
-  private get userRepository() {
-    return this.dbConnection.getRepository(UserEntity);
-  }
-
   getChats = async (userId: number) => {
     return this.repository
       .createQueryBuilder('C')
@@ -47,13 +43,14 @@ export default class ChatDataSource {
     const entityManager = queryRunner.manager;
 
     try {
-      const chats = await this.repository
-        .createQueryBuilder('C')
+      const chats = await entityManager
+        .createQueryBuilder()
         .select('C.id', 'id')
         .addSelect('U.id', 'receiverId')
+        .from('Chats', 'C')
         .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
         .innerJoin('Users', 'U', 'U.id = UC.usersId')
-        .where('U.id != :id and U.id = :receiverId', { id: userId, receiverId })
+        .where('U.id = :receiverId', { receiverId })
         .execute();
 
       const userA = await entityManager.findOne(UserEntity, { where: { id: userId } });
@@ -118,17 +115,37 @@ export default class ChatDataSource {
       const user = await entityManager.createQueryBuilder(UserEntity, 'user').where('user.id = :userId', { userId });
       const chat = await entityManager.createQueryBuilder(ChatEntity, 'chat').where('chat.id = :chatId', { chatId });
 
-      await entityManager.createQueryBuilder().relation(MessageEntity, 'owner').of(newMsg).add(user);
-      await entityManager.createQueryBuilder().relation(ChatEntity, 'chat').of(newMsg).add(chat);
+      await entityManager.createQueryBuilder().relation(MessageEntity, 'owner').of(newMsg).set(user);
+      await entityManager.createQueryBuilder().relation(ChatEntity, 'messages').of(newMsg).add(chat);
+
+      return newMsg;
     });
   }
 
-  deleteMessage(userId: number, messageId: number) {
+  updateMessage(
+    userId: number,
+    { content, messageId, isRead }: { content?: string; messageId: number; isRead?: boolean }
+  ) {
+    const values = {
+      ...(isRead ? { is_read: isRead } : {}),
+      ...(content ? { content } : {})
+    };
     return this.dbConnection
+      .createQueryBuilder()
+      .update(MessageEntity)
+      .set(values)
+      .where('id = :id', { id: messageId })
+      .execute();
+  }
+
+  async deleteMessage(userId: number, messageId: number) {
+    await this.dbConnection
       .createQueryBuilder()
       .delete()
       .from(MessageEntity)
       .where('id = :id and ownerId = :userId', { id: messageId, userId })
       .execute();
+
+    return messageId;
   }
 }

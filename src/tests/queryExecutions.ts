@@ -20,6 +20,22 @@ export function getChatsExecution(executor = global.defaultUserExecutor) {
   });
 }
 
+export function getChatExecution(id: number, executor = global.defaultUserExecutor) {
+  return executor({
+    document: parse(/* GraphQL */ `
+        query GetChat {
+            GetChat(id: ${id}) {
+                id
+                correspondent {
+                    id
+                    username
+                }
+            }
+        }
+    `)
+  });
+}
+
 export function addChatExecution(
   receiverId: number,
   executor: SyncExecutor<any, HTTPExecutorOptions> = global.defaultUserExecutor
@@ -57,6 +73,25 @@ export function getExecutor(jwtToken) {
     endpoint: `/graphiql`,
     headers: {
       Authorization: `Bearer ${jwtToken}`
+    }
+  });
+}
+
+export function addMessageExecution(
+  { content, chatId }: { content: string; chatId: number },
+  executor = global.defaultUserExecutor
+) {
+  return executor({
+    document: parse(/* GraphQL */ `
+      mutation AddMessage($chatId: ID!, $content: String!) {
+        AddMessage(chatId: $chatId, content: $content) {
+          id
+        }
+      }
+    `),
+    variables: {
+      chatId,
+      content
     }
   });
 }
