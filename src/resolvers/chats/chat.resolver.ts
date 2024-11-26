@@ -1,4 +1,4 @@
-import { createAuthResolver } from 'utils/resolvers';
+import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getUserIdFromContext } from 'utils/context';
 
@@ -9,15 +9,25 @@ const resolver = {
         dataSources: { chats: chatsDataSource }
       } = context;
       const userId = getUserIdFromContext(context);
+
       return chatsDataSource.getChats(userId);
     }),
-    GetChat: createAuthResolver<{ id: number }>((_, args, context: Context) => {
+    GetChat: createAuthResolver<{ id: number }>((_, args, context: Context, info) => {
+      const {
+        dataSources: { chats: chatsDataSource }
+      } = context;
+      const userId = getUserIdFromContext(context);
+      const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
+
+      return chatsDataSource.getChatById({ userId, chatId: +args.id }, fieldsMap);
+    }),
+    GetMessages: createAuthResolver<{ chatId: number }>((_, args, context: Context) => {
       const {
         dataSources: { chats: chatsDataSource }
       } = context;
       const userId = getUserIdFromContext(context);
 
-      return chatsDataSource.getChatById(userId, +args.id);
+      return chatsDataSource.getMessages(userId, args.chatId);
     })
   },
   Mutation: {

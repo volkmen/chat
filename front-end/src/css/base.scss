@@ -11,3 +11,12 @@
   transform: translateY(-50%);
 }
 
+
+html {
+  max-height: 100vh;
+}
+
+.scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

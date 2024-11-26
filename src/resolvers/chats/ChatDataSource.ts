@@ -22,7 +22,9 @@ export default class ChatDataSource {
       .execute();
   };
 
-  getChatById = async (userId: number, chatId: number) => {
+  getChatById = async ({ chatId, userId }: { userId: number; chatId: number }, include: { messages?: boolean }) => {
+    const includeMessages = 'messages' in include && Boolean(include.messages);
+
     const chats = await this.repository
       .createQueryBuilder('C')
       .select('C.id', 'id')
@@ -32,7 +34,23 @@ export default class ChatDataSource {
       .where('U.id != :id and C.id = :chatId', { id: userId, chatId })
       .execute();
 
-    return chats[0];
+    const chat = chats[0];
+
+    if (includeMessages) {
+      const messages = await this.dbConnection
+        .createQueryBuilder('Messages', 'M')
+        .select('M.id', 'id')
+        .addSelect('M.content', 'content')
+        .where('M.chatId = :chatId', { chatId })
+        .execute();
+
+      return {
+        ...chat,
+        messages
+      };
+    }
+
+    return chat;
   };
 
   async addChat(userId: number, { receiverId }: { receiverId: number }) {
@@ -41,6 +59,8 @@ export default class ChatDataSource {
     await queryRunner.startTransaction();
 
     const entityManager = queryRunner.manager;
+
+    console.log(userId, receiverId);
 
     try {
       const chats = await entityManager
@@ -112,11 +132,17 @@ export default class ChatDataSource {
         .where('msg.id = :newMsgId', { newMsgId })
         .getOne();
 
-      const user = await entityManager.createQueryBuilder(UserEntity, 'user').where('user.id = :userId', { userId });
-      const chat = await entityManager.createQueryBuilder(ChatEntity, 'chat').where('chat.id = :chatId', { chatId });
+      const user = await entityManager
+        .createQueryBuilder(UserEntity, 'user')
+        .where('user.id = :userId', { userId })
+        .getOne();
+      const chat = await entityManager
+        .createQueryBuilder(ChatEntity, 'chat')
+        .where('chat.id = :chatId', { chatId })
+        .getOne();
 
       await entityManager.createQueryBuilder().relation(MessageEntity, 'owner').of(newMsg).set(user);
-      await entityManager.createQueryBuilder().relation(ChatEntity, 'messages').of(newMsg).add(chat);
+      await entityManager.createQueryBuilder().relation(ChatEntity, 'messages').of(chat).add(newMsg);
 
       return newMsg;
     });
@@ -147,5 +173,29 @@ export default class ChatDataSource {
       .execute();
 
     return messageId;
+  }
+
+  async getMessages(userId: number, chatId: number) {
+    const chatIsAccessibleForThisUser = await this.repository
+      .createQueryBuilder('C')
+      .select('C.id')
+      .innerJoin('UsersChats', 'US', 'US.chatsId = C.id')
+      .innerJoin('Users', 'U', 'US.usersId = U.id')
+      .where('C.id = :chatId and U.id = :userId', { chatId, userId })
+      .getOne();
+
+    if (chatIsAccessibleForThisUser) {
+      return this.dbConnection
+        .createQueryBuilder('Messages', 'M')
+        .select('M.id', 'id')
+        .addSelect('M.content', 'content')
+        .addSelect('M.created_at', 'created_at')
+        .addSelect('U.id', 'sender_id')
+        .innerJoin('Users', 'U', 'U.id = M.ownerId')
+        .where('M.chatId = :chatId and M.ownerId = :userId', { chatId, userId })
+        .execute();
+    }
+
+    throw new BadRequestError('Forbidden');
   }
 }

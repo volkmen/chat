@@ -3,6 +3,7 @@ import { gql } from '@apollo/client';
 export const ME_QUERY = gql`
   query GetMe {
     GetMe {
+      id
       username
       is_verified
       email

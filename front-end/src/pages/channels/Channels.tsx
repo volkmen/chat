@@ -1,15 +1,17 @@
 import React from 'react';
 import PageLayout from 'components/PageLayout';
 import { useQuery } from '@apollo/client';
-import { GET_CHANNELS } from 'api/channels';
+import { GET_CHATS } from 'api/chats';
 
 const Channels = () => {
-  const { loading, error } = useQuery(GET_CHANNELS);
+  const { loading, error, data } = useQuery(GET_CHATS);
+
+  console.log(data);
 
   return (
     <PageLayout loading={loading} error={error}>
       {/*<AddUser />*/}
-      Channels page
+      Chats page
     </PageLayout>
   );
 };

@@ -7,3 +7,9 @@ declare module 'classnames' {
 
   export default classNames;
 }
+
+declare module 'relative-date' {
+  function convert(arg: Date | number | string): string;
+
+  export default convert;
+}

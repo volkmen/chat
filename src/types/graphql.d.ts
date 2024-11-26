@@ -34,6 +34,7 @@ export type Message = {
   created_at: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   is_read: Scalars['Boolean']['output'];
+  sender_id: Scalars['ID']['output'];
   updated_at: Scalars['String']['output'];
 };
 
@@ -94,7 +95,7 @@ export type Query = {
   GetChats: Array<Chat>;
   GetMe: User;
   GetMessage?: Maybe<Message>;
-  GetMessages?: Maybe<Message>;
+  GetMessages: Array<Message>;
   GetUsers: Array<User>;
   ResendVerificationToken: Scalars['ID']['output'];
   ResetPassword: Scalars['ID']['output'];
@@ -109,6 +110,11 @@ export type QueryGetChatArgs = {
 export type QueryGetMessageArgs = {
   chatId: Scalars['ID']['input'];
   messageId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMessagesArgs = {
+  chatId: Scalars['ID']['input'];
 };
 
 export type User = {

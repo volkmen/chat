@@ -1,12 +1,17 @@
 import React from 'react';
-import Header from 'components/Header';
-import SidebarComponent from '../../components/SidebarComponent';
+
+import PageLayout from 'components/PageLayout';
 
 function HomeComponent() {
   return (
-    <div>
-      <SidebarComponent />
-    </div>
+    <PageLayout loading={false} error={null}>
+      <div className='absolute-centered mx-auto'>
+        <h2>Welcome to the best app ever exists :) </h2>
+        <br />
+
+        <p>Please select or find user you want to talk</p>
+      </div>
+    </PageLayout>
   );
 }
 

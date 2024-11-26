@@ -136,8 +136,6 @@ describe('chat', () => {
 
     const msgId = addMessage.data.AddMessage.id;
 
-    console.log(msgId);
-
     const delMsgResult = await global.defaultUserExecutor({
       document: parse(/* GraphQL */ `
         mutation DeleteMessage {
@@ -146,7 +144,6 @@ describe('chat', () => {
       `)
     });
 
-    console.log(delMsgResult);
     expect(delMsgResult.data.DeleteMessage).toBeTruthy();
   });
 });

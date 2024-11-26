@@ -3,13 +3,16 @@ import { Spinner } from 'flowbite-react';
 import SidebarComponent from './SidebarComponent';
 import Header from './Header';
 import { throttle } from 'lodash';
+import classNames from 'classnames';
 
 interface PageLayoutProps extends PropsWithChildren {
   loading: boolean;
   error?: unknown;
+  bottomPadding?: number;
+  mainClassName?: string;
 }
 
-const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => {
+const PageLayout: React.FC<PageLayoutProps> = ({ loading, children, mainClassName }) => {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [height, setHeight] = React.useState(0);
 
@@ -18,7 +21,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => {
       if (ref.current) {
         const bounds = ref.current.getBoundingClientRect();
 
-        setHeight(bounds.top);
+        setHeight(bounds.height);
       }
     }, 100);
 
@@ -32,10 +35,15 @@ const PageLayout: React.FC<PageLayoutProps> = ({ loading, children }) => {
 
   return (
     <div>
-      <Header />
-      <div className='flex relative' ref={ref}>
+      <div ref={ref}>
+        <Header />
+      </div>
+      <div className='flex relative container mx-auto'>
         <SidebarComponent />
-        <div className='w-full' style={{ height: `calc(100vh - ${height}px` }}>
+        <div
+          className={classNames('w-full relative overflow-auto h-full scrollbar', mainClassName)}
+          style={{ maxHeight: `calc(100vh - ${height}px`, minHeight: `calc(100vh - ${height}px)` }}
+        >
           {loading ? (
             <div className='flex items-center justify-center'>
               <Spinner size='lg' />

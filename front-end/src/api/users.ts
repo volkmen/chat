@@ -9,3 +9,20 @@ export const GET_USERS = gql(`
     }
   }
 `);
+
+export const GET_USERS_CHATS = gql(`
+	query GetUsersChats {
+    GetUsers {
+    	id
+      username
+      email
+    }
+    GetChats {
+      id
+      correspondent {
+        id
+        username
+      }
+    }
+  }
+`);

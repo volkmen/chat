@@ -1,0 +1,7 @@
+.msg-item {
+  position: relative;
+
+  &:first-child {
+    margin-top: 10px;
+  }
+}

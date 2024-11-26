@@ -12,9 +12,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
     <Providers>
-      <div className='container mx-auto bg-gray-50'>
-        <Router />
-      </div>
+      <Router />
     </Providers>
     <Toaster />
   </React.StrictMode>

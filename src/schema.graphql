@@ -16,8 +16,8 @@ type Query {
   ResendVerificationToken: ID!
   GetChats: [Chat!]!
   GetChat(id: ID!): Chat
-  GetMessages: Message
   GetMessage(chatId: ID!, messageId: ID!): Message
+  GetMessages(chatId: ID!): [Message!]!
   GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
@@ -39,6 +39,7 @@ type Message {
   is_read: Boolean!
   created_at: String!
   updated_at: String!
+  sender_id: ID!
 }
 
 type Correspondent {

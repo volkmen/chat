@@ -1,9 +1,13 @@
 import React from 'react';
-import { useSuspenseQuery } from '@apollo/client';
-import { GET_USERS } from 'api/users';
+import { useMutation, useSuspenseQuery } from '@apollo/client';
+import { GET_USERS_CHATS } from 'api/users';
 import { GetUsersResponse, User } from 'types/users';
 import Fuse from 'fuse.js';
-// import { BiMessageRounded, BiVideo } from 'react-icons/bi';
+import { ADD_CHAT } from 'api/chats';
+import { showToastError, showToastSuccess } from 'services/toast';
+import { Chat, GetChatsResponse } from 'types/chats';
+import { PageRoutes } from '../../consts/routes';
+import { useNavigate } from 'react-router-dom';
 
 const fuseOptions = {
   isCaseSensitive: false,
@@ -22,25 +26,65 @@ const fuseOptions = {
   keys: ['username', 'email']
 };
 
-const extractUsers = (data?: GetUsersResponse) => data?.GetUsers;
+export type GetUsersChatsResponse = GetUsersResponse & GetChatsResponse;
+type UserExtended = User & {
+  chat?: Chat;
+};
+
+const extractUsers = (data?: GetUsersChatsResponse): UserExtended[] => {
+  const users = data?.GetUsers || [];
+  const chats = data?.GetChats || [];
+
+  const chatsMap = chats?.reduce<Record<number, Chat>>((acc, chat) => {
+    acc[chat.correspondent.id] = chat;
+
+    return acc;
+  }, {});
+
+  return users.map(user => ({ ...user, chat: chatsMap[user.id] }));
+};
 
 interface SearchPeopleOverlayProps {
   searchPattern: string;
 }
 
 const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern }) => {
-  const { data } = useSuspenseQuery<GetUsersResponse>(GET_USERS);
-  const users = extractUsers(data);
+  const { data } = useSuspenseQuery<GetUsersChatsResponse>(GET_USERS_CHATS, {
+    fetchPolicy: 'cache-and-network'
+  });
+  const users = React.useMemo(() => extractUsers(data), [data]);
+  const [addChat] = useMutation(ADD_CHAT);
+  const navigate = useNavigate();
 
   const filteredUsers = React.useMemo(() => {
     if (!users) {
       return [];
     }
 
-    const fuse = new Fuse<User>(users, fuseOptions);
+    const fuse = new Fuse<UserExtended>(users, fuseOptions);
 
     return fuse.search(searchPattern);
   }, [searchPattern]);
+
+  const onAddChat = (user: UserExtended) => () => {
+    if (user.chat) {
+      console.log(PageRoutes.Chat + `/${user.chat.id}`);
+      navigate(PageRoutes.Chats + `/${user.chat.id}`);
+    } else {
+      addChat({
+        variables: {
+          receiverId: user.id
+        }
+      })
+        .then(() => {
+          showToastSuccess(`Chat was added successfully with ${user.username}`);
+          navigate(PageRoutes.Users + `/${user.id}`);
+        })
+        .catch(() => {
+          showToastError('Error adding chat');
+        });
+    }
+  };
 
   return (
     <div className='w-80 px-0 overflow-hidden border border-gray-200 shadow-2xl rounded-xl bg-white'>
@@ -48,12 +92,13 @@ const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern
       <hr />
       <ul>
         {filteredUsers.map(({ item: user }) => (
-          <li className='p-2 cursor-pointer hover:bg-gray-50 flex w-full justify-between items-center' key={user.id}>
+          <li
+            className='p-2 cursor-pointer hover:bg-gray-50 flex w-full justify-between items-center'
+            key={user.id}
+            onMouseDown={onAddChat(user)}
+          >
             <div>{user.username}</div>
-            <div className='flex gap-1 items-center'>
-              {/*<BiMessageRounded size={20} className='hover:text-cyan-700 text-gray-500' />*/}
-              {/*<BiVideo size={24} className='hover:text-cyan-700 text-gray-500' />*/}
-            </div>
+            <div className='flex gap-1 items-center'></div>
           </li>
         ))}
       </ul>

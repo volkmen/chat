@@ -1,4 +1,4 @@
-import { ApolloResponse, ApolloSuccessDataResponse } from './api';
+import { ApolloSuccessDataResponse } from './api';
 
 export interface User {
   id: number;
