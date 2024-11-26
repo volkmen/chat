@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'consts/routes';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ME_QUERY, RESEND_VERIFICATION_TOKEN, VERIFY_EMAIL } from 'api/account';

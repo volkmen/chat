@@ -1,4 +1,4 @@
-import { DataSource as ORMDataSource } from 'typeorm';
+import { DataSource as ORMDataSource, Not } from 'typeorm';
 import { UserEntity } from 'entities/User.entity';
 import { UnAuthorisedError } from 'utils/errors';
 
@@ -19,12 +19,15 @@ export default class UsersDataSource {
     return User;
   }
 
-  getUsers(fieldsMap: object) {
+  getUsers(userId: number, fieldsMap: object) {
     const includeChats = fieldsMap['chats'] === true;
 
     return this.repository.find({
       relations: {
         chats: includeChats
+      },
+      where: {
+        id: Not(userId)
       }
     });
   }

@@ -6,9 +6,9 @@ import { PageRoutes } from 'consts/routes';
 import { useIsAuthenticated } from './hooks/useAuth';
 import Spinner from './components/Spinner';
 import Verify from './pages/verify/Verify';
-import Channels from './pages/channels/Channels';
 import Chat from './pages/chat/Chat';
 import Home from './pages/home/Home';
+import useCheckChatsPage from './hooks/useCheckChatsPage';
 
 const Router = () => {
   const { isLoading } = useIsAuthenticated();
@@ -27,13 +27,8 @@ const Router = () => {
       <Route path={PageRoutes.SignIn} element={<SignIn />} />
       <Route path={PageRoutes.SignUp} element={<SignUp />} />
       <Route path={PageRoutes.Verify} element={<Verify />} />
-      {/*<Route path={PageRoutes.Channels} element={<Channels />} />*/}
       <Route path={PageRoutes.Chat} element={<Chat />} />
-      {/*<Route path={PageRoutes.Users} element={<UsersComponent />} />*/}
-      {/*<Route path={PageRoutes.Groups} element={<GroupsComponent />} />*/}
       <Route path='*' element={<Navigate to={PageRoutes.Home} replace />} />
-
-      {/*<Route path='*' element={<Navigate to={Routes.home} />} />*/}
     </RoutesComponent>
   );
 };

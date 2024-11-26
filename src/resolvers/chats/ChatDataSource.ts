@@ -11,15 +11,29 @@ export default class ChatDataSource {
     return this.dbConnection.getRepository(ChatEntity);
   }
 
+  private createChatIdsQueryForUser(userId: number) {
+    return this.repository
+      .createQueryBuilder('C')
+      .select('C.id', 'id')
+      .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
+      .innerJoin('Users', 'U', 'U.id = UC.usersId')
+      .where('U.id = :userId', { userId });
+  }
+
   getChats = async (userId: number) => {
+    const chatIdsQuery = this.createChatIdsQueryForUser(userId);
+
     return this.repository
       .createQueryBuilder('C')
       .select('C.id', 'id')
       .addSelect("json_build_object('id', U.id, 'username', U.username)", 'correspondent')
-      .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
-      .innerJoin('Users', 'U', 'U.id = UC.usersId')
-      .where('U.id != :id', { id: userId })
+      .innerJoin('UsersChats', 'US', 'US.chatsId = C.id')
+      .innerJoin('Users', 'U', 'U.id = US.usersId')
+      .where(`C.id IN (${chatIdsQuery.getQuery()}) and U.id != :id`, { id: userId })
+      .setParameters(chatIdsQuery.getParameters())
       .execute();
+
+    // return correspondents;
   };
 
   getChatById = async ({ chatId, userId }: { userId: number; chatId: number }, include: { messages?: boolean }) => {
@@ -60,19 +74,7 @@ export default class ChatDataSource {
 
     const entityManager = queryRunner.manager;
 
-    console.log(userId, receiverId);
-
     try {
-      const chats = await entityManager
-        .createQueryBuilder()
-        .select('C.id', 'id')
-        .addSelect('U.id', 'receiverId')
-        .from('Chats', 'C')
-        .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
-        .innerJoin('Users', 'U', 'U.id = UC.usersId')
-        .where('U.id = :receiverId', { receiverId })
-        .execute();
-
       const userA = await entityManager.findOne(UserEntity, { where: { id: userId } });
       const userB = await entityManager.findOne(UserEntity, { where: { id: receiverId } });
 
@@ -80,7 +82,37 @@ export default class ChatDataSource {
         return new BadRequestError('Receiver or user is not exists');
       }
 
-      if (chats.length > 0) {
+      const chatIdsQuery = this.createChatIdsQueryForUser(userId);
+
+      const userChats = await entityManager
+        .createQueryBuilder()
+        .select('C.id', 'id')
+        .addSelect('U.id', 'receiverId')
+        .from('Chats', 'C')
+        .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
+        .innerJoin('Users', 'U', 'U.id = UC.usersId')
+        .where(`C.id IN (${chatIdsQuery.getQuery()}) and U.id = :id`, { id: receiverId })
+        .setParameters(chatIdsQuery.getParameters())
+        .execute();
+
+      const receiverChats = await entityManager
+        .createQueryBuilder()
+        .select('C.id', 'id')
+        .addSelect('U.id', 'userId')
+        .from('Chats', 'C')
+        .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
+        .innerJoin('Users', 'U', 'U.id = UC.usersId')
+        .where('U.id = :userId', { userId: receiverId })
+        .getMany();
+
+      console.log(receiverChats);
+
+      const chatsMap = receiverChats.reduce((acc, chat) => {
+        acc[chat.userId] = true;
+        return acc;
+      }, {});
+
+      if (userChats.findIndex(user => user.id === chatsMap[user.id]) > -1) {
         return new BadRequestError('Chat is already exist');
       }
 
@@ -182,7 +214,9 @@ export default class ChatDataSource {
       .innerJoin('UsersChats', 'US', 'US.chatsId = C.id')
       .innerJoin('Users', 'U', 'US.usersId = U.id')
       .where('C.id = :chatId and U.id = :userId', { chatId, userId })
-      .getOne();
+      .execute();
+
+    console.log(chatIsAccessibleForThisUser);
 
     if (chatIsAccessibleForThisUser) {
       return this.dbConnection
@@ -192,7 +226,7 @@ export default class ChatDataSource {
         .addSelect('M.created_at', 'created_at')
         .addSelect('U.id', 'sender_id')
         .innerJoin('Users', 'U', 'U.id = M.ownerId')
-        .where('M.chatId = :chatId and M.ownerId = :userId', { chatId, userId })
+        .where('M.chatId = :chatId', { chatId })
         .execute();
     }
 

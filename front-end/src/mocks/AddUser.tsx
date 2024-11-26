@@ -19,7 +19,7 @@ const AddUser = () => {
       .then(() => {
         toast.success('Fake user added successfully');
       })
-      .catch(e => {
+      .catch(() => {
         toast.error('Error ');
       });
 

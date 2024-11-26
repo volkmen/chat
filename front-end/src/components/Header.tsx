@@ -2,6 +2,7 @@ import SearchPeopleComponent from './search-people/SearchPeopleComponent';
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../api/account';
+// import AddUser from '../mocks/AddUser';
 
 function Header() {
   const { data } = useQuery(ME_QUERY);
@@ -12,6 +13,7 @@ function Header() {
         <div className='ps-3 flex gap-x-2.5 items-center'>
           <img src={process.env.PUBLIC_URL + '/logo.png'} alt='logo' width='30px' />
           <div className='text-gray-800'>{data?.GetMe.username}</div>
+          {/*<AddUser />*/}
         </div>
         <SearchPeopleComponent />
       </div>

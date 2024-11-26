@@ -15,9 +15,10 @@ const resolver = {
 
     GetUsers: createAuthResolver(async (_, args, context: Context, info): Promise<UserEntity[]> => {
       const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
+      const userId = getUserIdFromContext(context);
 
       const usersDataSource = getUsersResource(context);
-      return usersDataSource.getUsers(fieldsMap);
+      return usersDataSource.getUsers(userId, fieldsMap);
     }),
 
     DeleteMe: createAuthResolver<{ id: number }, Promise<number>>(async (_, args, context: Context) => {

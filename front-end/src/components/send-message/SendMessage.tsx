@@ -12,7 +12,8 @@ interface SendMessageProps {
 
 const SendMessage: React.FC<SendMessageProps> = ({ chatId, onSendMessage }) => {
   const [value, setValue] = React.useState('');
-  const [submitMessage] = useMutation<any, { chatId: number; content: string }>(SEND_MESSAGE);
+  const [submitMessage] = useMutation<number, { chatId: number; content: string }>(SEND_MESSAGE);
+  const ref = React.useRef<HTMLTextAreaElement | null>(null);
 
   const onSubmit: FormEventHandler = e => {
     preventDefault(e);
@@ -21,9 +22,10 @@ const SendMessage: React.FC<SendMessageProps> = ({ chatId, onSendMessage }) => {
         chatId,
         content: value
       }
-    }).then(res => {
+    }).then(() => {
       onSendMessage();
-      console.log(res);
+      setValue('');
+      ref.current?.focus();
     });
   };
 
@@ -35,6 +37,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ chatId, onSendMessage }) => {
         value={value}
         rows={3}
         onChange={e => setValue(e.target.value)}
+        ref={ref}
       />
       <Button size='xs' type='submit' className='self-end px-2'>
         Send

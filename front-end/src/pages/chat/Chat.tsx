@@ -10,10 +10,13 @@ import { PageRoutes } from 'consts/routes';
 import Message from './Message';
 import { ME_QUERY } from 'api/account';
 import './Chat.scss';
+import useCheckChatsPage from 'hooks/useCheckChatsPage';
 
 const Chat = () => {
   const params = useParams();
   const navigate = useNavigate();
+
+  useCheckChatsPage();
 
   const chatId = params.chatId && +params.chatId;
 

@@ -6,12 +6,12 @@ import { GetChatsResponse } from 'types/chats';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageRoutes } from '../consts/routes';
 import classNames from 'classnames';
-import { ME_QUERY } from '../api/account';
 
 const SidebarComponent = () => {
   const { data, loading } = useQuery<GetChatsResponse>(GET_CHATS);
   const params = useParams();
   const selectedChatId = params.chatId && +params.chatId;
+  const chats = data?.GetChats;
 
   const navigate = useNavigate();
 
@@ -23,8 +23,6 @@ const SidebarComponent = () => {
     return <Spinner />;
   }
 
-  console.log(selectedChatId);
-
   return (
     <aside
       id='default-sidebar'
@@ -33,7 +31,7 @@ const SidebarComponent = () => {
     >
       <div className='overflow-y-auto py-5 px-3 h-full border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
         <ul className=''>
-          {data?.GetChats.map(chat => (
+          {chats?.map(chat => (
             <li
               onClick={onSelectChat(chat.id)}
               key={chat.id}

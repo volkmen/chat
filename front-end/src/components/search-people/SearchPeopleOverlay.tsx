@@ -6,7 +6,7 @@ import Fuse from 'fuse.js';
 import { ADD_CHAT } from 'api/chats';
 import { showToastError, showToastSuccess } from 'services/toast';
 import { Chat, GetChatsResponse } from 'types/chats';
-import { PageRoutes } from '../../consts/routes';
+import { PageRoutes } from 'consts/routes';
 import { useNavigate } from 'react-router-dom';
 
 const fuseOptions = {
@@ -35,6 +35,8 @@ const extractUsers = (data?: GetUsersChatsResponse): UserExtended[] => {
   const users = data?.GetUsers || [];
   const chats = data?.GetChats || [];
 
+  console.log(chats);
+
   const chatsMap = chats?.reduce<Record<number, Chat>>((acc, chat) => {
     acc[chat.correspondent.id] = chat;
 
@@ -49,9 +51,10 @@ interface SearchPeopleOverlayProps {
 }
 
 const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern }) => {
-  const { data } = useSuspenseQuery<GetUsersChatsResponse>(GET_USERS_CHATS, {
+  const { data, refetch } = useSuspenseQuery<GetUsersChatsResponse>(GET_USERS_CHATS, {
     fetchPolicy: 'cache-and-network'
   });
+
   const users = React.useMemo(() => extractUsers(data), [data]);
   const [addChat] = useMutation(ADD_CHAT);
   const navigate = useNavigate();
@@ -76,9 +79,13 @@ const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern
           receiverId: user.id
         }
       })
-        .then(() => {
+        .then(async response => {
+          await refetch();
+
+          console.log(response);
+
           showToastSuccess(`Chat was added successfully with ${user.username}`);
-          navigate(PageRoutes.Users + `/${user.id}`);
+          navigate(PageRoutes.Chats + `/${user.chat}`);
         })
         .catch(() => {
           showToastError('Error adding chat');

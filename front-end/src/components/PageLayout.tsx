@@ -4,6 +4,7 @@ import SidebarComponent from './SidebarComponent';
 import Header from './Header';
 import { throttle } from 'lodash';
 import classNames from 'classnames';
+import useCheckChatsPage from '../hooks/useCheckChatsPage';
 
 interface PageLayoutProps extends PropsWithChildren {
   loading: boolean;
