@@ -95,24 +95,7 @@ export default class ChatDataSource {
         .setParameters(chatIdsQuery.getParameters())
         .execute();
 
-      const receiverChats = await entityManager
-        .createQueryBuilder()
-        .select('C.id', 'id')
-        .addSelect('U.id', 'userId')
-        .from('Chats', 'C')
-        .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
-        .innerJoin('Users', 'U', 'U.id = UC.usersId')
-        .where('U.id = :userId', { userId: receiverId })
-        .getMany();
-
-      console.log(receiverChats);
-
-      const chatsMap = receiverChats.reduce((acc, chat) => {
-        acc[chat.userId] = true;
-        return acc;
-      }, {});
-
-      if (userChats.findIndex(user => user.id === chatsMap[user.id]) > -1) {
+      if (userChats.length > 0) {
         return new BadRequestError('Chat is already exist');
       }
 
