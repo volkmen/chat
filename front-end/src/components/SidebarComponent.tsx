@@ -8,7 +8,7 @@ import { PageRoutes } from '../consts/routes';
 import classNames from 'classnames';
 
 const SidebarComponent = () => {
-  const { data, loading } = useQuery<GetChatsResponse>(GET_CHATS);
+  const { data, loading } = useQuery<GetChatsResponse>(GET_CHATS, { variables: { includeCorrespondent: true } });
   const params = useParams();
   const selectedChatId = params.chatId && +params.chatId;
   const chats = data?.GetChats;

@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
 
 export const GET_CHATS = gql`
-  query GetChats {
+  query GetChats($includeCorrespondent: Boolean = false) {
     GetChats {
       id
-      correspondent {
+      correspondent @include(if: $includeCorrespondent) {
         id
         username
       }
