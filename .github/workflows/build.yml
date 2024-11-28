@@ -19,9 +19,9 @@ jobs:
       db:
         image: postgres:latest # Replace with the desired database image (e.g., postgres, mysql, mongo)
         ports:
-          - ${{ env.DATABASE_USERNAME }}:${{ env.DATABASE_USERNAME }} # Map the database port
+          - 5432:5432 # Map the database port
         options: >-
-          --health-cmd="pg_isready -U ${{ env.DATABASE_USERNAME }}" # Ensure the service is ready
+          --health-cmd="pg_isready -U postgres" # Ensure the service is ready
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
