@@ -1,8 +1,8 @@
 import React from 'react';
 import PageLayout from 'components/PageLayout';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
-import { GET_CHAT, GET_MESSAGES } from 'api/chats';
+import { useQuery, useSubscription } from '@apollo/client';
+import { GET_CHAT, GET_MESSAGES, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/chats';
 import { ChatMessagesResponse } from 'types/chats';
 import SendMessage from 'components/send-message/SendMessage';
 import { isNumber } from 'lodash';
@@ -19,6 +19,10 @@ const Chat = () => {
   useCheckChatsPage();
 
   const chatId = params.chatId && +params.chatId;
+  const { data, loading, error } = useSubscription(SUBSCRIBE_TO_RECEIVE_MESSAGE, { variables: { chatId } });
+  //
+
+  console.log(chatId, loading, data, error);
 
   if (!isNumber(chatId)) {
     console.warn('was navigated form chat page', params);

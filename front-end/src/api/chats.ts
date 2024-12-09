@@ -50,3 +50,16 @@ export const SEND_MESSAGE = gql`
     }
   }
 `;
+
+export const MESSAGE_RECEIVED = 'MESSAGE_RECEIVED';
+
+export const SUBSCRIBE_TO_RECEIVE_MESSAGE = gql`
+  subscription MessageReceived($chatId: ID!) {
+    MessageReceived(chatId: $chatId) {
+      id
+      content
+      created_at
+      sender_id
+    }
+  }
+`;

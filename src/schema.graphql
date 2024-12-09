@@ -54,7 +54,12 @@ type Chat {
   correspondent: Correspondent
 }
 
+type Subscription {
+  MessageReceived(chatId: ID!): Message!
+}
+
 schema {
   query: Query
   mutation: Mutation
+  subscription: Subscription
 }

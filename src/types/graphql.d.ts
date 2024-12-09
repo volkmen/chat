@@ -117,6 +117,16 @@ export type QueryGetMessagesArgs = {
   chatId: Scalars['ID']['input'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  MessageReceived: Message;
+};
+
+
+export type SubscriptionMessageReceivedArgs = {
+  chatId: Scalars['ID']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   chats?: Maybe<Array<Maybe<Chat>>>;

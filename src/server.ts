@@ -1,10 +1,12 @@
 import * as path from 'node:path';
 import { createServer, type Server } from 'node:http';
-import { createSchema, createYoga } from 'graphql-yoga';
+import { createSchema, createYoga, createPubSub, PubSub } from 'graphql-yoga';
 import { loadFiles } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { type YogaServerInstance } from 'graphql-yoga/typings/server';
 import { DataSource as TypeormDatasource } from 'typeorm';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
 
 import AuthDataSource from './resolvers/auth/AuthDataSource';
 import UsersDataSource from './resolvers/users/UsersDataSource';
@@ -13,10 +15,12 @@ import resolvers from './resolvers';
 import EmailVerificationService from './services/emailer';
 import JwtService from './services/jwtService';
 import { Context } from './types/server';
+import { ConnectionParams } from 'subscriptions-transport-ws';
 
 class App {
-  yoga: YogaServerInstance<unknown, unknown>;
+  yoga: YogaServerInstance<Context, Context>;
   context: {
+    pubsub: PubSub<any>;
     dataSources: {
       auth: AuthDataSource;
       users: UsersDataSource;
@@ -27,6 +31,7 @@ class App {
   };
   server: Server;
   dbConnection: TypeormDatasource;
+  pubsub: ReturnType<typeof createPubSub>;
 
   jwtService = new JwtService();
 
@@ -40,6 +45,7 @@ class App {
     this.context = {
       emailVerificationService: new EmailVerificationService(),
       jwtService: this.jwtService,
+      pubsub: this.pubsub,
       dataSources: {
         auth: new AuthDataSource(dbConnection),
         users: new UsersDataSource(dbConnection),
@@ -50,22 +56,78 @@ class App {
 
   async initServer() {
     const typeDefs = await this.getTypeDefs();
+
+    // Initialize PubSub for subscriptions
+    this.pubsub = createPubSub();
+
+    // Create Yoga instance with WebSocket support
     this.yoga = createYoga<Context>({
       schema: createSchema<Context>({
         typeDefs,
         resolvers
       }),
       context: this.getContext,
-      graphqlEndpoint: '/graphiql'
+      graphqlEndpoint: '/graphql', // HTTP and WebSocket endpoint
+      graphiql: {
+        // Use WebSockets in GraphiQL
+        subscriptionsProtocol: 'WS'
+      },
+      logging: true // Enable logging for easier debugging
     });
 
+    // Use the Yoga instance with an HTTP server
     this.server = createServer(this.yoga);
+
+    const wsServer = new WebSocketServer({
+      server: this.server,
+      path: this.yoga.graphqlEndpoint
+    });
+
+    useServer(
+      {
+        execute: (args: any) => args.rootValue.execute(args),
+        subscribe: (args: any) => args.rootValue.subscribe(args),
+        onSubscribe: async (ctx, msg) => {
+          const { schema, execute, subscribe, contextFactory, parse, validate } = this.yoga.getEnveloped({
+            ...ctx,
+            req: ctx.extra.request,
+            socket: ctx.extra.socket,
+            params: msg.payload
+          });
+
+          const args = {
+            schema,
+            operationName: msg.payload.operationName,
+            document: parse(msg.payload.query),
+            variableValues: msg.payload.variables,
+            contextValue: await contextFactory(),
+            rootValue: {
+              execute,
+              subscribe
+            }
+          };
+
+          const errors = validate(args.schema, args.document);
+          if (errors.length) return errors;
+          return args;
+        }
+      },
+      wsServer
+    );
+
+    console.log('GraphQL Yoga server with WebSocket support initialized.');
 
     return this.yoga;
   }
 
-  private getContext = async ({ request }: any) => {
-    const tokenPayload = await this.context.jwtService.parsePayload(request);
+  private getContext = async ({
+    request,
+    connectionParams
+  }: {
+    request: Request;
+    connectionParams?: ConnectionParams;
+  }) => {
+    const tokenPayload = await this.context.jwtService.parsePayload(request, connectionParams);
 
     return {
       ...this.context,
@@ -75,7 +137,8 @@ class App {
 
   public listen(port: number) {
     this.server.listen(port, () => {
-      console.log(`Server is listening on port ${port}`);
+      console.log(`Server is listening on http://localhost:${port}/graphql`);
+      console.log(`Subscriptions are available at ws://localhost:${port}/graphql`);
     });
   }
 

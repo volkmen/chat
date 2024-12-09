@@ -159,7 +159,17 @@ export default class ChatDataSource {
       await entityManager.createQueryBuilder().relation(MessageEntity, 'owner').of(newMsg).set(user);
       await entityManager.createQueryBuilder().relation(ChatEntity, 'messages').of(chat).add(newMsg);
 
-      return newMsg;
+      const msgs = await entityManager
+        .createQueryBuilder(MessageEntity, 'M')
+        .select('M.id', 'id')
+        .addSelect('M.content', 'content')
+        .addSelect('M.created_at', 'created_at')
+        .addSelect('U.id', 'sender_id')
+        .innerJoin('Users', 'U', 'U.id = M.ownerId')
+        .where('M.id = :newMsgId', { newMsgId })
+        .execute();
+
+      return msgs[0];
     });
   }
 
