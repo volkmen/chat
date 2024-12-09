@@ -36,7 +36,7 @@ export default class ChatDataSource {
     // return correspondents;
   };
 
-  getChatById = async ({ chatId, userId }: { userId: number; chatId: number }, include: { messages?: boolean }) => {
+  getChatById = async ({ chatId, userId }: { userId: number; chatId: number }, include: Record<string, boolean>) => {
     const includeMessages = 'messages' in include && Boolean(include.messages);
 
     const chats = await this.repository
@@ -131,7 +131,7 @@ export default class ChatDataSource {
     }
   }
 
-  addMessage(userId: number, { chatId, content }: { chatId: number; content: string }) {
+  addMessage(userId: number, { chatId, content }: { chatId: number; content: string }): Promise<MessageEntity> {
     return this.dbConnection.transaction(async entityManager => {
       const msgResult = await entityManager
         .createQueryBuilder()

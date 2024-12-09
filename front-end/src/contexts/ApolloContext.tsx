@@ -37,8 +37,6 @@ const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
 
-    console.log(definition);
-
     return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsLink,

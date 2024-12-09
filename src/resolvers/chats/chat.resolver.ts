@@ -1,6 +1,8 @@
 import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getUserIdFromContext } from 'utils/context';
+import { MessageEntity } from '../../entities/Message.entity';
+import { ChatEvents } from '../../consts/events';
 
 const setTimeout$ = function (delay) {
   return new Promise(resolve => setTimeout(resolve, delay));
@@ -48,9 +50,12 @@ const resolver = {
       } = context;
       const userId = getUserIdFromContext(context);
 
-      const msg = await chatsDataSource.addMessage(userId, { chatId: args.chatId, content: args.content });
-      pubsub.publish('MESSAGE_RECEIVED', { msg });
-      console.log('PUBLISH MESSAGE_RECEIVED', msg);
+      const msg = await chatsDataSource.addMessage(userId, {
+        chatId: args.chatId,
+        content: args.content
+      });
+      pubsub.publish(`${ChatEvents.MESSAGE_WAS_ADDED}_${args.chatId}`, { msg });
+      console.log('PUBLISH MESSAGE_RECEIVED', `${ChatEvents.MESSAGE_WAS_ADDED}_${args.chatId}`, msg);
       return msg;
     }),
     DeleteMessage: createAuthResolver<{ id: number }>((_, args, context: Context) => {
@@ -63,12 +68,11 @@ const resolver = {
   },
   Subscription: {
     MessageReceived: {
-      subscribe: (_, __, { pubsub }) => {
-        console.log('SUBSCRIBE MESSAGE_RECEIVED');
-        return pubsub.subscribe('MESSAGE_RECEIVED');
+      subscribe: (_, args, { pubsub }) => {
+        console.log(`${ChatEvents.MESSAGE_WAS_ADDED}_${args.chatId}`);
+        return pubsub.subscribe(`${ChatEvents.MESSAGE_WAS_ADDED}_${args.chatId}`);
       },
       resolve: (payload, args) => {
-        console.log('!!!!!!!!!!!!!!!!');
         console.log('Resolving subscription payload:', payload, 'with args:', args); // Debug here
         return payload.msg;
       }

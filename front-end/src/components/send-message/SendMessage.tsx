@@ -6,7 +6,7 @@ import { SEND_MESSAGE } from 'api/chats';
 
 interface SendMessageProps {
   chatId: number;
-  onSendMessage: () => void;
+  onSendMessage?: () => void;
   className?: string;
 }
 
@@ -23,7 +23,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ chatId, onSendMessage }) => {
         content: value
       }
     }).then(() => {
-      onSendMessage();
+      onSendMessage?.();
       setValue('');
       ref.current?.focus();
     });

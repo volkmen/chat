@@ -1,5 +1,14 @@
 import { gql } from '@apollo/client';
 
+export const MESSAGE_FRAGMENT = gql`
+  fragment Message on Message {
+    id
+    content
+    created_at
+    sender_id
+  }
+`;
+
 export const GET_CHATS = gql`
   query GetChats($includeCorrespondent: Boolean = false) {
     GetChats {
@@ -31,12 +40,10 @@ export const ADD_CHAT = gql`
 `;
 
 export const GET_MESSAGES = gql`
+  ${MESSAGE_FRAGMENT}
   query GetMessages($chatId: ID!) {
     GetMessages(chatId: $chatId) {
-      id
-      content
-      created_at
-      sender_id
+      ...Message
     }
   }
 `;
@@ -51,15 +58,11 @@ export const SEND_MESSAGE = gql`
   }
 `;
 
-export const MESSAGE_RECEIVED = 'MESSAGE_RECEIVED';
-
 export const SUBSCRIBE_TO_RECEIVE_MESSAGE = gql`
+  ${MESSAGE_FRAGMENT}
   subscription MessageReceived($chatId: ID!) {
     MessageReceived(chatId: $chatId) {
-      id
-      content
-      created_at
-      sender_id
+      ...Message
     }
   }
 `;

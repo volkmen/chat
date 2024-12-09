@@ -42,7 +42,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ loading, children, mainClassNam
       <div className='flex relative container mx-auto'>
         <SidebarComponent />
         <div
-          className={classNames('w-full relative overflow-auto h-full scrollbar', mainClassName)}
+          className={classNames('w-full relative h-full', mainClassName)}
           style={{ maxHeight: `calc(100vh - ${height}px`, minHeight: `calc(100vh - ${height}px)` }}
         >
           {loading ? (

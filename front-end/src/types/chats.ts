@@ -18,5 +18,6 @@ export interface Chat {
 }
 
 export type ChatMessagesResponse = ApolloSuccessDataResponse<'GetMessages', MessageType[]>;
+export type SubscriptionMessageReceive = { MessageReceived: MessageType };
 
 export type GetChatsResponse = ApolloSuccessDataResponse<'GetChats', Chat[]>;
