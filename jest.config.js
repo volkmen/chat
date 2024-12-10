@@ -12,6 +12,7 @@ module.exports = {
     // Example: Map `@components` to the actual path
     '^entities/(.*)$': '<rootDir>/entities/$1',
     '^resolvers/(.*)$': '<rootDir>/resolvers/$1',
-    '^utils/(.*)$': '<rootDir>/utils/$1'
+    '^utils/(.*)$': '<rootDir>/utils/$1',
+    '^consts/(.*)$': '<rootDir>/consts/$1'
   }
 };

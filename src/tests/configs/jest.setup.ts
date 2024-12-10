@@ -30,14 +30,14 @@ beforeAll(async () => {
 
   global.signedOutExecutor = buildHTTPExecutor({
     fetch: server.yoga.fetch,
-    endpoint: `/graphiql`
+    endpoint: `/graphql`
   });
 
   const jwtToken = server.jwtService.createToken({ id: 1 });
 
   global.defaultUserExecutor = buildHTTPExecutor({
     fetch: server.yoga.fetch,
-    endpoint: `/graphiql`,
+    endpoint: `/graphql`,
     headers: {
       Authorization: `Bearer ${jwtToken}`
     }

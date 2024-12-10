@@ -26,5 +26,4 @@
     "rootDir": "src"
   },
   "include": ["src"],
-//  "exclude": ["codegen.ts","convertGraphql2Types.js", "src/types/graphql.d.ts", "front-end/**/*"]
 }
