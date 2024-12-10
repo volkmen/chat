@@ -1,5 +1,4 @@
-import 'module-alias/register';
-
+import './moduleAliases';
 import App from './server';
 import { connectToDatabase } from './services/typeorm';
 import { DataSource } from 'typeorm';

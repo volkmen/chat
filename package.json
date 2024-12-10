@@ -64,17 +64,11 @@
     "gql2types": "node mergeGraphqlSchemas.js",
     "codegen": "graphql-codegen --config codegen.ts",
     "typeorm": "typeorm-ts-node-esm -d src/configs/typeorm-base.config.ts",
-    "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d typeorm.migration.config.ts",
-    "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d typeorm.migration.config.ts",
-    "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d typeorm.migration.config.ts",
+    "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/typeorm.migration.config.ts",
+    "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/typeorm.migration.config.ts",
+    "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/typeorm.migration.config.ts",
     "test": "NODE_ENV=testing jest",
-    "test:teardown": "npx kill-port 3300"
-  },
-  "_moduleAliases": {
-    "resolvers": "src/resolvers",
-    "entities": "src/entities",
-    "types": "src/types",
-    "utils": "src/utils",
-    "consts": "src/consts"
+    "test:teardown": "npx kill-port 3300",
+    "build": "rm -rf build && tsc && yarn codegen && yarn gql2types && cp src/schema.graphql build/schema.graphql"
   }
 }

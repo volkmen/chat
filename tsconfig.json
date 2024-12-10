@@ -22,11 +22,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "jsx": "react-jsx",
-    "paths": {
-      "types": ["types"],
-      "resolvers": ["resolvers"],
-      "utils": ["utils"]
-    }
+    "outDir": "build",
+    "rootDir": "src"
   },
-  "exclude": ["convertGraphql2Types.js", "src/types/graphql.d.ts", "front-end/**/*"]
+  "include": ["src"],
+//  "exclude": ["codegen.ts","convertGraphql2Types.js", "src/types/graphql.d.ts", "front-end/**/*"]
 }

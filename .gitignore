@@ -10,3 +10,4 @@ front-end/build
 front-end/node_modules
 
 redis-data
+build

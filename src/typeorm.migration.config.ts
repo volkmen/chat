@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import typeORMBseConfig from './src/configs/typeorm-base.config';
+import typeORMBseConfig from './configs/typeorm-base.config';
 
 const dataSourceConfig = new DataSource(typeORMBseConfig);
 

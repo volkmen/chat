@@ -36,7 +36,7 @@ class App {
   jwtService = new JwtService();
 
   private async getTypeDefs() {
-    const loadedFiles = await loadFiles(path.join(process.cwd(), 'src', 'schema.graphql'));
+    const loadedFiles = await loadFiles(path.join(__dirname, 'schema.graphql'));
 
     return mergeTypeDefs(loadedFiles);
   }
