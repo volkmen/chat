@@ -26,10 +26,10 @@ const SidebarComponent = () => {
   return (
     <aside
       id='default-sidebar'
-      className='w-64 transition-transform -translate-x-full sm:translate-x-0'
+      className='w-64 transition-transform -translate-x-full sm:translate-x-0  bg-gray-50'
       aria-label='Sidenav'
     >
-      <div className='overflow-y-auto py-5 px-3 h-full border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700'>
+      <div className='overflow-y-auto py-5 px-3 h-full dark:bg-gray-800 dark:border-gray-700'>
         <ul className=''>
           {chats?.map(chat => (
             <li

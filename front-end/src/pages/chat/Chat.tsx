@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PageLayout from 'components/PageLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
@@ -15,7 +15,7 @@ import './Chat.scss';
 const Chat = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const messagesEndRef = useRef<any>(null);
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const [isFirstLoaded, setIsFirstLoad] = React.useState(false);
 
   const pageIsVeryBottom = useIsVisible(messagesEndRef);
@@ -48,16 +48,15 @@ const Chat = () => {
 
   React.useEffect(() => {
     if (data && !isFirstLoaded) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
-    } else if (pageIsVeryBottom && lastMessageIsMine) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView();
       setIsFirstLoad(true);
+    } else if (!pageIsVeryBottom && lastMessageIsMine) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [data, pageIsVeryBottom, lastMessageIsMine, isFirstLoaded]);
+  }, [data, lastMessageIsMine, isFirstLoaded]);
 
   return (
-    <PageLayout loading={false} mainClassName='flex flex-col justify-between'>
-      {/*<div className='h-full '>*/}
+    <PageLayout loading={false} mainClassName='flex flex-col justify-between border-r  border-r-gray-200'>
       {isEmpty ? (
         <>
           <div />
@@ -67,17 +66,17 @@ const Chat = () => {
           </div>
         </>
       ) : (
-        <div className='overflow-auto'>
+        <div className='overflow-auto bg-blend-screen'>
           {chat &&
             messages?.map(msg => (
               <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
             ))}
-          <div ref={messagesEndRef} style={{ height: '1px' }} />
+          <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '1px' }} />
         </div>
       )}
       <div
-        className='sticky bottom-0 w-full p-3 bg-gray-100 rounded-t-lg'
-        style={{ boxShadow: '0px -3px 14px -6px rgba(0,0,0,0.45)' }}
+        className='sticky bottom-0 w-full p-3 border-t border-t-gray-200 bg-gray-50'
+        style={{ boxShadow: ' 0px -6px 12px -12px rgba(0, 0, 0, 0.45)' }}
       >
         <SendMessage chatId={chatId} />
       </div>

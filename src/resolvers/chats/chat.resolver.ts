@@ -1,12 +1,7 @@
 import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getUserIdFromContext } from 'utils/context';
-import { MessageEntity } from '../../entities/Message.entity';
-import { ChatEvents } from '../../consts/events';
-
-const setTimeout$ = function (delay) {
-  return new Promise(resolve => setTimeout(resolve, delay));
-};
+import { ChatEvents } from 'consts/events';
 
 const resolver = {
   Query: {
@@ -69,11 +64,9 @@ const resolver = {
   Subscription: {
     MessageReceived: {
       subscribe: (_, args, { pubsub }) => {
-        console.log(`${ChatEvents.MESSAGE_WAS_ADDED}_${args.chatId}`);
         return pubsub.subscribe(`${ChatEvents.MESSAGE_WAS_ADDED}_${args.chatId}`);
       },
       resolve: (payload, args) => {
-        console.log('Resolving subscription payload:', payload, 'with args:', args); // Debug here
         return payload.msg;
       }
     }

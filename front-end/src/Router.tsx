@@ -8,7 +8,6 @@ import Spinner from './components/Spinner';
 import Verify from './pages/verify/Verify';
 import Chat from './pages/chat/Chat';
 import Home from './pages/home/Home';
-import useCheckChatsPage from './hooks/useCheckChatsPage';
 
 const Router = () => {
   const { isLoading } = useIsAuthenticated();

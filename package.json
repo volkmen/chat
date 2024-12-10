@@ -74,6 +74,7 @@
     "resolvers": "src/resolvers",
     "entities": "src/entities",
     "types": "src/types",
-    "utils": "src/utils"
+    "utils": "src/utils",
+    "consts": "src/consts"
   }
 }

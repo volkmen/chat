@@ -35,14 +35,14 @@ const PageLayout: React.FC<PageLayoutProps> = ({ loading, children, mainClassNam
   }, []);
 
   return (
-    <div>
+    <div className='bg-gray-50'>
       <div ref={ref}>
         <Header />
       </div>
       <div className='flex relative container mx-auto'>
         <SidebarComponent />
         <div
-          className={classNames('w-full relative h-full', mainClassName)}
+          className={classNames('w-full relative h-full bg-white border border-gray-200', mainClassName)}
           style={{ maxHeight: `calc(100vh - ${height}px`, minHeight: `calc(100vh - ${height}px)` }}
         >
           {loading ? (
