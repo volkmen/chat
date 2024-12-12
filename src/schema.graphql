@@ -18,6 +18,7 @@ type Query {
   GetChat(id: ID!): Chat
   GetMessage(chatId: ID!, messageId: ID!): Message
   GetMessages(chatId: ID!): [Message!]!
+  DoTyping(chatId: ID!, isTyping: Boolean!): MessageIsTyping
   GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
@@ -56,8 +57,14 @@ type Chat {
   correspondent: Correspondent
 }
 
+type MessageIsTyping {
+  isTyping: Boolean!
+  username: String!
+}
+
 type Subscription {
-  ChatAdded: Chat!
+  OnChatAdded: ID!
+  OnTyping(chatId: ID!): Boolean
   MessageReceived(chatId: ID!): Message!
   MessageIsRead(id: ID!): ID!
 }

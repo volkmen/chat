@@ -1,7 +1,7 @@
 import { DataSource as ORMDataSource } from 'typeorm/data-source/DataSource';
 import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
-import { BadRequestError } from 'utils/errors';
+import { BadRequestError, ForbiddenError } from 'utils/errors';
 
 export default class ChatDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -31,11 +31,22 @@ export default class ChatDataSource {
       .where(`C.id IN (${chatIdsQuery.getQuery()}) and U.id != :id`, { id: userId })
       .setParameters(chatIdsQuery.getParameters())
       .execute();
-
-    // return correspondents;
   };
 
-  getChatById = async ({ chatId, userId }: { userId: number; chatId: number }, include: Record<string, boolean>) => {
+  async selectChatIdWithUsername(userId: number, { chatId }: { chatId: number }) {
+    const chats = await this.repository
+      .createQueryBuilder('C')
+      .select('C.id', 'id')
+      .addSelect('U.username', 'username')
+      .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
+      .innerJoin('Users', 'U', 'U.id = UC.usersId')
+      .where('U.id != :id and C.id = :chatId', { id: userId, chatId })
+      .execute();
+
+    return chats[0];
+  }
+
+  getChatById = async (userId: number, { chatId }: { chatId: number }, include: Record<string, boolean> = {}) => {
     const includeMessages = 'messages' in include && Boolean(include.messages);
 
     const chats = await this.repository
@@ -48,6 +59,10 @@ export default class ChatDataSource {
       .execute();
 
     const chat = chats[0];
+
+    if (!chat) {
+      throw new ForbiddenError('not allowed');
+    }
 
     if (includeMessages) {
       const messages = await this.dbConnection

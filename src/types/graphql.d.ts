@@ -38,6 +38,12 @@ export type Message = {
   updated_at: Scalars['String']['output'];
 };
 
+export type MessageIsTyping = {
+  __typename?: 'MessageIsTyping';
+  isTyping: Scalars['Boolean']['output'];
+  username: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   AddChat: Scalars['ID']['output'];
@@ -103,6 +109,7 @@ export type MutationVerifyEmailArgs = {
 export type Query = {
   __typename?: 'Query';
   DeleteMe: Scalars['ID']['output'];
+  DoTyping?: Maybe<MessageIsTyping>;
   GetChat?: Maybe<Chat>;
   GetChats: Array<Chat>;
   GetMe: User;
@@ -111,6 +118,12 @@ export type Query = {
   GetUsers: Array<User>;
   ResendVerificationToken: Scalars['ID']['output'];
   ResetPassword: Scalars['ID']['output'];
+};
+
+
+export type QueryDoTypingArgs = {
+  chatId: Scalars['ID']['input'];
+  isTyping: Scalars['Boolean']['input'];
 };
 
 
@@ -131,9 +144,10 @@ export type QueryGetMessagesArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  ChatAdded: Chat;
   MessageIsRead: Scalars['ID']['output'];
   MessageReceived: Message;
+  OnChatAdded: Scalars['ID']['output'];
+  OnTyping?: Maybe<Scalars['Boolean']['output']>;
 };
 
 
@@ -143,6 +157,11 @@ export type SubscriptionMessageIsReadArgs = {
 
 
 export type SubscriptionMessageReceivedArgs = {
+  chatId: Scalars['ID']['input'];
+};
+
+
+export type SubscriptionOnTypingArgs = {
   chatId: Scalars['ID']['input'];
 };
 

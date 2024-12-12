@@ -19,18 +19,24 @@ type Chat {
     correspondent: Correspondent
 }
 
+type MessageIsTyping {
+    isTyping: Boolean!
+    username: String!
+}
+
 type Query {
     GetChats: [Chat!]!
     GetChat(id: ID!): Chat
     GetMessage(chatId: ID!, messageId: ID!): Message
     GetMessages(chatId: ID!): [Message!]!
+    DoTyping(chatId: ID!, isTyping: Boolean!): MessageIsTyping
 }
 
 type Mutation {
     AddChat(receiverId: ID!): ID!
 }
 
-
 type Subscription {
-    ChatAdded: ID!
+    OnChatAdded: ID!
+    OnTyping(chatId: ID!): Boolean
 }

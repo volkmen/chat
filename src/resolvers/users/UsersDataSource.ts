@@ -9,7 +9,7 @@ export default class UsersDataSource {
     return this.dbConnection.getRepository(UserEntity);
   }
 
-  async getUserById(id: number, fieldsMap: object) {
+  async getUserById(id: number, fieldsMap: object = {}) {
     const includeChats = fieldsMap['chats'] === true;
     const User = await this.repository.findOne({ where: { id }, relations: { chats: includeChats } });
 

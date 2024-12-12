@@ -2,13 +2,32 @@ import { addChatExecution, getChatsExecution, getExecutor, makeSignUpExecution }
 import { parse } from 'graphql/index';
 import { SyncExecutor } from '@graphql-tools/utils/typings';
 import { HTTPExecutorOptions } from '@graphql-tools/executor-http';
-import { CHAT_ADDED } from 'resolvers/chats/events';
+import { CHAT_ADDED, CHAT_IS_TYPING } from 'resolvers/chats/events';
+
+async function signUpAddChat() {
+  const result = await makeSignUpExecution();
+  const receiverId = result.data.SignUp.id;
+  const createChatResult = await addChatExecution(receiverId);
+  const chatId = +createChatResult.data.AddChat;
+
+  return { chatId, receiverId };
+}
 
 describe('chats', () => {
   let executor: SyncExecutor<any, HTTPExecutorOptions>;
+  let pubsub;
 
   beforeAll(() => {
     executor = globalThis.defaultUserExecutor;
+    pubsub = globalThis.server.context.pubsub;
+  });
+
+  beforeEach(() => {
+    jest.spyOn(pubsub, 'publish');
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should not add chat if receiver does not exists', async () => {
@@ -107,13 +126,53 @@ describe('chats', () => {
   });
 
   it('should subscription to be invoked once chat is added', async () => {
-    const { pubsub } = globalThis.server.context;
-    jest.spyOn(pubsub, 'publish');
-    const result = await makeSignUpExecution();
-    const receiverId = result.data.SignUp.id;
-    const createChatResult = await addChatExecution(receiverId);
-    const chatId = +createChatResult.data.AddChat;
+    const { chatId, receiverId } = await signUpAddChat();
 
     expect(pubsub.publish).toHaveBeenCalledWith(`${CHAT_ADDED}_${receiverId}`, { chatId, receiverId });
+  });
+
+  it('should publish IS_TYPING once chat is added', async () => {
+    const { chatId } = await signUpAddChat();
+    pubsub.publish.mockReset();
+
+    const doTypingResult = await executor({
+      document: parse(/* GraphQL */ `
+        query DoTyping {
+          DoTyping(chatId: ${chatId}, isTyping: true) {
+            ... on MessageIsTyping {
+              username,
+              isTyping
+            }
+          }
+        }
+      `)
+    });
+
+    expect(doTypingResult.data.DoTyping.isTyping).toBe(true);
+    expect(pubsub.publish).toHaveBeenCalledWith(
+      `${CHAT_IS_TYPING}_${chatId}`,
+      expect.objectContaining({ isTyping: true })
+    );
+  });
+
+  it('should NOT publish IS_TYPING to be invoked once chat is added if chatId is wrong', async () => {
+    await signUpAddChat();
+    pubsub.publish.mockReset();
+
+    const doTypingResult = await executor({
+      document: parse(/* GraphQL */ `
+        query DoTyping {
+          DoTyping(chatId: 100, isTyping: true) {
+            ... on MessageIsTyping {
+              username
+              isTyping
+            }
+          }
+        }
+      `)
+    });
+
+    expect(doTypingResult.errors).toBeTruthy();
+    expect(pubsub.publish).toHaveBeenCalledTimes(0);
   });
 });
