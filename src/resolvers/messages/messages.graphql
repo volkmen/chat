@@ -7,25 +7,19 @@ type Message {
     sender_id: ID!
 }
 
-type Correspondent {
-    id: ID!
-    username: String
-}
-
-type Chat {
-    id: ID!
-    messages: [Message!]!
-    is_group: Boolean!
-    correspondent: Correspondent
-}
-
 type Query {
-    GetChats: [Chat!]!
-    GetChat(id: ID!): Chat
     GetMessage(chatId: ID!, messageId: ID!): Message
     GetMessages(chatId: ID!): [Message!]!
 }
 
 type Mutation {
-    AddChat(receiverId: ID!): ID!
+    AddMessage(chatId: ID!, content: String!): Message
+    UpdateMessage(msgId: ID!): Message!
+    DeleteMessage(id: ID!): ID!
+    ReadMessage(msgId: ID!): ID!
+}
+
+type Subscription {
+    MessageReceived(chatId: ID!): Message!
+    MessageIsRead(id: ID!): ID!
 }

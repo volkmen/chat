@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import { createServer, type Server } from 'node:http';
-import { createSchema, createYoga, createPubSub, PubSub } from 'graphql-yoga';
+import { createSchema, createYoga, createPubSub } from 'graphql-yoga';
 import { loadFiles } from '@graphql-tools/load-files';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { type YogaServerInstance } from 'graphql-yoga/typings/server';
@@ -11,6 +11,7 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import AuthDataSource from './resolvers/auth/AuthDataSource';
 import UsersDataSource from './resolvers/users/UsersDataSource';
 import ChatsDataSource from './resolvers/chats/ChatDataSource';
+import MessagesDataSource from './resolvers/messages/MessagesDataSource';
 import resolvers from './resolvers';
 import EmailVerificationService from './services/emailer';
 import JwtService from './services/jwtService';
@@ -19,16 +20,7 @@ import { ConnectionParams } from 'subscriptions-transport-ws';
 
 class App {
   yoga: YogaServerInstance<Context, Context>;
-  context: {
-    pubsub: PubSub<any>;
-    dataSources: {
-      auth: AuthDataSource;
-      users: UsersDataSource;
-      chats: ChatsDataSource;
-    };
-    emailVerificationService: EmailVerificationService;
-    jwtService: JwtService;
-  };
+  context: Context;
   server: Server;
   dbConnection: TypeormDatasource;
   pubsub: ReturnType<typeof createPubSub>;
@@ -49,8 +41,10 @@ class App {
       dataSources: {
         auth: new AuthDataSource(dbConnection),
         users: new UsersDataSource(dbConnection),
-        chats: new ChatsDataSource(dbConnection)
-      }
+        chats: new ChatsDataSource(dbConnection),
+        messages: new MessagesDataSource(dbConnection)
+      },
+      tokenPayload: null
     };
   }
 

@@ -35,3 +35,15 @@ export class NotImplementedError extends GraphQLError {
     });
   }
 }
+
+export class ForbiddenError extends GraphQLError {
+  constructor(msg: string) {
+    super(msg, {
+      extensions: {
+        http: {
+          status: 403
+        }
+      }
+    });
+  }
+}

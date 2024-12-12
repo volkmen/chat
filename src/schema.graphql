@@ -29,7 +29,9 @@ type Mutation {
   SignIn(email: String!, password: String!): User
   AddChat(receiverId: ID!): ID!
   AddMessage(chatId: ID!, content: String!): Message
+  UpdateMessage(msgId: ID!): Message!
   DeleteMessage(id: ID!): ID!
+  ReadMessage(msgId: ID!): ID!
   UpdateMe(username: String): User
 }
 
@@ -56,6 +58,7 @@ type Chat {
 
 type Subscription {
   MessageReceived(chatId: ID!): Message!
+  MessageIsRead(id: ID!): ID!
 }
 
 schema {

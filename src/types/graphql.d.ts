@@ -43,9 +43,11 @@ export type Mutation = {
   AddChat: Scalars['ID']['output'];
   AddMessage?: Maybe<Message>;
   DeleteMessage: Scalars['ID']['output'];
+  ReadMessage: Scalars['ID']['output'];
   SignIn?: Maybe<User>;
   SignUp?: Maybe<User>;
   UpdateMe?: Maybe<User>;
+  UpdateMessage: Message;
   VerifyEmail?: Maybe<User>;
 };
 
@@ -66,6 +68,11 @@ export type MutationDeleteMessageArgs = {
 };
 
 
+export type MutationReadMessageArgs = {
+  msgId: Scalars['ID']['input'];
+};
+
+
 export type MutationSignInArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -81,6 +88,11 @@ export type MutationSignUpArgs = {
 
 export type MutationUpdateMeArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationUpdateMessageArgs = {
+  msgId: Scalars['ID']['input'];
 };
 
 
@@ -119,7 +131,13 @@ export type QueryGetMessagesArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  MessageIsRead: Scalars['ID']['output'];
   MessageReceived: Message;
+};
+
+
+export type SubscriptionMessageIsReadArgs = {
+  id: Scalars['ID']['input'];
 };
 
 

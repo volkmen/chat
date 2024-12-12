@@ -1,10 +1,4 @@
-import {
-  addChatExecution,
-  addMessageExecution,
-  getChatsExecution,
-  getExecutor,
-  makeSignUpExecution
-} from './queryExecutions';
+import { addChatExecution, getChatsExecution, getExecutor, makeSignUpExecution } from './queryExecutions';
 import { parse } from 'graphql/index';
 import { SyncExecutor } from '@graphql-tools/utils/typings';
 import { HTTPExecutorOptions } from '@graphql-tools/executor-http';
@@ -78,7 +72,6 @@ describe('chat', () => {
 
     expect(chatsAfter.data.GetChats.length === 3 + lenChats).toBe(true);
   });
-
   // todo FIX THIS
   it.skip('should return user chat by id', async () => {
     const result = await makeSignUpExecution();
@@ -108,43 +101,5 @@ describe('chat', () => {
     const receiverExecutor = getExecutor(result.data.SignUp.jwtToken);
     const addChatException = await addChatExecution(1, receiverExecutor);
     expect(addChatException.errors.length).toBe(1);
-  });
-
-  it('add message', async () => {
-    const result = await makeSignUpExecution();
-    expect(result.data).toBeTruthy();
-
-    const receiverId = result.data.SignUp.id;
-    const resultAddChat = await addChatExecution(receiverId);
-
-    const chatId: number = +resultAddChat.data.AddChat;
-
-    const addMessage = await addMessageExecution({ chatId, content: 'I am message here' });
-    expect(addMessage.data.AddMessage).toBeTruthy();
-  });
-
-  it('delete message', async () => {
-    const result = await makeSignUpExecution();
-    expect(result.data).toBeTruthy();
-
-    const receiverId = result.data.SignUp.id;
-    const resultAddChat = await addChatExecution(receiverId);
-
-    const chatId: number = +resultAddChat.data.AddChat;
-
-    const addMessage = await addMessageExecution({ chatId, content: 'I am message here' });
-    expect(addMessage.data.AddMessage).toBeTruthy();
-
-    const msgId = addMessage.data.AddMessage.id;
-
-    const delMsgResult = await globalThis.defaultUserExecutor({
-      document: parse(/* GraphQL */ `
-        mutation DeleteMessage {
-          DeleteMessage(id: ${msgId})
-        }
-      `)
-    });
-
-    expect(delMsgResult.data.DeleteMessage).toBeTruthy();
   });
 });

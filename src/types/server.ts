@@ -4,13 +4,16 @@ import AuthDataSource from '../resolvers/auth/AuthDataSource';
 import UsersDataSource from '../resolvers/users/UsersDataSource';
 import ChatDataSource from '../resolvers/chats/ChatDataSource';
 import { PubSub } from 'graphql-yoga';
+import MessagesDataSource from '../resolvers/messages/MessagesDataSource';
 
+type DataSources = {
+  auth: AuthDataSource;
+  users: UsersDataSource;
+  chats: ChatDataSource;
+  messages: MessagesDataSource;
+};
 export type Context = {
-  dataSources: {
-    auth: AuthDataSource;
-    users: UsersDataSource;
-    chats: ChatDataSource;
-  };
+  dataSources: DataSources;
   pubsub: PubSub<any>;
   emailVerificationService: EmailVerificationService;
   jwtService: JwtService;
