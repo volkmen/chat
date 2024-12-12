@@ -131,6 +131,7 @@ export type QueryGetMessagesArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  ChatAdded: Chat;
   MessageIsRead: Scalars['ID']['output'];
   MessageReceived: Message;
 };

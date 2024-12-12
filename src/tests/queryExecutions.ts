@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker';
 import { SyncExecutor } from '@graphql-tools/utils';
 import { HTTPExecutorOptions } from '@graphql-tools/executor-http/typings';
 
-export function getChatsExecution(executor = global.defaultUserExecutor) {
+export function getChatsExecution(executor = globalThis.defaultUserExecutor) {
   return executor({
     document: parse(/* GraphQL */ `
       query GetChats {
@@ -20,25 +20,25 @@ export function getChatsExecution(executor = global.defaultUserExecutor) {
   });
 }
 
-export function getChatExecution(id: number, executor = global.defaultUserExecutor) {
+export function getChatExecution(id: number, executor = globalThis.defaultUserExecutor) {
   return executor({
     document: parse(/* GraphQL */ `
-        query GetChat {
-            GetChat(id: ${id}) {
-                id
-                correspondent {
-                    id
-                    username
-                }
-            }
+      query GetChat {
+        GetChat(id: ${id}) {
+          id
+          correspondent {
+            id
+            username
+          }
         }
+      }
     `)
   });
 }
 
 export function addChatExecution(
   receiverId: number,
-  executor: SyncExecutor<any, HTTPExecutorOptions> = global.defaultUserExecutor
+  executor: SyncExecutor<any, HTTPExecutorOptions> = globalThis.defaultUserExecutor
 ) {
   return executor({
     document: parse(/* GraphQL */ `
@@ -52,16 +52,16 @@ export function addChatExecution(
 export function makeSignUpExecution(
   args = { username: faker.internet.username(), password: faker.internet.password(), email: faker.internet.email() }
 ): any {
-  return global.signedOutExecutor({
+  return globalThis.signedOutExecutor({
     document: parse(/* GraphQL */ `
-        mutation SignUp {
-            SignUp(username: "${args.username}", email: "${args.email}", password: "${args.password}") {
-                username
-                is_verified
-                jwtToken
-                id
-            }
+      mutation SignUp {
+        SignUp(username: "${args.username}", email: "${args.email}", password: "${args.password}") {
+          username
+          is_verified
+          jwtToken
+          id
         }
+      }
     `),
     operationName: 'SignUp'
   });
@@ -69,7 +69,7 @@ export function makeSignUpExecution(
 
 export function getExecutor(jwtToken) {
   return buildHTTPExecutor({
-    fetch: global.server.yoga.fetch,
+    fetch: globalThis.server.yoga.fetch,
     endpoint: `/graphiql`,
     headers: {
       Authorization: `Bearer ${jwtToken}`
@@ -79,7 +79,7 @@ export function getExecutor(jwtToken) {
 
 export function addMessageExecution(
   { content, chatId }: { content: string; chatId: number },
-  executor = global.defaultUserExecutor
+  executor = globalThis.defaultUserExecutor
 ) {
   return executor({
     document: parse(/* GraphQL */ `

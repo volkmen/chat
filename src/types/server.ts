@@ -3,7 +3,7 @@ import type JwtService from '../services/jwtService';
 import AuthDataSource from '../resolvers/auth/AuthDataSource';
 import UsersDataSource from '../resolvers/users/UsersDataSource';
 import ChatDataSource from '../resolvers/chats/ChatDataSource';
-import { PubSub } from 'graphql-yoga';
+import { createPubSub } from 'graphql-yoga';
 import MessagesDataSource from '../resolvers/messages/MessagesDataSource';
 
 type DataSources = {
@@ -14,7 +14,7 @@ type DataSources = {
 };
 export type Context = {
   dataSources: DataSources;
-  pubsub: PubSub<any>;
+  pubsub: ReturnType<typeof createPubSub>;
   emailVerificationService: EmailVerificationService;
   jwtService: JwtService;
   tokenPayload: {

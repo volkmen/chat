@@ -57,6 +57,7 @@ type Chat {
 }
 
 type Subscription {
+  ChatAdded: Chat!
   MessageReceived(chatId: ID!): Message!
   MessageIsRead(id: ID!): ID!
 }

@@ -1,38 +1,32 @@
 import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
 import type { Context } from 'types/server';
 import { UserEntity } from 'entities/User.entity';
-import { getUserIdFromContext, getUsersResource } from 'utils/context';
+import { getDataSourceAndUserId, getUserIdFromContext } from 'utils/context';
 
 const resolver = {
   Query: {
     GetMe: createAuthResolver((_, args, context: Context, info): Promise<UserEntity> => {
       const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
-      const usersDataSource = getUsersResource(context);
-      const userId = getUserIdFromContext(context);
+      const { userId, dataSource } = getDataSourceAndUserId(context, 'users');
 
-      return usersDataSource.getUserById(userId, fieldsMap);
+      return dataSource.getUserById(userId, fieldsMap);
     }),
 
     GetUsers: createAuthResolver(async (_, args, context: Context, info): Promise<UserEntity[]> => {
       const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
-      const userId = getUserIdFromContext(context);
-
-      const usersDataSource = getUsersResource(context);
-      return usersDataSource.getUsers(userId, fieldsMap);
+      const { userId, dataSource } = getDataSourceAndUserId(context, 'users');
+      return dataSource.getUsers(userId, fieldsMap);
     }),
 
     DeleteMe: createAuthResolver<{ id: number }, Promise<number>>(async (_, args, context: Context) => {
-      const usersDataSource = getUsersResource(context);
-      const userId = getUserIdFromContext(context);
-      return usersDataSource.deleteUser(userId); // Return the ID of the deleted auth
+      const { userId, dataSource } = getDataSourceAndUserId(context, 'users');
+      return dataSource.deleteUser(userId); // Return the ID of the deleted auth
     })
   },
   Mutation: {
     UpdateMe: createAuthResolver(async (_, { username }: { username: string }, context): Promise<UserEntity> => {
-      const usersDataSource = getUsersResource(context);
-      const userId = getUserIdFromContext(context);
-
-      return usersDataSource.updateUser(userId, { username }); // Using args.input for updated data
+      const { userId, dataSource } = getDataSourceAndUserId(context, 'users');
+      return dataSource.updateUser(userId, { username }); // Using args.input for updated data
     })
   }
 };

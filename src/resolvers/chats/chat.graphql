@@ -29,3 +29,8 @@ type Query {
 type Mutation {
     AddChat(receiverId: ID!): ID!
 }
+
+
+type Subscription {
+    ChatAdded: ID!
+}

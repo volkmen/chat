@@ -73,11 +73,13 @@ describe('chat', () => {
     expect(chatsAfter.data.GetChats.length === 3 + lenChats).toBe(true);
   });
   // todo FIX THIS
-  it.skip('should return user chat by id', async () => {
+  it.only('should return user chat by id', async () => {
     const result = await makeSignUpExecution();
     expect(result.data).toBeTruthy();
 
     const receiverId = result.data.SignUp.id;
+
+    console.log('!!!!!!!!', result);
     const resultAddChat = await addChatExecution(receiverId);
 
     const chatId = resultAddChat.data.AddChat;

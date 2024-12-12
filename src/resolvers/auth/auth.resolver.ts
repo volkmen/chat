@@ -1,13 +1,13 @@
 import { type Context } from 'types/server';
 import { UserEntity } from 'entities/User.entity';
 import { SignInInput } from './types';
-import { getAuthResource, getUserIdFromContext } from 'utils/context';
+import { getDataSourceAndUserId, getUserIdFromContext } from 'utils/context';
 import { createAuthResolver } from 'utils/resolvers';
 import { NotImplementedError } from 'utils/errors';
 
 const resolver = {
   Query: {
-    ResetPassword: createAuthResolver((_, args, context: Context) => {
+    ResetPassword: createAuthResolver(() => {
       throw new NotImplementedError('Not implemented');
     }),
 
@@ -42,10 +42,8 @@ const resolver = {
     },
 
     VerifyEmail: createAuthResolver(async (_, args: { token: number }, context): Promise<UserEntity> => {
-      const authDataResource = getAuthResource(context);
-      const userId = getUserIdFromContext(context);
-
-      return authDataResource.verifyEmail(userId, args.token);
+      const { userId, dataSource } = getDataSourceAndUserId(context, 'auth');
+      return dataSource.verifyEmail(userId, args.token);
     }),
 
     SignIn: async (_, args: SignInInput, context: Context): Promise<UserEntity & { jwtToken: string }> => {
