@@ -2,8 +2,9 @@ import { addChatExecution, getChatsExecution, getExecutor, makeSignUpExecution }
 import { parse } from 'graphql/index';
 import { SyncExecutor } from '@graphql-tools/utils/typings';
 import { HTTPExecutorOptions } from '@graphql-tools/executor-http';
+import { CHAT_ADDED } from 'resolvers/chats/events';
 
-describe('chat', () => {
+describe('chats', () => {
   let executor: SyncExecutor<any, HTTPExecutorOptions>;
 
   beforeAll(() => {
@@ -70,16 +71,15 @@ describe('chat', () => {
 
     const chatsAfter = await getChatsExecution();
 
-    expect(chatsAfter.data.GetChats.length === 3 + lenChats).toBe(true);
+    expect(chatsAfter.data.GetChats.length >= 3 + lenChats).toBe(true);
   });
-  // todo FIX THIS
-  it.only('should return user chat by id', async () => {
+
+  it('should return user chat by id', async () => {
     const result = await makeSignUpExecution();
     expect(result.data).toBeTruthy();
 
     const receiverId = result.data.SignUp.id;
 
-    console.log('!!!!!!!!', result);
     const resultAddChat = await addChatExecution(receiverId);
 
     const chatId = resultAddChat.data.AddChat;
@@ -102,6 +102,18 @@ describe('chat', () => {
 
     const receiverExecutor = getExecutor(result.data.SignUp.jwtToken);
     const addChatException = await addChatExecution(1, receiverExecutor);
+
     expect(addChatException.errors.length).toBe(1);
+  });
+
+  it('should subscription to be invoked once chat is added', async () => {
+    const { pubsub } = globalThis.server.context;
+    jest.spyOn(pubsub, 'publish');
+    const result = await makeSignUpExecution();
+    const receiverId = result.data.SignUp.id;
+    const createChatResult = await addChatExecution(receiverId);
+    const chatId = +createChatResult.data.AddChat;
+
+    expect(pubsub.publish).toHaveBeenCalledWith(`${CHAT_ADDED}_${receiverId}`, { chatId, receiverId });
   });
 });

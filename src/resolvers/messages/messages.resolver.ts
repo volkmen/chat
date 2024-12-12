@@ -23,7 +23,6 @@ const resolver = {
         content: args.content
       });
       context.pubsub.publish(`${MessageEvents.MESSAGE_WAS_ADDED}_${args.chatId}`, { msg });
-      console.log('PUBLISH MESSAGE_RECEIVED', `${MessageEvents.MESSAGE_WAS_ADDED}_${args.chatId}`, msg);
       return msg;
     }),
     DeleteMessage: createAuthResolver<{ id: number }>((_, args, context: Context) => {

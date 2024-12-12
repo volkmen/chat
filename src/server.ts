@@ -17,7 +17,6 @@ import EmailVerificationService from './services/emailer';
 import JwtService from './services/jwtService';
 import { Context } from './types/server';
 import { ConnectionParams } from 'subscriptions-transport-ws';
-import { CHAT_ADDED } from './resolvers/chats/events';
 
 class App {
   yoga: YogaServerInstance<Context, Context>;

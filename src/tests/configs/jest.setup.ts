@@ -1,7 +1,7 @@
-import { connectToDatabase } from '../../services/typeorm';
-import { buildHTTPExecutor } from '@graphql-tools/executor-http';
-import Server from '../../server';
 import nodemailer from 'nodemailer';
+import { buildHTTPExecutor } from '@graphql-tools/executor-http';
+import { connectToDatabase } from 'services/typeorm';
+import Server from '../../server';
 
 jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
   return {

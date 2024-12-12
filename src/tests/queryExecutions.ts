@@ -70,7 +70,7 @@ export function makeSignUpExecution(
 export function getExecutor(jwtToken) {
   return buildHTTPExecutor({
     fetch: globalThis.server.yoga.fetch,
-    endpoint: `/graphiql`,
+    endpoint: `/graphql`,
     headers: {
       Authorization: `Bearer ${jwtToken}`
     }
