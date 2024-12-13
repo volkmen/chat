@@ -16,7 +16,7 @@ type Query {
   ResendVerificationToken: ID!
   GetChats: [Chat!]!
   GetChat(id: ID!): Chat
-  GetMessage(chatId: ID!, messageId: ID!): Message
+  GetMessage(messageId: ID!): Message
   GetMessages(chatId: ID!): [Message!]!
   DoTyping(chatId: ID!, isTyping: Boolean!): MessageIsTyping
   GetMe: User!
@@ -32,7 +32,7 @@ type Mutation {
   AddMessage(chatId: ID!, content: String!): Message
   UpdateMessage(msgId: ID!): Message!
   DeleteMessage(id: ID!): ID!
-  ReadMessage(msgId: ID!): ID!
+  ReadMessage(id: ID!): ID!
   UpdateMe(username: String): User
 }
 

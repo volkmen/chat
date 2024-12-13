@@ -1,5 +1,5 @@
 import { useQuery, useSubscription } from '@apollo/client';
-import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/chats';
+import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
 import { ChatMessagesResponse, SubscriptionMessageReceive } from 'types/chats';
 
 enum ChatEvents {

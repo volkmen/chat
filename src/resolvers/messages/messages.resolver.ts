@@ -2,12 +2,12 @@ import { createAuthResolver } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getDataSourceAndUserId } from 'utils/context';
 import { MessageEvents } from './events';
-import { NotImplementedError } from 'utils/errors';
 
 const resolver = {
   Query: {
-    GetMessage: createAuthResolver(() => {
-      throw new NotImplementedError('not implemented');
+    GetMessage: createAuthResolver<{ messageId: number }>((_, args, context: Context) => {
+      const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
+      return dataSource.getMessageById(userId, args.messageId);
     }),
     GetMessages: createAuthResolver<{ chatId: number }>((_, args, context: Context) => {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');

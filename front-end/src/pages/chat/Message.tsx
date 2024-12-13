@@ -5,6 +5,9 @@ import { User } from 'types/users';
 import relativeDate from 'relative-date';
 import { IoCheckmarkDoneOutline } from 'react-icons/io5';
 import { IoCheckmarkOutline } from 'react-icons/io5';
+import { useMutation } from '@apollo/client';
+import { READ_MESSAGE } from 'api/messages';
+import { useIsVisible } from 'hooks';
 
 interface MessageProps {
   message: MessageType;
@@ -23,6 +26,20 @@ const Message: React.FC<MessageProps> = ({ message, correspondent, className, me
   const borderClassName = isMineMessage
     ? 'mr-4 rounded-s-xl rounded-ee-xl bg-blue-100'
     : 'ml-4 rounded-e-xl rounded-es-xl bg-red-100';
+  const refVisibility = React.useRef<HTMLDivElement>(null);
+
+  const isVisible = useIsVisible(refVisibility);
+  const [sendIsRead] = useMutation(READ_MESSAGE);
+
+  React.useEffect(() => {
+    if (isVisible && !isMineMessage && !message.isRead) {
+      sendIsRead({
+        variables: {
+          id: message.id
+        }
+      });
+    }
+  }, [isVisible, message.isRead, isMineMessage]);
 
   return (
     <div className={classNames('flex msg-item arrow-right', isMineMessage && 'justify-end', className)}>
@@ -41,6 +58,7 @@ const Message: React.FC<MessageProps> = ({ message, correspondent, className, me
           {isMineMessage && (
             <div className='flex justify-end text-end font-normal text-gray-500 dark:text-gray-400'>{status}</div>
           )}
+          {!isMineMessage && <div ref={refVisibility} style={{ height: '1px' }} />}
         </div>
       </div>
     </div>

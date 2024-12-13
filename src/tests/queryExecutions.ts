@@ -95,3 +95,28 @@ export function addMessageExecution(
     }
   });
 }
+
+export function getMessageExecution(messageId: number, executor = globalThis.defaultUserExecutor) {
+  return executor({
+    document: parse(/* GraphQL */ `
+      query GetMessage($messageId: ID!) {
+        GetMessage(messageId: $messageId) {
+          id
+          isRead
+        }
+      }
+    `),
+    variables: {
+      messageId
+    }
+  });
+}
+export async function signUpAddChat() {
+  const result = await makeSignUpExecution();
+  const receiverId = result.data.SignUp.id;
+  const jwtToken = result.data.SignUp.jwtToken;
+  const createChatResult = await addChatExecution(receiverId);
+  const chatId = +createChatResult.data.AddChat;
+
+  return { chatId, receiverId, jwtToken };
+}

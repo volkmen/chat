@@ -1,17 +1,14 @@
-import { addChatExecution, getChatsExecution, getExecutor, makeSignUpExecution } from './queryExecutions';
+import {
+  addChatExecution,
+  getChatsExecution,
+  getExecutor,
+  makeSignUpExecution,
+  signUpAddChat
+} from './queryExecutions';
 import { parse } from 'graphql/index';
 import { SyncExecutor } from '@graphql-tools/utils/typings';
 import { HTTPExecutorOptions } from '@graphql-tools/executor-http';
 import { CHAT_ADDED, CHAT_IS_TYPING } from 'resolvers/chats/events';
-
-async function signUpAddChat() {
-  const result = await makeSignUpExecution();
-  const receiverId = result.data.SignUp.id;
-  const createChatResult = await addChatExecution(receiverId);
-  const chatId = +createChatResult.data.AddChat;
-
-  return { chatId, receiverId };
-}
 
 describe('chats', () => {
   let executor: SyncExecutor<any, HTTPExecutorOptions>;

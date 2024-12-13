@@ -3,6 +3,7 @@ import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
 import { BadRequestError, ForbiddenError } from 'utils/errors';
 import { MessageEntity } from 'entities/Message.entity';
+import { plainToInstance } from 'class-transformer';
 
 export default class MessagesDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -11,8 +12,17 @@ export default class MessagesDataSource {
     return this.dbConnection.getRepository(MessageEntity);
   }
 
-  getMessageById(userId: number, id: number) {
-    return this.repository.createQueryBuilder('M').where('M.id = :id and M.ownerId = :userId', { userId, id }).getOne();
+  async getMessageById(userId: number, id: number) {
+    const messages = await this.repository
+      .createQueryBuilder('M')
+      .select('M.id', 'id')
+      .addSelect('M.content', 'content')
+      .addSelect('M.created_at', 'createdAt')
+      .addSelect('M.is_read', 'isRead')
+      .where('M.id = :id and M.ownerId = :userId', { userId, id })
+      .execute();
+
+    return messages[0];
   }
 
   async getMessages(userId: number, chatId: number) {
@@ -108,21 +118,23 @@ export default class MessagesDataSource {
     const userAllowedToUpdate = await this.repository
       .createQueryBuilder('M')
       .select('U.id', 'senderId')
-      .innerJoin('Chats', 'C', 'C.id = M.chatsId')
+      .innerJoin('Chats', 'C', 'C.id = M.chatId')
       .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
       .innerJoin('Users', 'U', 'U.id = UC.usersId')
-      .where('U.id != :userId', { userId })
-      .getOne();
+      .where('M.id = :messageId and U.id != :userId', { messageId, userId })
+      .execute();
 
-    if (!userAllowedToUpdate) {
+    if (userAllowedToUpdate.length === 0) {
       throw new ForbiddenError('Not allowed');
     }
 
-    return this.repository
+    await this.repository
       .createQueryBuilder()
       .update()
       .set({ is_read: true })
       .where('id = :messageId', { messageId })
       .execute();
+
+    return messageId;
   }
 }

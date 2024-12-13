@@ -2,7 +2,7 @@ import React, { FormEventHandler } from 'react';
 import { Button, Textarea } from 'flowbite-react';
 import { preventDefault } from 'utils/events';
 import { useMutation } from '@apollo/client';
-import { SEND_MESSAGE } from 'api/chats';
+import { SEND_MESSAGE } from 'api/messages';
 
 interface SendMessageProps {
   chatId: number;
