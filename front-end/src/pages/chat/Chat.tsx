@@ -44,7 +44,7 @@ const Chat = () => {
 
   const chat = chatData?.GetChat;
   const me = meData?.GetMe;
-  const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].sender_id === me.id;
+  const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].senderId === me.id;
 
   React.useEffect(() => {
     if (data && !isFirstLoaded) {

@@ -16,10 +16,10 @@ interface MessageProps {
 }
 
 const Message: React.FC<MessageProps> = ({ message, correspondent, className, me }) => {
-  const isMineMessage = me.id === message.sender_id;
+  const isMineMessage = me.id === message.senderId;
   const senderName = isMineMessage ? 'Me' : correspondent.username;
-  const relTime = relativeDate(message.created_at);
-  const status = !message.is_read ? <IoCheckmarkDoneOutline color='#0000E7' /> : <IoCheckmarkOutline color='#888' />;
+  const relTime = relativeDate(message.createdAt);
+  const status = message.isRead ? <IoCheckmarkDoneOutline color='#0000E7' /> : <IoCheckmarkOutline color='#888' />;
   const borderClassName = isMineMessage
     ? 'mr-4 rounded-s-xl rounded-ee-xl bg-blue-100'
     : 'ml-4 rounded-e-xl rounded-es-xl bg-red-100';

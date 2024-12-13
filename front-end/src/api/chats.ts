@@ -4,8 +4,8 @@ export const MESSAGE_FRAGMENT = gql`
   fragment Message on Message {
     id
     content
-    created_at
-    sender_id
+    createdAt
+    senderId
   }
 `;
 
@@ -53,7 +53,7 @@ export const SEND_MESSAGE = gql`
     AddMessage(chatId: $chatId, content: $content) {
       id
       content
-      created_at
+      createdAt
     }
   }
 `;

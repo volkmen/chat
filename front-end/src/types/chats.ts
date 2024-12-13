@@ -3,9 +3,9 @@ import { ApolloSuccessDataResponse } from './api';
 export interface MessageType {
   content: string;
   id: number;
-  created_at: number;
-  sender_id: number;
-  is_read: boolean;
+  createdAt: number;
+  senderId: number;
+  isRead: boolean;
 }
 
 export interface Chat {

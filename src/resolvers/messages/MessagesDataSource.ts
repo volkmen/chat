@@ -29,8 +29,8 @@ export default class MessagesDataSource {
         .createQueryBuilder('Messages', 'M')
         .select('M.id', 'id')
         .addSelect('M.content', 'content')
-        .addSelect('M.created_at', 'created_at')
-        .addSelect('U.id', 'sender_id')
+        .addSelect('M.created_at', 'createdAt')
+        .addSelect('U.id', 'senderId')
         .innerJoin('Users', 'U', 'U.id = M.ownerId')
         .where('M.chatId = :chatId', { chatId })
         .execute();
@@ -71,8 +71,8 @@ export default class MessagesDataSource {
         .createQueryBuilder(MessageEntity, 'M')
         .select('M.id', 'id')
         .addSelect('M.content', 'content')
-        .addSelect('M.created_at', 'created_at')
-        .addSelect('U.id', 'sender_id')
+        .addSelect('M.created_at', 'createdAt')
+        .addSelect('U.id', 'senderId')
         .innerJoin('Users', 'U', 'U.id = M.ownerId')
         .where('M.id = :newMsgId', { newMsgId })
         .execute();
