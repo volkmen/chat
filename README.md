@@ -1,7 +1,6 @@
 
-# Explore and practise  next techologies
-This is chat application where I expore some new techologies for me.
-It include next techologies:
+# Explore and practice  next techologies
+
 1. FE - React, AppoloClient
 2. BE - Node, Yoga Graphql server
 3. Communications - GRAPHQL
