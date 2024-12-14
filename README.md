@@ -6,6 +6,3 @@
 3. Communications - GRAPHQL
 4. Authorization - plain with email verification
 5. Database - PostgresSQL (TypeORM as ORM)
-
- ## Authors
-Yaroslav Vovk
