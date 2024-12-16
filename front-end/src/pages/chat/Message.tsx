@@ -5,7 +5,7 @@ import { User } from 'types/users';
 import relativeDate from 'relative-date';
 import { IoCheckmarkDoneOutline } from 'react-icons/io5';
 import { IoCheckmarkOutline } from 'react-icons/io5';
-import { useMutation } from '@apollo/client';
+import { useMutation, useSubscription } from '@apollo/client';
 import { READ_MESSAGE } from 'api/messages';
 import { useIsVisible } from 'hooks';
 

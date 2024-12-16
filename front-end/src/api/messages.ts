@@ -6,6 +6,7 @@ export const MESSAGE_FRAGMENT = gql`
     content
     createdAt
     senderId
+    isRead
   }
 `;
 
@@ -40,5 +41,14 @@ export const GET_MESSAGES = gql`
 export const READ_MESSAGE = gql`
   mutation ReadMessage($id: ID!) {
     ReadMessage(id: $id)
+  }
+`;
+
+export const SUBSCRIBE_MESSAGE_IS_READ = gql`
+  ${MESSAGE_FRAGMENT}
+  subscription MessageIsRead {
+    MessageIsRead {
+      ...Message
+    }
   }
 `;

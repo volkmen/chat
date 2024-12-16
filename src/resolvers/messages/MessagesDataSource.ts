@@ -3,7 +3,6 @@ import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
 import { BadRequestError, ForbiddenError } from 'utils/errors';
 import { MessageEntity } from 'entities/Message.entity';
-import { plainToInstance } from 'class-transformer';
 
 export default class MessagesDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -19,7 +18,9 @@ export default class MessagesDataSource {
       .addSelect('M.content', 'content')
       .addSelect('M.created_at', 'createdAt')
       .addSelect('M.is_read', 'isRead')
+      .addSelect('M.ownerId', 'senderId')
       .where('M.id = :id and M.ownerId = :userId', { userId, id })
+      .orderBy('M.created_at', 'DESC')
       .execute();
 
     return messages[0];
@@ -40,6 +41,7 @@ export default class MessagesDataSource {
         .select('M.id', 'id')
         .addSelect('M.content', 'content')
         .addSelect('M.created_at', 'createdAt')
+        .addSelect('M.is_read', 'isRead')
         .addSelect('U.id', 'senderId')
         .innerJoin('Users', 'U', 'U.id = M.ownerId')
         .where('M.chatId = :chatId', { chatId })
@@ -82,6 +84,7 @@ export default class MessagesDataSource {
         .select('M.id', 'id')
         .addSelect('M.content', 'content')
         .addSelect('M.created_at', 'createdAt')
+        .addSelect('M.is_read', 'isRead')
         .addSelect('U.id', 'senderId')
         .innerJoin('Users', 'U', 'U.id = M.ownerId')
         .where('M.id = :newMsgId', { newMsgId })
@@ -135,6 +138,16 @@ export default class MessagesDataSource {
       .where('id = :messageId', { messageId })
       .execute();
 
-    return messageId;
+    const result = await this.repository
+      .createQueryBuilder('M')
+      .select('M.id', 'id')
+      .addSelect('M.content', 'content')
+      .addSelect('M.created_at', 'createdAt')
+      .addSelect('M.is_read', 'isRead')
+      .addSelect('M.ownerId', 'senderId')
+      .where('M.id = :messageId', { messageId })
+      .execute();
+
+    return result[0];
   }
 }

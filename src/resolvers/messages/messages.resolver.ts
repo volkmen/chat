@@ -31,9 +31,10 @@ const resolver = {
     }),
     ReadMessage: createAuthResolver<{ id: number }>(async (_, args, context: Context) => {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
-      const msg = await dataSource.doReadMessage(userId, args.id);
-      context.pubsub.publish(`${MessageEvents.MESSAGE_IS_READ}_${args.id}`, args.id);
-      return msg;
+      const result = await dataSource.doReadMessage(userId, args.id);
+      context.pubsub.publish(`${result.senderId}_${MessageEvents.MESSAGE_IS_READ}`, result);
+
+      return args.id;
     })
   },
   Subscription: {
@@ -46,8 +47,10 @@ const resolver = {
       }
     },
     MessageIsRead: {
-      subscribe: (_, args, { pubsub }) => {
-        return pubsub.subscribe(`${MessageEvents.MESSAGE_IS_READ}_${args.msgId}`);
+      subscribe: (_, __, context) => {
+        const { userId } = getDataSourceAndUserId(context, 'messages');
+        console.log('sapoksapokpo');
+        return context.pubsub.subscribe(`${userId}_${MessageEvents.MESSAGE_IS_READ}`);
       },
       resolve: payload => {
         return payload;

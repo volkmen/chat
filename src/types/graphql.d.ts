@@ -75,7 +75,7 @@ export type MutationDeleteMessageArgs = {
 
 
 export type MutationReadMessageArgs = {
-  msgId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
 };
 
 
@@ -144,15 +144,10 @@ export type QueryGetMessagesArgs = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  MessageIsRead: Scalars['ID']['output'];
+  MessageIsRead: Message;
   MessageReceived: Message;
   OnChatAdded: Scalars['ID']['output'];
   OnTyping?: Maybe<Scalars['Boolean']['output']>;
-};
-
-
-export type SubscriptionMessageIsReadArgs = {
-  id: Scalars['ID']['input'];
 };
 
 

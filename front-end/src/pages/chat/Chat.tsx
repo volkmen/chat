@@ -50,7 +50,7 @@ const Chat = () => {
     if (data && !isFirstLoaded) {
       messagesEndRef.current?.scrollIntoView();
       setIsFirstLoad(true);
-    } else if (!pageIsVeryBottom && lastMessageIsMine) {
+    } else if (lastMessageIsMine || pageIsVeryBottom) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [data, lastMessageIsMine, isFirstLoaded]);
@@ -71,7 +71,7 @@ const Chat = () => {
             messages?.map(msg => (
               <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
             ))}
-          <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '1px' }} />
+          <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '10px' }} />
         </div>
       )}
       <div

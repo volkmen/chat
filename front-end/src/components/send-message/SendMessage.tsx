@@ -6,11 +6,10 @@ import { SEND_MESSAGE } from 'api/messages';
 
 interface SendMessageProps {
   chatId: number;
-  onSendMessage?: () => void;
   className?: string;
 }
 
-const SendMessage: React.FC<SendMessageProps> = ({ chatId, onSendMessage }) => {
+const SendMessage: React.FC<SendMessageProps> = ({ chatId }) => {
   const [value, setValue] = React.useState('');
   const [submitMessage] = useMutation<number, { chatId: number; content: string }>(SEND_MESSAGE);
   const ref = React.useRef<HTMLTextAreaElement | null>(null);
@@ -23,7 +22,6 @@ const SendMessage: React.FC<SendMessageProps> = ({ chatId, onSendMessage }) => {
         content: value
       }
     }).then(() => {
-      onSendMessage?.();
       setValue('');
       ref.current?.focus();
     });

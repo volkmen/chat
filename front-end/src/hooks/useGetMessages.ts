@@ -1,10 +1,6 @@
 import { useQuery, useSubscription } from '@apollo/client';
-import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
+import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_MESSAGE_IS_READ, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
 import { ChatMessagesResponse, SubscriptionMessageReceive } from 'types/chats';
-
-enum ChatEvents {
-  MESSAGE_WAS_ADDED = 'MESSAGE_WAS_ADDED'
-}
 
 export default function useGetMessages({ chatId }: { chatId: number }) {
   const {
@@ -14,6 +10,30 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
   } = useQuery<ChatMessagesResponse>(GET_MESSAGES, {
     variables: {
       chatId
+    }
+  });
+
+  useSubscription(SUBSCRIBE_MESSAGE_IS_READ, {
+    onData: ({ data, client }) => {
+      console.log('!!!!!!!!!!!!!!!!!!!', data);
+      if (dataMessages) {
+        client.cache.modify({
+          fields: {
+            GetMessages(existingMessages = [], { readField }) {
+              return existingMessages.map((message: any) => {
+                if (readField('id', message) === data.data.MessageIsRead.id) {
+                  return client.cache.writeFragment({
+                    data: data.data.MessageIsRead,
+                    fragment: MESSAGE_FRAGMENT
+                  });
+                }
+
+                return message;
+              });
+            }
+          }
+        });
+      }
     }
   });
 

@@ -16,7 +16,7 @@ type Query {
   ResendVerificationToken: ID!
   GetChats: [Chat!]!
   GetChat(id: ID!): Chat
-  GetMessage(messageId: ID!): Message
+  GetMessage(chatId: ID!, messageId: ID!): Message
   GetMessages(chatId: ID!): [Message!]!
   DoTyping(chatId: ID!, isTyping: Boolean!): MessageIsTyping
   GetMe: User!
@@ -66,7 +66,7 @@ type Subscription {
   OnChatAdded: ID!
   OnTyping(chatId: ID!): Boolean
   MessageReceived(chatId: ID!): Message!
-  MessageIsRead(id: ID!): ID!
+  MessageIsRead: Message!
 }
 
 schema {
