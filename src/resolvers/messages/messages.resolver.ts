@@ -49,7 +49,6 @@ const resolver = {
     MessageIsRead: {
       subscribe: (_, __, context) => {
         const { userId } = getDataSourceAndUserId(context, 'messages');
-        console.log('sapoksapokpo');
         return context.pubsub.subscribe(`${userId}_${MessageEvents.MESSAGE_IS_READ}`);
       },
       resolve: payload => {

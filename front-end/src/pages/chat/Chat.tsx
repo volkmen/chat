@@ -53,7 +53,7 @@ const Chat = () => {
     } else if (lastMessageIsMine || pageIsVeryBottom) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [data, lastMessageIsMine, isFirstLoaded]);
+  }, [messages?.length, lastMessageIsMine, chatId]);
 
   return (
     <PageLayout loading={false} mainClassName='flex flex-col justify-between border-r  border-r-gray-200'>
@@ -71,7 +71,7 @@ const Chat = () => {
             messages?.map(msg => (
               <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
             ))}
-          <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '10px' }} />
+          <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '1px' }} className='mb-6' />
         </div>
       )}
       <div

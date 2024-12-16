@@ -10,12 +10,12 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
   } = useQuery<ChatMessagesResponse>(GET_MESSAGES, {
     variables: {
       chatId
-    }
+    },
+    fetchPolicy: 'cache-and-network'
   });
 
   useSubscription(SUBSCRIBE_MESSAGE_IS_READ, {
     onData: ({ data, client }) => {
-      console.log('!!!!!!!!!!!!!!!!!!!', data);
       if (dataMessages) {
         client.cache.modify({
           fields: {
