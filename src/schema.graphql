@@ -16,9 +16,9 @@ type Query {
   ResendVerificationToken: ID!
   GetChats: [Chat!]!
   GetChat(id: ID!): Chat
-  GetMessage(chatId: ID!, messageId: ID!): Message
-  GetMessages(chatId: ID!): [Message!]!
   DoTyping(chatId: ID!, isTyping: Boolean!): MessageIsTyping
+  GetMessage(messageId: ID!): Message
+  GetMessages(chatId: ID!): [Message!]!
   GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
