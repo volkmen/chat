@@ -1,8 +1,8 @@
 import React, { FormEventHandler } from 'react';
 import { Button, Textarea } from 'flowbite-react';
 import { preventDefault } from 'utils/events';
-import { useMutation } from '@apollo/client';
-import { SEND_MESSAGE } from 'api/messages';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { DO_TYPING, SEND_MESSAGE } from 'api/messages';
 
 interface SendMessageProps {
   chatId: number;
@@ -12,8 +12,12 @@ interface SendMessageProps {
 const SendMessage: React.FC<SendMessageProps> = ({ chatId }) => {
   const [value, setValue] = React.useState('');
   const [submitMessage] = useMutation<number, { chatId: number; content: string }>(SEND_MESSAGE);
+  const [doTyping, { data }] = useLazyQuery<{ DoTyping: boolean }>(DO_TYPING, {
+    fetchPolicy: 'network-only'
+  });
   const ref = React.useRef<HTMLTextAreaElement | null>(null);
 
+  // console.log(data);
   const onSubmit: FormEventHandler = e => {
     preventDefault(e);
     submitMessage({
@@ -27,6 +31,18 @@ const SendMessage: React.FC<SendMessageProps> = ({ chatId }) => {
     });
   };
 
+  const onFocus = () => {
+    doTyping({ variables: { chatId, isTyping: true } });
+  };
+
+  const onBlur = () => {
+    if (data?.DoTyping) {
+      doTyping({ variables: { chatId, isTyping: false } });
+    }
+  };
+
+  React.useEffect(() => onBlur, []);
+
   return (
     <form onSubmit={onSubmit} className='flex gap-2 align-bottom'>
       <Textarea
@@ -36,6 +52,8 @@ const SendMessage: React.FC<SendMessageProps> = ({ chatId }) => {
         rows={3}
         onChange={e => setValue(e.target.value)}
         ref={ref}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
       <Button size='xs' type='submit' className='self-end px-2'>
         Send

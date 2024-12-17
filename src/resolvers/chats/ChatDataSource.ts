@@ -40,7 +40,7 @@ export default class ChatDataSource {
       .addSelect('U.username', 'username')
       .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
       .innerJoin('Users', 'U', 'U.id = UC.usersId')
-      .where('U.id != :id and C.id = :chatId', { id: userId, chatId })
+      .where('U.id = :id and C.id = :chatId', { id: userId, chatId })
       .execute();
 
     return chats[0];

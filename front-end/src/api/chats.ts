@@ -29,3 +29,13 @@ export const ADD_CHAT = gql`
     AddChat(receiverId: $receiverId)
   }
 `;
+
+export const ON_TYPING = gql`
+  subscription OnTyping($chatId: ID!) {
+    OnTyping(chatId: $chatId) {
+      isTyping
+      username
+      userId
+    }
+  }
+`;

@@ -22,12 +22,13 @@ type Chat {
 type MessageIsTyping {
     isTyping: Boolean!
     username: String!
+    userId: ID!
 }
 
 type Query {
     GetChats: [Chat!]!
     GetChat(id: ID!): Chat
-    DoTyping(chatId: ID!, isTyping: Boolean!): MessageIsTyping
+    DoTyping(chatId: ID!, isTyping: Boolean!): Boolean
 }
 
 type Mutation {
@@ -36,5 +37,5 @@ type Mutation {
 
 type Subscription {
     OnChatAdded: ID!
-    OnTyping(chatId: ID!): Boolean
+    OnTyping(chatId: ID!): MessageIsTyping
 }

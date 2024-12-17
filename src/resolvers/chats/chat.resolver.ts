@@ -21,8 +21,12 @@ const resolver = {
         const chat = await dataSource.selectChatIdWithUsername(userId, { chatId: chatId });
 
         if (chat) {
-          context.pubsub.publish(`${CHAT_IS_TYPING}_${chatId}`, { isTyping, username: chat.username });
-          return { isTyping, username: chat.username };
+          context.pubsub.publish(`${CHAT_IS_TYPING}_${chatId}`, {
+            username: chat.username,
+            userId,
+            isTyping
+          });
+          return isTyping;
         }
         throw new ForbiddenError('Not allowed');
       }
@@ -50,6 +54,8 @@ const resolver = {
       subscribe: createAuthResolver<{ chatId: number }>(async (_, args, context: Context) => {
         const { userId, dataSource } = getDataSourceAndUserId(context, 'chats');
         const chat = await dataSource.selectChatIdWithUsername(userId, { chatId: args.chatId });
+
+        console.log('ON_TYPING');
         if (chat) {
           return context.pubsub.subscribe(`${CHAT_IS_TYPING}_${args.chatId}`);
         }

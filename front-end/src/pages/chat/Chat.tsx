@@ -1,15 +1,15 @@
 import React from 'react';
 import PageLayout from 'components/PageLayout';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
-import { GET_CHAT } from 'api/chats';
+import { useQuery, useSubscription } from '@apollo/client';
+import { GET_CHAT, ON_TYPING } from 'api/chats';
 import SendMessage from 'components/send-message/SendMessage';
 import { isNumber } from 'lodash';
 import { PageRoutes } from 'consts/routes';
 import Message from './Message';
 import { ME_QUERY } from 'api/account';
 import { useCheckChatsPage, useIsVisible, useGetMessages } from 'hooks';
-
+import useGetTypingUsername from 'hooks/useGetTypingUsername';
 import './Chat.scss';
 
 const Chat = () => {
@@ -22,7 +22,11 @@ const Chat = () => {
 
   useCheckChatsPage();
 
-  const chatId = params.chatId && +params.chatId;
+  const chatId = params.chatId && (+params.chatId as number);
+
+  const username = useGetTypingUsername(chatId as number);
+
+  // console.log(username);
 
   React.useEffect(() => {
     setIsFirstLoad(false);
@@ -66,19 +70,23 @@ const Chat = () => {
           </div>
         </>
       ) : (
-        <div className='overflow-auto bg-blend-screen'>
+        <div className='overflow-auto bg-blend-screen' style={{ height: 'inherit' }}>
           {chat &&
             messages?.map(msg => (
               <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
             ))}
           <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '1px' }} className='mb-6' />
+          {/*{true && <div className='sticky bottom-0 w-full '>{'username'}</div>}*/}
         </div>
       )}
-      <div
-        className='sticky bottom-0 w-full p-3 border-t border-t-gray-200 bg-gray-50'
-        style={{ boxShadow: ' 0px -6px 12px -12px rgba(0, 0, 0, 0.45)' }}
-      >
-        <SendMessage chatId={chatId} />
+      <div>
+        {username && <div className='sticky bottom-0 w-full text-xs italic'>{username}'s typing...</div>}
+        <div
+          className='sticky bottom-0 w-full p-3 border-t border-t-gray-200 bg-gray-50'
+          style={{ boxShadow: ' 0px -6px 12px -12px rgba(0, 0, 0, 0.45)' }}
+        >
+          <SendMessage chatId={chatId} />
+        </div>
       </div>
     </PageLayout>
   );

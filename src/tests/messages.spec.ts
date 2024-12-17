@@ -66,7 +66,7 @@ describe('chat', () => {
   });
 
   it('should update isRead message', async () => {
-    const { chatId, receiverId, jwtToken } = await signUpAddChat();
+    const { chatId, jwtToken } = await signUpAddChat();
     const result = await addMessageExecution({ chatId, content: 'new message' });
 
     expect(result.data.AddMessage).toBeTruthy();

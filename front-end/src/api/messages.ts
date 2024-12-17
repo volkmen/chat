@@ -20,6 +20,12 @@ export const SEND_MESSAGE = gql`
   }
 `;
 
+export const DO_TYPING = gql`
+  query DoTyping($chatId: ID!, $isTyping: Boolean!) {
+    DoTyping(chatId: $chatId, isTyping: $isTyping)
+  }
+`;
+
 export const SUBSCRIBE_TO_RECEIVE_MESSAGE = gql`
   ${MESSAGE_FRAGMENT}
   subscription MessageReceived($chatId: ID!) {
