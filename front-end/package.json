@@ -51,7 +51,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start:css": "tailwindcss -i src/css/tailwind.scss -o ./src/css/tailwind-generated.css --watch"
+    "start:css": "tailwindcss -i src/css/tailwind.scss -o ./src/css/tailwind-generated.css --watch",
+    "start:css:minify": "tailwindcss -i src/css/tailwind.scss -o ./src/css/tailwind-generated.css --watch --minify"
   },
   "eslintConfig": {
     "extends": [

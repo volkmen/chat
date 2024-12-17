@@ -8,6 +8,7 @@ postgres-db
 front-end/coverage
 front-end/build
 front-end/node_modules
+front-end/src/css/tailwind-generated.css
 
 redis-data
 build
