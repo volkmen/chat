@@ -1,5 +1,5 @@
 
-# Explore and practice  next techologies
+# Explore and practice  next techologies on my own
 
 1. FE - React, AppoloClient
 2. BE - Node, Yoga Graphql server
