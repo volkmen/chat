@@ -18,7 +18,7 @@ type Query {
   GetChat(id: ID!): Chat
   DoTyping(chatId: ID!, isTyping: Boolean!): Boolean
   GetMessage(messageId: ID!): Message
-  GetMessages(chatId: ID!): [Message!]!
+  GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessaged!
   GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
@@ -68,6 +68,13 @@ type Subscription {
   OnTyping(chatId: ID!): MessageIsTyping
   MessageReceived(chatId: ID!): Message!
   MessageIsRead: Message!
+}
+
+type PaginatedMessaged {
+  page: Int!
+  size: Int!
+  total: Int!
+  data: [Message!]!
 }
 
 schema {

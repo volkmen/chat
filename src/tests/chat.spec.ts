@@ -135,17 +135,12 @@ describe('chats', () => {
     const doTypingResult = await executor({
       document: parse(/* GraphQL */ `
         query DoTyping {
-          DoTyping(chatId: ${chatId}, isTyping: true) {
-            ... on MessageIsTyping {
-              username,
-              isTyping
-            }
-          }
+          DoTyping(chatId: ${chatId}, isTyping: true)
         }
       `)
     });
 
-    expect(doTypingResult.data.DoTyping.isTyping).toBe(true);
+    expect(doTypingResult.data.DoTyping).toBe(true);
     expect(pubsub.publish).toHaveBeenCalledWith(
       `${CHAT_IS_TYPING}_${chatId}`,
       expect.objectContaining({ isTyping: true })

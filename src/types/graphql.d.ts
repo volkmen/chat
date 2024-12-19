@@ -107,6 +107,14 @@ export type MutationVerifyEmailArgs = {
   token: Scalars['Int']['input'];
 };
 
+export type PaginatedMessaged = {
+  __typename?: 'PaginatedMessaged';
+  data: Array<Message>;
+  page: Scalars['Int']['output'];
+  size: Scalars['Int']['output'];
+  total: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   DeleteMe: Scalars['ID']['output'];
@@ -115,7 +123,7 @@ export type Query = {
   GetChats: Array<Chat>;
   GetMe: User;
   GetMessage?: Maybe<Message>;
-  GetMessages: Array<Message>;
+  GetMessages: PaginatedMessaged;
   GetUsers: Array<User>;
   ResendVerificationToken: Scalars['ID']['output'];
   ResetPassword: Scalars['ID']['output'];
@@ -140,6 +148,8 @@ export type QueryGetMessageArgs = {
 
 export type QueryGetMessagesArgs = {
   chatId: Scalars['ID']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Subscription = {

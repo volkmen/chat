@@ -3,6 +3,7 @@ import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
 import { BadRequestError, ForbiddenError } from 'utils/errors';
 import { MessageEntity } from 'entities/Message.entity';
+import { Paginated } from 'types/pagination';
 
 export default class MessagesDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -26,7 +27,10 @@ export default class MessagesDataSource {
     return messages[0];
   }
 
-  async getMessages(userId: number, chatId: number) {
+  async getMessages(
+    userId: number,
+    { chatId, page = 1, size = 30 }: { chatId: number; page?: number; size?: number }
+  ): Promise<Paginated<MessageEntity>> {
     const chatIsAccessibleForThisUser = await this.repository
       .createQueryBuilder('C')
       .select('C.id')
@@ -36,7 +40,14 @@ export default class MessagesDataSource {
       .execute();
 
     if (chatIsAccessibleForThisUser) {
-      return this.dbConnection
+      const totalItems = await this.repository
+        .createQueryBuilder('M')
+        .select('count(M.id)', 'total')
+        .where('M.chatId = :chatId', { chatId })
+        .execute();
+      const total = totalItems[0].total;
+
+      const result = await this.dbConnection
         .createQueryBuilder('Messages', 'M')
         .select('M.id', 'id')
         .addSelect('M.content', 'content')
@@ -45,7 +56,16 @@ export default class MessagesDataSource {
         .addSelect('U.id', 'senderId')
         .innerJoin('Users', 'U', 'U.id = M.ownerId')
         .where('M.chatId = :chatId', { chatId })
+        .limit(size)
+        .offset(size * (page - 1))
         .execute();
+
+      return {
+        total,
+        page,
+        size,
+        data: result
+      };
     }
 
     throw new BadRequestError('Forbidden');

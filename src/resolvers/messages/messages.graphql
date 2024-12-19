@@ -7,9 +7,16 @@ type Message {
     senderId: ID!
 }
 
+type PaginatedMessaged {
+    page: Int!
+    size: Int!
+    total: Int!
+    data: [Message!]!
+}
+
 type Query {
     GetMessage(messageId: ID!): Message
-    GetMessages(chatId: ID!): [Message!]!
+    GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessaged!
 }
 
 type Mutation {

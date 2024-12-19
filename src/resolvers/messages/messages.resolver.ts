@@ -9,9 +9,9 @@ const resolver = {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
       return dataSource.getMessageById(userId, args.messageId);
     }),
-    GetMessages: createAuthResolver<{ chatId: number }>((_, args, context: Context) => {
+    GetMessages: createAuthResolver<{ chatId: number; page: number; size: number }>((_, args, context: Context) => {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
-      return dataSource.getMessages(userId, args.chatId);
+      return dataSource.getMessages(userId, { chatId: args.chatId, page: args.page, size: args.size });
     })
   },
   Mutation: {

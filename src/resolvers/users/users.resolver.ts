@@ -1,7 +1,7 @@
 import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
 import type { Context } from 'types/server';
 import { UserEntity } from 'entities/User.entity';
-import { getDataSourceAndUserId, getUserIdFromContext } from 'utils/context';
+import { getDataSourceAndUserId } from 'utils/context';
 
 const resolver = {
   Query: {

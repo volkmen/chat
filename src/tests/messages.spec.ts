@@ -3,6 +3,7 @@ import {
   addMessageExecution,
   getExecutor,
   getMessageExecution,
+  getMessagesExecution,
   makeSignUpExecution,
   signUpAddChat
 } from './queryExecutions';
@@ -84,5 +85,28 @@ describe('chat', () => {
     });
 
     expect(doTypingResult.data.ReadMessage).toBe(msgId);
+  });
+
+  it('pagination for messages. Should return messages paginated', async () => {
+    const { chatId } = await signUpAddChat();
+    const pageSize = 3;
+    const totalMesgs = 5;
+    const { data, total, page, size } = await getMessagesExecution({ chatId, page: 1, size: pageSize });
+    expect(data).toBeTruthy();
+    expect(total).toBe(0);
+    expect(page).toBe(1);
+    expect(size).toBe(pageSize);
+
+    await Promise.all(
+      Array.from(new Array(totalMesgs)).map((_, i) => {
+        return addMessageExecution({ chatId, content: `I am message number - ${i}` });
+      })
+    );
+
+    const resultPage1 = await getMessagesExecution({ chatId, page: 1, size: pageSize });
+    expect(resultPage1.data.length).toBe(pageSize);
+
+    const resultPage2 = await getMessagesExecution({ chatId, page: 2, size: pageSize });
+    expect(resultPage2.data.length).toBe(totalMesgs - pageSize);
   });
 });
