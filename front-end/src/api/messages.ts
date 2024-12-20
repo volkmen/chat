@@ -37,9 +37,14 @@ export const SUBSCRIBE_TO_RECEIVE_MESSAGE = gql`
 
 export const GET_MESSAGES = gql`
   ${MESSAGE_FRAGMENT}
-  query GetMessages($chatId: ID!) {
-    GetMessages(chatId: $chatId) {
-      ...Message
+  query GetMessages($chatId: ID!, $page: Int, $size: Int) {
+    GetMessages(chatId: $chatId, page: $page, size: $size) {
+      page
+      size
+      total
+      data {
+        ...Message
+      }
     }
   }
 `;

@@ -1,18 +1,38 @@
-import { useQuery, useSubscription } from '@apollo/client';
+import React, { useCallback } from 'react';
+import { useLazyQuery, useSubscription } from '@apollo/client';
 import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_MESSAGE_IS_READ, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
 import { ChatMessagesResponse, SubscriptionMessageReceive } from 'types/chats';
 
 export default function useGetMessages({ chatId }: { chatId: number }) {
-  const {
-    data: dataMessages,
-    loading,
-    error
-  } = useQuery<ChatMessagesResponse>(GET_MESSAGES, {
-    variables: {
-      chatId
-    },
-    fetchPolicy: 'cache-and-network'
+  const [currentPage, setCurrentPage] = React.useState(0);
+
+  const [fetchMessages, { data: dataMessages, loading, error }] = useLazyQuery<ChatMessagesResponse>(GET_MESSAGES, {
+    fetchPolicy: 'cache-and-network',
+    onData: () => {}
   });
+
+  console.log(dataMessages, error);
+
+  const fetchNextPage = useCallback(() => {
+    console.log('fetch');
+
+    const responseData = dataMessages?.GetMessages;
+    const totalPages = responseData ? Math.ceil(responseData.total / responseData.size) : 0;
+
+    if (!responseData || currentPage < totalPages) {
+      fetchMessages({
+        variables: {
+          chatId,
+          page: currentPage + 1,
+          size: 30
+        }
+      });
+    }
+  }, [currentPage]);
+
+  React.useEffect(() => {
+    setCurrentPage(dataMessages?.GetMessages.page || 0);
+  }, [dataMessages?.GetMessages.page]);
 
   useSubscription(SUBSCRIBE_MESSAGE_IS_READ, {
     onData: ({ data, client }) => {
@@ -69,5 +89,5 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     }
   });
 
-  return { data: dataMessages?.GetMessages, loading, error };
+  return { data: dataMessages?.GetMessages.data, loading, error, fetchMessages: fetchNextPage };
 }

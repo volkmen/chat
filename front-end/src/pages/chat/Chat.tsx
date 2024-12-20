@@ -1,10 +1,11 @@
 import React from 'react';
-import PageLayout from 'components/PageLayout';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery, useSubscription } from '@apollo/client';
-import { GET_CHAT, ON_TYPING } from 'api/chats';
-import SendMessage from 'components/send-message/SendMessage';
 import { isNumber } from 'lodash';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
+import PageLayout from 'components/PageLayout';
+import SendMessage from 'components/send-message/SendMessage';
+import Pagination from 'components/Pagination';
+import { GET_CHAT } from 'api/chats';
 import { PageRoutes } from 'consts/routes';
 import Message from './Message';
 import { ME_QUERY } from 'api/account';
@@ -39,7 +40,7 @@ const Chat = () => {
     return null;
   }
 
-  const { data } = useGetMessages({ chatId });
+  const { data, fetchMessages, loading } = useGetMessages({ chatId });
 
   const messages = data || [];
   const { data: chatData } = useQuery(GET_CHAT, { variables: { chatId } });
@@ -60,25 +61,28 @@ const Chat = () => {
   }, [messages?.length, lastMessageIsMine, chatId]);
 
   return (
-    <PageLayout loading={false} mainClassName='flex flex-col justify-between border-r  border-r-gray-200'>
-      {isEmpty ? (
-        <>
-          <div />
-          <div className='absolute-centered text-centered'>
-            <p className='text-center'>Kick off this chat :)</p>
-            <p> Start typing and send a message</p>
+    <PageLayout loading={false} mainClassName='flex flex-col justify-between border-r border-r-gray-200'>
+      <Pagination callback={fetchMessages} className='bg-blend-screen' loading={loading}>
+        {isEmpty ? (
+          <>
+            <div />
+            <div className='absolute-centered text-centered'>
+              <p className='text-center'>Kick off this chat :)</p>
+              <p> Start typing and send a message</p>
+            </div>
+          </>
+        ) : (
+          <div style={{ height: 'inherit' }}>
+            {chat &&
+              messages?.map(msg => (
+                <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
+              ))}
+            <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '1px' }} className='mb-6' />
+            {/*{true && <div className='sticky bottom-0 w-full '>{'username'}</div>}*/}
           </div>
-        </>
-      ) : (
-        <div className='overflow-auto bg-blend-screen' style={{ height: 'inherit' }}>
-          {chat &&
-            messages?.map(msg => (
-              <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
-            ))}
-          <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '1px' }} className='mb-6' />
-          {/*{true && <div className='sticky bottom-0 w-full '>{'username'}</div>}*/}
-        </div>
-      )}
+        )}
+      </Pagination>
+
       <div>
         {username && <div className='sticky bottom-0 w-full text-xs italic'>{username}'s typing...</div>}
         <div
