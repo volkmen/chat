@@ -12,3 +12,6 @@ front-end/src/css/tailwind-generated.css
 
 redis-data
 build
+
+
+yarn-error.log
