@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.11.8",
+    "@faker-js/faker": "^9.3.0",
     "@headlessui/react": "^2.1.9",
     "@heroicons/react": "^2.1.5",
     "@types/lodash": "^4.17.10",
