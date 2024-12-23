@@ -9,7 +9,7 @@ import { GET_CHAT } from 'api/chats';
 import { PageRoutes } from 'consts/routes';
 import Message from './Message';
 import { ME_QUERY } from 'api/account';
-import { useCheckChatsPage, useIsVisible, useGetMessages } from 'hooks';
+import { useCheckChatsPage, useGetMessages } from 'hooks';
 import useGetTypingUsername from 'hooks/useGetTypingUsername';
 import './Chat.scss';
 

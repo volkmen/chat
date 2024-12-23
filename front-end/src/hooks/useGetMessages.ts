@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
 import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_MESSAGE_IS_READ, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
 import { ChatMessagesResponse, SubscriptionMessageReceive } from 'types/chats';
@@ -19,11 +19,11 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     }
   });
 
-  const ref = useRef<any>(null);
+  const ref = React.useRef<any>(null);
 
   ref.current = dataMessages;
 
-  const fetchNextPage = useCallback(() => {
+  const fetchNextPage = React.useCallback(() => {
     const responseData = ref.current?.GetMessages;
 
     if (responseData && responseData.page * responseData.size < responseData.total) {
