@@ -19,18 +19,15 @@ const Chat = () => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const [isFirstLoaded, setIsFirstLoad] = React.useState(false);
 
-  const pageIsVeryBottom = useIsVisible(messagesEndRef);
-
   useCheckChatsPage();
 
   const chatId = params.chatId && (+params.chatId as number);
 
   const username = useGetTypingUsername(chatId as number);
 
-  // console.log(username);
-
   React.useEffect(() => {
     setIsFirstLoad(false);
+    setLastElem(null);
   }, [chatId]);
 
   if (!isNumber(chatId)) {
@@ -49,20 +46,58 @@ const Chat = () => {
 
   const chat = chatData?.GetChat;
   const me = meData?.GetMe;
-  const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].senderId === me.id;
+
+  const [lastElem, setLastElem] = React.useState<HTMLDivElement | null>(null);
+
+  const onFetchMsg = React.useCallback(() => {
+    verifyLastElem();
+    fetchMessages();
+  }, [fetchMessages]);
 
   React.useEffect(() => {
-    if (data && !isFirstLoaded) {
-      messagesEndRef.current?.scrollIntoView();
+    if (!isFirstLoaded && data) {
       setIsFirstLoad(true);
-    } else if (lastMessageIsMine || pageIsVeryBottom) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } else if (data && lastElem) {
+      lastElem.scrollIntoView();
+    } else if (messagesEndRef.current) {
+      const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].senderId === me.id;
+
+      if (lastMessageIsMine) {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        const { top } = messagesEndRef.current?.getBoundingClientRect();
+
+        if (top < window.innerHeight - 26) {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
     }
-  }, [messages?.length, lastMessageIsMine, chatId]);
+  }, [data?.length, isFirstLoaded]);
+
+  const verifyLastElem = React.useCallback(() => {
+    const container = containerRef.current;
+
+    const el: any = Array.from(container?.childNodes || []).find((node: any) => {
+      const { bottom, top } = node.getBoundingClientRect();
+
+      return bottom < window.innerHeight && top < window.innerHeight;
+    });
+
+    if (el) {
+      setLastElem(el);
+    }
+  }, []);
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const onSendMessage = React.useCallback(() => {
+    setLastElem(null);
+  }, []);
 
   return (
     <PageLayout loading={false} mainClassName='flex flex-col justify-between border-r border-r-gray-200'>
-      <Pagination callback={fetchMessages} className='bg-blend-screen' loading={loading}>
+      <Pagination callback={onFetchMsg} className='bg-blend-screen overflow-auto' loading={loading} isReversed>
         {isEmpty ? (
           <>
             <div />
@@ -72,7 +107,7 @@ const Chat = () => {
             </div>
           </>
         ) : (
-          <div style={{ height: 'inherit' }}>
+          <div style={{ height: 'inherit' }} ref={containerRef} className='overflow-auto'>
             {chat &&
               messages?.map(msg => (
                 <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
@@ -89,7 +124,7 @@ const Chat = () => {
           className='sticky bottom-0 w-full p-3 border-t border-t-gray-200 bg-gray-50'
           style={{ boxShadow: ' 0px -6px 12px -12px rgba(0, 0, 0, 0.45)' }}
         >
-          <SendMessage chatId={chatId} />
+          <SendMessage chatId={chatId} onSendMessage={onSendMessage} />
         </div>
       </div>
     </PageLayout>

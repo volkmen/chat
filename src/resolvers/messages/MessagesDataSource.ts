@@ -58,13 +58,14 @@ export default class MessagesDataSource {
         .where('M.chatId = :chatId', { chatId })
         .limit(size)
         .offset(size * (page - 1))
+        .orderBy('M.created_at', 'DESC')
         .execute();
 
       return {
         total,
         page,
         size,
-        data: result
+        data: result.reverse()
       };
     }
 

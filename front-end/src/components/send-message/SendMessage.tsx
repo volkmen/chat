@@ -7,9 +7,10 @@ import { DO_TYPING, SEND_MESSAGE } from 'api/messages';
 interface SendMessageProps {
   chatId: number;
   className?: string;
+  onSendMessage?: () => void;
 }
 
-const SendMessage: React.FC<SendMessageProps> = ({ chatId }) => {
+const SendMessage: React.FC<SendMessageProps> = ({ chatId, onSendMessage }) => {
   const [value, setValue] = React.useState('');
   const [submitMessage] = useMutation<number, { chatId: number; content: string }>(SEND_MESSAGE);
   const [doTyping, { data }] = useLazyQuery<{ DoTyping: boolean }>(DO_TYPING, {
@@ -20,6 +21,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ chatId }) => {
   // console.log(data);
   const onSubmit: FormEventHandler = e => {
     preventDefault(e);
+    onSendMessage?.();
     submitMessage({
       variables: {
         chatId,

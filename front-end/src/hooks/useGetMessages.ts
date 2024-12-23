@@ -1,38 +1,57 @@
-import React, { useCallback } from 'react';
-import { useLazyQuery, useSubscription } from '@apollo/client';
+import React, { useCallback, useRef } from 'react';
+import { useQuery, useSubscription } from '@apollo/client';
 import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_MESSAGE_IS_READ, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
 import { ChatMessagesResponse, SubscriptionMessageReceive } from 'types/chats';
+import { uniqBy } from 'lodash';
 
 export default function useGetMessages({ chatId }: { chatId: number }) {
-  const [currentPage, setCurrentPage] = React.useState(0);
-
-  const [fetchMessages, { data: dataMessages, loading, error }] = useLazyQuery<ChatMessagesResponse>(GET_MESSAGES, {
+  const {
+    data: dataMessages,
+    loading,
+    error,
+    fetchMore
+  } = useQuery<ChatMessagesResponse>(GET_MESSAGES, {
     fetchPolicy: 'cache-and-network',
-    onData: () => {}
+    variables: {
+      chatId,
+      page: 1,
+      size: 30
+    }
   });
 
-  console.log(dataMessages, error);
+  const ref = useRef<any>(null);
+
+  ref.current = dataMessages;
 
   const fetchNextPage = useCallback(() => {
-    console.log('fetch');
+    const responseData = ref.current?.GetMessages;
 
-    const responseData = dataMessages?.GetMessages;
-    const totalPages = responseData ? Math.ceil(responseData.total / responseData.size) : 0;
-
-    if (!responseData || currentPage < totalPages) {
-      fetchMessages({
+    if (responseData && responseData.page * responseData.size < responseData.total) {
+      fetchMore({
         variables: {
           chatId,
-          page: currentPage + 1,
+          page: responseData.page + 1,
           size: 30
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return previousResult;
+
+          const prevMessages = previousResult.GetMessages.data;
+          const newMessages = fetchMoreResult.GetMessages.data;
+
+          return {
+            ...previousResult,
+            GetMessages: {
+              ...fetchMoreResult.GetMessages,
+              data: uniqBy([...newMessages, ...prevMessages], 'id')
+            }
+          };
         }
+      }).then(result => {
+        console.log(result.data.GetMessages);
       });
     }
-  }, [currentPage]);
-
-  React.useEffect(() => {
-    setCurrentPage(dataMessages?.GetMessages.page || 0);
-  }, [dataMessages?.GetMessages.page]);
+  }, [chatId]);
 
   useSubscription(SUBSCRIBE_MESSAGE_IS_READ, {
     onData: ({ data, client }) => {
@@ -40,7 +59,7 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
         client.cache.modify({
           fields: {
             GetMessages(existingMessages = [], { readField }) {
-              return existingMessages.map((message: any) => {
+              return existingMessages.data.map((message: any) => {
                 if (readField('id', message) === data.data.MessageIsRead.id) {
                   return client.cache.writeFragment({
                     data: data.data.MessageIsRead,
@@ -65,7 +84,8 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
           GetMessages(existingMessages = [], { readField }) {
             const newMessageData = newMessage.data?.['MessageReceived'];
 
-            const isMessageExists = existingMessages.some(
+            console.log('existingMessages', existingMessages);
+            const isMessageExists = existingMessages.data.some(
               (messageRef: { __ref: string }) => readField('id', messageRef) === newMessageData?.id
             );
 
@@ -79,7 +99,10 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
                 fragment: MESSAGE_FRAGMENT
               });
 
-              return [...existingMessages, newMessageRef];
+              return {
+                ...existingMessages,
+                data: [...existingMessages.data, newMessageRef]
+              };
             }
 
             return existingMessages;

@@ -9,14 +9,21 @@ interface PaginationProps {
   isHorizontal?: boolean;
   loading?: boolean;
   className?: string;
+  isReversed?: boolean;
+  onScroll?: () => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({ children, callback, isHorizontal, loading, className }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  children,
+  callback,
+  isHorizontal,
+  loading,
+  className,
+  isReversed
+}) => {
   const observerRef = React.useRef<IntersectionObserver | null>(null);
   const refCb = React.useRef<(() => void) | null>(null);
   const ref = React.useRef<HTMLDivElement>(null);
-
-  console.log(refCb);
 
   React.useEffect(() => {
     refCb.current = throttle(callback, 100);
@@ -40,10 +47,17 @@ const Pagination: React.FC<PaginationProps> = ({ children, callback, isHorizonta
 
   return (
     <div className={classNames(isHorizontal ? 'flex overflow-x-auto w-full pagination' : 'flex-column', className)}>
+      {isReversed && (
+        <div ref={ref} className='invisible'>
+          a
+        </div>
+      )}
       {children}
-      <div ref={ref} className='invisible'>
-        a
-      </div>
+      {!isReversed && (
+        <div ref={ref} className='invisible'>
+          a
+        </div>
+      )}
       {loading && <Spinner />}
     </div>
   );
