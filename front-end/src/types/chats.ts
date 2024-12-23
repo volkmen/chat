@@ -1,4 +1,5 @@
 import { ApolloSuccessDataResponse } from './api';
+import { Paginated } from './pagination';
 
 export interface MessageType {
   content: string;
@@ -17,7 +18,7 @@ export interface Chat {
   };
 }
 
-export type ChatMessagesResponse = ApolloSuccessDataResponse<'GetMessages', MessageType[]>;
+export type ChatMessagesResponse = ApolloSuccessDataResponse<'GetMessages', Paginated<MessageType>>;
 export type SubscriptionMessageReceive = { MessageReceived: MessageType };
 
 export type GetChatsResponse = ApolloSuccessDataResponse<'GetChats', Chat[]>;
