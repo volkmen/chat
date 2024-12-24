@@ -18,7 +18,7 @@ export type Chat = {
   __typename?: 'Chat';
   correspondent?: Maybe<Correspondent>;
   id: Scalars['ID']['output'];
-  is_group: Scalars['Boolean']['output'];
+  isGroup: Scalars['Boolean']['output'];
   messages: Array<Message>;
 };
 
@@ -34,7 +34,7 @@ export type Message = {
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isRead: Scalars['Boolean']['output'];
-  senderId: Scalars['ID']['output'];
+  owner: User;
   updatedAt: Scalars['String']['output'];
 };
 

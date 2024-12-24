@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, ManyToMany, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToMany, Column, CreateDateColumn, OneToMany, JoinTable } from 'typeorm';
 import { IsDate } from 'class-validator';
-import { Expose } from 'class-transformer';
 import { MessageEntity } from './Message.entity';
 import { UserEntity } from './User.entity';
 
@@ -9,22 +8,23 @@ export class ChatEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'boolean', default: false })
-  is_group: boolean;
+  @Column({ type: 'boolean', default: false, name: 'is_group' })
+  isGroup: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   @IsDate()
-  @Expose({ name: 'createdAt' })
-  created_at: Date;
+  createdAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'updated_at' })
   @IsDate()
-  @Expose({ name: 'updatedAt' })
-  updated_at: Date;
+  updatedAt: Date;
 
   @OneToMany(() => MessageEntity, message => message.chat, { onDelete: 'CASCADE' })
   messages: MessageEntity[];
 
   @ManyToMany(() => UserEntity)
+  @JoinTable({
+    name: 'UsersChats'
+  })
   users: UserEntity[];
 }

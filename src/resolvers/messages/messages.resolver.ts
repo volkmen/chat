@@ -32,7 +32,7 @@ const resolver = {
     ReadMessage: createAuthResolver<{ id: number }>(async (_, args, context: Context) => {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
       const result = await dataSource.doReadMessage(userId, args.id);
-      context.pubsub.publish(`${result.senderId}_${MessageEvents.MESSAGE_IS_READ}`, result);
+      context.pubsub.publish(`${result.owner.id}_${MessageEvents.MESSAGE_IS_READ}`, result);
 
       return args.id;
     })

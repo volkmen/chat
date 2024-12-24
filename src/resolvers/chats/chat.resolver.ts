@@ -18,11 +18,11 @@ const resolver = {
     DoTyping: createAuthResolver<{ chatId: number; isTyping: boolean }>(
       async (_, { chatId, isTyping }, context: Context) => {
         const { userId, dataSource } = getDataSourceAndUserId(context, 'chats');
-        const chat = await dataSource.selectChatIdWithUsername(userId, { chatId: chatId });
+        const user = await dataSource.getUserThatTypingAtChat(userId, { chatId: chatId });
 
-        if (chat) {
+        if (user) {
           context.pubsub.publish(`${CHAT_IS_TYPING}_${chatId}`, {
-            username: chat.username,
+            username: user.username,
             userId,
             isTyping
           });
@@ -53,7 +53,7 @@ const resolver = {
     OnTyping: {
       subscribe: createAuthResolver<{ chatId: number }>(async (_, args, context: Context) => {
         const { userId, dataSource } = getDataSourceAndUserId(context, 'chats');
-        const chat = await dataSource.selectChatIdWithUsername(userId, { chatId: args.chatId });
+        const chat = await dataSource.getUserThatTypingAtChat(userId, { chatId: args.chatId });
 
         console.log('ON_TYPING');
         if (chat) {

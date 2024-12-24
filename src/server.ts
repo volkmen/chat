@@ -122,6 +122,7 @@ class App {
     connectionParams?: ConnectionParams;
   }) => {
     const tokenPayload = await this.context.jwtService.parsePayload(request, connectionParams);
+    // const tokenPayload = { id: 1 };
 
     return {
       ...this.context,
