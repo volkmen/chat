@@ -1,7 +1,7 @@
 import { DataSource as ORMDataSource } from 'typeorm/data-source/DataSource';
 import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
-import { BadRequestError, ForbiddenError } from 'utils/errors';
+import { ForbiddenError } from 'utils/errors';
 import { MessageEntity } from 'entities/Message.entity';
 import { Paginated } from 'types/pagination';
 
@@ -13,62 +13,25 @@ export default class MessagesDataSource {
   }
 
   async getMessageById(userId: number, id: number) {
-    const messages = await this.repository
-      .createQueryBuilder('M')
-      .select('M.id', 'id')
-      .addSelect('M.content', 'content')
-      .addSelect('M.created_at', 'createdAt')
-      .addSelect('M.is_read', 'isRead')
-      .addSelect('M.ownerId', 'senderId')
-      .where('M.id = :id and M.ownerId = :userId', { userId, id })
-      .orderBy('M.created_at', 'DESC')
-      .execute();
-
-    return messages[0];
+    return this.repository.findOne({ where: { id, owner: { id: userId } } });
   }
 
   async getMessages(
     userId: number,
     { chatId, page = 1, size = 30 }: { chatId: number; page?: number; size?: number }
   ): Promise<Paginated<MessageEntity>> {
-    const chatIsAccessibleForThisUser = await this.repository
-      .createQueryBuilder('C')
-      .select('C.id')
-      .innerJoin('UsersChats', 'US', 'US.chatsId = C.id')
-      .innerJoin('Users', 'U', 'US.usersId = U.id')
-      .where('C.id = :chatId and U.id = :userId', { chatId, userId })
-      .execute();
+    const [messages, total] = await this.repository.findAndCount({
+      where: { chat: { id: chatId, users: { id: userId } } },
+      skip: size * (page - 1),
+      take: size
+    });
 
-    if (chatIsAccessibleForThisUser) {
-      const totalItems = await this.repository
-        .createQueryBuilder('M')
-        .select('count(M.id)', 'total')
-        .where('M.chatId = :chatId', { chatId })
-        .execute();
-      const total = totalItems[0].total;
-
-      const result = await this.dbConnection
-        .createQueryBuilder('Messages', 'M')
-        .select('M.id', 'id')
-        .addSelect('M.content', 'content')
-        .addSelect('M.created_at', 'createdAt')
-        .addSelect('M.is_read', 'isRead')
-        .addSelect('U.id', 'senderId')
-        .innerJoin('Users', 'U', 'U.id = M.ownerId')
-        .where('M.chatId = :chatId', { chatId })
-        .limit(size)
-        .offset(size * (page - 1))
-        .execute();
-
-      return {
-        total,
-        page,
-        size,
-        data: result
-      };
-    }
-
-    throw new BadRequestError('Forbidden');
+    return {
+      total,
+      page,
+      size,
+      data: messages
+    };
   }
 
   addMessage(userId: number, { chatId, content }: { chatId: number; content: string }): Promise<MessageEntity> {
@@ -99,18 +62,12 @@ export default class MessagesDataSource {
       await entityManager.createQueryBuilder().relation(MessageEntity, 'owner').of(newMsg).set(user);
       await entityManager.createQueryBuilder().relation(ChatEntity, 'messages').of(chat).add(newMsg);
 
-      const msgs = await entityManager
-        .createQueryBuilder(MessageEntity, 'M')
-        .select('M.id', 'id')
-        .addSelect('M.content', 'content')
-        .addSelect('M.created_at', 'createdAt')
-        .addSelect('M.is_read', 'isRead')
-        .addSelect('U.id', 'senderId')
-        .innerJoin('Users', 'U', 'U.id = M.ownerId')
-        .where('M.id = :newMsgId', { newMsgId })
-        .execute();
-
-      return msgs[0];
+      return entityManager.findOne(MessageEntity, {
+        where: { id: newMsgId },
+        relations: {
+          owner: true
+        }
+      });
     });
   }
 
@@ -154,20 +111,10 @@ export default class MessagesDataSource {
     await this.repository
       .createQueryBuilder()
       .update()
-      .set({ is_read: true })
+      .set({ isRead: true })
       .where('id = :messageId', { messageId })
       .execute();
 
-    const result = await this.repository
-      .createQueryBuilder('M')
-      .select('M.id', 'id')
-      .addSelect('M.content', 'content')
-      .addSelect('M.created_at', 'createdAt')
-      .addSelect('M.is_read', 'isRead')
-      .addSelect('M.ownerId', 'senderId')
-      .where('M.id = :messageId', { messageId })
-      .execute();
-
-    return result[0];
+    return this.repository.findOne({ where: { id: messageId }, relations: { owner: true } });
   }
 }

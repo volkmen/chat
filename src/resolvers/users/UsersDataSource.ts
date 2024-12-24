@@ -20,11 +20,11 @@ export default class UsersDataSource {
   }
 
   getUsers(userId: number, fieldsMap: object) {
-    const includeChats = fieldsMap['chats'] === true;
-
     return this.repository.find({
       relations: {
-        chats: includeChats
+        chats: {
+          messages: true
+        }
       },
       where: {
         id: Not(userId)

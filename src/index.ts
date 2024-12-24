@@ -8,7 +8,7 @@ const app = new App();
 Promise.all([
   connectToDatabase({
     migrationsRun: true,
-    logging: false
+    logging: true
   }),
   app.initServer()
 ]).then(([dbDataSource]) => {

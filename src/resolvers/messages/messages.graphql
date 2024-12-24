@@ -4,7 +4,7 @@ type Message {
     isRead: Boolean!
     createdAt: String!
     updatedAt: String!
-    senderId: ID!
+    owner: User
 }
 
 type PaginatedMessaged {
