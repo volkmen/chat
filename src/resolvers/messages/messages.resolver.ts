@@ -1,4 +1,4 @@
-import { createAuthResolver } from 'utils/resolvers';
+import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getDataSourceAndUserId } from 'utils/context';
 import { MessageEvents } from './events';
@@ -9,10 +9,13 @@ const resolver = {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
       return dataSource.getMessageById(userId, args.messageId);
     }),
-    GetMessages: createAuthResolver<{ chatId: number; page: number; size: number }>((_, args, context: Context) => {
-      const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
-      return dataSource.getMessages(userId, { chatId: args.chatId, page: args.page, size: args.size });
-    })
+    GetMessages: createAuthResolver<{ chatId: number; page: number; size: number }>(
+      (_, args, context: Context, info) => {
+        const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
+        const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
+        return dataSource.getMessages(userId, { chatId: args.chatId, page: args.page, size: args.size }, fieldsMap);
+      }
+    )
   },
   Mutation: {
     AddMessage: createAuthResolver<{ content: string; chatId: number }>(async (_, args, context: Context) => {

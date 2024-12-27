@@ -18,10 +18,24 @@ export default class MessagesDataSource {
 
   async getMessages(
     userId: number,
-    { chatId, page = 1, size = 30 }: { chatId: number; page?: number; size?: number }
+    { chatId, page = 1, size = 30 }: { chatId: number; page?: number; size?: number },
+    fieldsMap: object
   ): Promise<Paginated<MessageEntity>> {
     const [messages, total] = await this.repository.findAndCount({
       where: { chat: { id: chatId, users: { id: userId } } },
+      relations: {
+        owner: true
+      },
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        isRead: true,
+        owner: {
+          id: true,
+          username: true
+        }
+      },
       skip: size * (page - 1),
       take: size
     });

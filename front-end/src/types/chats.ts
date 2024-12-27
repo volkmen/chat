@@ -1,11 +1,16 @@
 import { ApolloSuccessDataResponse } from './api';
 import { Paginated } from './pagination';
 
+type User = {
+  id: number;
+  username: string;
+};
+
 export interface MessageType {
   content: string;
   id: number;
   createdAt: number;
-  senderId: number;
+  owner: Partial<User>;
   isRead: boolean;
 }
 
