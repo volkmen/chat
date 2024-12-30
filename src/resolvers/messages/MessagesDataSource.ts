@@ -4,6 +4,8 @@ import { UserEntity } from 'entities/User.entity';
 import { ForbiddenError } from 'utils/errors';
 import { MessageEntity } from 'entities/Message.entity';
 import { Paginated } from 'types/pagination';
+import { get } from 'lodash';
+import { type FieldsByTypeName } from 'graphql-parse-resolve-info';
 
 export default class MessagesDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -19,21 +21,23 @@ export default class MessagesDataSource {
   async getMessages(
     userId: number,
     { chatId, page = 1, size = 30 }: { chatId: number; page?: number; size?: number },
-    fieldsMap: object
+    fieldsMap: FieldsByTypeName
   ): Promise<Paginated<MessageEntity>> {
+    const ownerFields = get(fieldsMap, 'owner.fieldsByTypeName.User');
+
     const [messages, total] = await this.repository.findAndCount({
       where: { chat: { id: chatId, users: { id: userId } } },
       relations: {
-        owner: true
+        owner: Boolean(ownerFields)
       },
       select: {
         id: true,
-        content: true,
-        createdAt: true,
-        isRead: true,
+        content: Boolean(fieldsMap['content']),
+        createdAt: Boolean(fieldsMap['createdAt']),
+        isRead: Boolean(fieldsMap['isRead']),
         owner: {
-          id: true,
-          username: true
+          id: Boolean(get(ownerFields, 'id')),
+          username: Boolean(get(ownerFields, 'username'))
         }
       },
       skip: size * (page - 1),

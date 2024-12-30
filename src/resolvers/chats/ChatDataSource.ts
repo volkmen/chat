@@ -3,6 +3,7 @@ import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
 import { BadRequestError, ForbiddenError } from 'utils/errors';
 import { Correspondent } from 'types/graphql';
+import { FieldsByTypeName } from 'graphql-parse-resolve-info';
 
 export default class ChatDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -61,7 +62,7 @@ export default class ChatDataSource {
     });
   }
 
-  getChatById = async (userId: number, { chatId }: { chatId: number }, include: Record<string, boolean> = {}) => {
+  getChatById = async (userId: number, { chatId }: { chatId: number }, include: FieldsByTypeName) => {
     const includeMessages = 'messages' in include && Boolean(include.messages);
 
     const chat = await this.repository.findOne({

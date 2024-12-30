@@ -7,7 +7,7 @@ type Message {
     owner: User
 }
 
-type PaginatedMessaged {
+type PaginatedMessages {
     page: Int!
     size: Int!
     total: Int!
@@ -16,7 +16,7 @@ type PaginatedMessaged {
 
 type Query {
     GetMessage(messageId: ID!): Message
-    GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessaged!
+    GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessages!
 }
 
 type Mutation {

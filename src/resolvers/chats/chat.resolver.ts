@@ -1,4 +1,4 @@
-import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
+import { createAuthResolver, parseQueryFields } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getDataSourceAndUserId, getUserIdFromContext } from 'utils/context';
 import { CHAT_ADDED, CHAT_IS_TYPING } from './events';
@@ -12,7 +12,7 @@ const resolver = {
     }),
     GetChat: createAuthResolver<{ id: number }>((_, args, context: Context, info) => {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'chats');
-      const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
+      const fieldsMap = parseQueryFields(info);
       return dataSource.getChatById(userId, { chatId: args.id }, fieldsMap);
     }),
     DoTyping: createAuthResolver<{ chatId: number; isTyping: boolean }>(

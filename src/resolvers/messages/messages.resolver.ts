@@ -1,7 +1,8 @@
-import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
+import { createAuthResolver, parseQueryFields } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getDataSourceAndUserId } from 'utils/context';
 import { MessageEvents } from './events';
+import { get } from 'lodash';
 
 const resolver = {
   Query: {
@@ -12,8 +13,13 @@ const resolver = {
     GetMessages: createAuthResolver<{ chatId: number; page: number; size: number }>(
       (_, args, context: Context, info) => {
         const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
-        const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
-        return dataSource.getMessages(userId, { chatId: args.chatId, page: args.page, size: args.size }, fieldsMap);
+        const queryFields = parseQueryFields(info);
+
+        return dataSource.getMessages(
+          userId,
+          { chatId: args.chatId, page: args.page, size: args.size },
+          get(queryFields, 'data.fieldsByTypeName.Message')
+        );
       }
     )
   },

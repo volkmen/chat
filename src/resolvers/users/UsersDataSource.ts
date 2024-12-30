@@ -1,6 +1,7 @@
 import { DataSource as ORMDataSource, Not } from 'typeorm';
 import { UserEntity } from 'entities/User.entity';
 import { UnAuthorisedError } from 'utils/errors';
+import { FieldsByTypeName } from 'graphql-parse-resolve-info';
 
 export default class UsersDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -9,7 +10,7 @@ export default class UsersDataSource {
     return this.dbConnection.getRepository(UserEntity);
   }
 
-  async getUserById(id: number, fieldsMap: object = {}) {
+  async getUserById(id: number, fieldsMap: FieldsByTypeName) {
     const includeChats = fieldsMap['chats'] === true;
     const User = await this.repository.findOne({ where: { id }, relations: { chats: includeChats } });
 
@@ -19,7 +20,7 @@ export default class UsersDataSource {
     return User;
   }
 
-  getUsers(userId: number, fieldsMap: object) {
+  getUsers(userId: number, fieldsMap: FieldsByTypeName) {
     return this.repository.find({
       relations: {
         chats: {

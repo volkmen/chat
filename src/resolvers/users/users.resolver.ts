@@ -1,19 +1,20 @@
-import { createAuthResolver, getQueryFieldsMapFromGraphQLRequestedInfo } from 'utils/resolvers';
+import { createAuthResolver, parseQueryFields } from 'utils/resolvers';
 import type { Context } from 'types/server';
 import { UserEntity } from 'entities/User.entity';
 import { getDataSourceAndUserId } from 'utils/context';
+import { parseResolveInfo, simplifyParsedResolveInfoFragmentWithType } from 'graphql-parse-resolve-info';
 
 const resolver = {
   Query: {
     GetMe: createAuthResolver((_, args, context: Context, info): Promise<UserEntity> => {
-      const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
+      const fieldsMap = parseQueryFields(info);
       const { userId, dataSource } = getDataSourceAndUserId(context, 'users');
 
       return dataSource.getUserById(userId, fieldsMap);
     }),
 
     GetUsers: createAuthResolver(async (_, args, context: Context, info): Promise<UserEntity[]> => {
-      const fieldsMap = getQueryFieldsMapFromGraphQLRequestedInfo(info);
+      const fieldsMap = parseQueryFields(info);
       const { userId, dataSource } = getDataSourceAndUserId(context, 'users');
       return dataSource.getUsers(userId, fieldsMap);
     }),
