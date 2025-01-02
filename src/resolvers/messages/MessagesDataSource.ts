@@ -6,6 +6,8 @@ import { MessageEntity } from 'entities/Message.entity';
 import { Paginated } from 'types/pagination';
 import { get } from 'lodash';
 import { type FieldsByTypeName } from 'graphql-parse-resolve-info';
+import { ONE_HOUR, ONE_MINUTE } from 'utils/date';
+import { createCacheTagsToRemove } from 'utils/typerom';
 
 export default class MessagesDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -15,7 +17,14 @@ export default class MessagesDataSource {
   }
 
   async getMessageById(userId: number, id: number) {
-    return this.repository.findOne({ where: { id, owner: { id: userId } } });
+    return this.repository.findOne({
+      where: { id, owner: { id: userId } },
+      relations: { chat: true },
+      cache: {
+        id: `getMessageById?id=${id}`,
+        milliseconds: ONE_HOUR
+      }
+    });
   }
 
   async getMessages(
@@ -39,6 +48,9 @@ export default class MessagesDataSource {
           id: Boolean(get(ownerFields, 'id')),
           username: Boolean(get(ownerFields, 'username'))
         }
+      },
+      order: {
+        createdAt: 'DESC'
       },
       skip: size * (page - 1),
       take: size
@@ -89,25 +101,32 @@ export default class MessagesDataSource {
     });
   }
 
-  updateMessage(userId: number, { content, messageId }: { content?: string; messageId: number }) {
+  async updateMessage(userId: number, { content, messageId }: { content?: string; messageId: number }) {
     const values = {
       ...(content ? { content } : {})
     };
-    return this.dbConnection
+    const updateResult = await this.dbConnection
       .createQueryBuilder()
       .update(MessageEntity)
       .set(values)
       .where('id = :id', { id: messageId })
       .execute();
+
+    this.dbConnection.queryResultCache.remove(createCacheTagsToRemove(`getMessageById?id=${messageId}`));
+    return updateResult;
   }
 
   async deleteMessage(userId: number, messageId: number) {
+    const message = await this.getMessageById(userId, messageId);
+
     await this.dbConnection
       .createQueryBuilder()
       .delete()
       .from(MessageEntity)
       .where('id = :id and ownerId = :userId', { id: messageId, userId })
       .execute();
+
+    this.dbConnection.queryResultCache.remove(createCacheTagsToRemove(`getMessages?chatId=${message.chat.id}`));
 
     return messageId;
   }

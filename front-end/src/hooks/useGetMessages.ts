@@ -15,7 +15,7 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     variables: {
       chatId,
       page: 1,
-      size: 30
+      size: 10
     }
   });
 
@@ -31,7 +31,7 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
         variables: {
           chatId,
           page: responseData.page + 1,
-          size: 30
+          size: 10
         },
         updateQuery: (previousResult, { fetchMoreResult }) => {
           if (!fetchMoreResult) return previousResult;
