@@ -42,7 +42,7 @@ export default class MessagesDataSource {
       select: {
         id: true,
         content: Boolean(fieldsMap['content']),
-        createdAt: Boolean(fieldsMap['createdAt']),
+        createdAt: true,
         isRead: Boolean(fieldsMap['isRead']),
         owner: {
           id: Boolean(get(ownerFields, 'id')),

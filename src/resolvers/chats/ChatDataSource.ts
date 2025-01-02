@@ -144,6 +144,7 @@ export default class ChatDataSource {
 
       await entityManager.createQueryBuilder().relation(UserEntity, 'chats').of(userA).add(newChat);
       await entityManager.createQueryBuilder().relation(UserEntity, 'chats').of(userB).add(newChat);
+      this.dbConnection.queryResultCache.remove([`getChats?userId=${userId}`]);
 
       await queryRunner.commitTransaction();
 
