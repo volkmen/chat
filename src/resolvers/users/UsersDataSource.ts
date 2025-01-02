@@ -11,8 +11,7 @@ export default class UsersDataSource {
   }
 
   async getUserById(id: number, fieldsMap: FieldsByTypeName) {
-    const includeChats = fieldsMap['chats'] === true;
-    const User = await this.repository.findOne({ where: { id }, relations: { chats: includeChats } });
+    const User = await this.repository.findOne({ where: { id }, relations: { chats: Boolean(fieldsMap['chats']) } });
 
     if (!User) {
       throw new UnAuthorisedError('Unauthorised');
