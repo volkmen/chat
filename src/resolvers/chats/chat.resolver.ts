@@ -55,7 +55,6 @@ const resolver = {
         const { userId, dataSource } = getDataSourceAndUserId(context, 'chats');
         const chat = await dataSource.getUserThatTypingAtChat(userId, { chatId: args.chatId });
 
-        console.log('ON_TYPING');
         if (chat) {
           return context.pubsub.subscribe(`${CHAT_IS_TYPING}_${args.chatId}`);
         }

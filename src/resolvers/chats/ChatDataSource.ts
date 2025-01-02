@@ -2,8 +2,8 @@ import { DataSource as ORMDataSource } from 'typeorm/data-source/DataSource';
 import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
 import { BadRequestError, ForbiddenError } from 'utils/errors';
-import { Correspondent } from 'types/graphql';
 import { FieldsByTypeName } from 'graphql-parse-resolve-info';
+import { ONE_HOUR } from 'utils/date';
 
 export default class ChatDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -41,6 +41,7 @@ export default class ChatDataSource {
       .leftJoinAndSelect('c.messages', 'message')
       .where(`c.id IN (${chatIdsQuery.getQuery()})`)
       .setParameters(chatIdsQuery.getParameters())
+      .cache(`getChats?userId=${userId}`, ONE_HOUR)
       .getMany();
 
     return chats.map(chat => ({
@@ -55,6 +56,10 @@ export default class ChatDataSource {
   async getUserThatTypingAtChat(userId: number, { chatId }: { chatId: number }) {
     return this.userRepository.findOne({
       where: { id: userId, chats: { id: chatId } },
+      cache: {
+        id: `getUserThatTypingAtChat?chatId=${chatId}&userId=${userId}`,
+        milliseconds: ONE_HOUR
+      },
       select: {
         id: true,
         username: true
@@ -67,7 +72,11 @@ export default class ChatDataSource {
 
     const chat = await this.repository.findOne({
       where: { id: chatId },
-      relations: { messages: includeMessages, users: true }
+      relations: { messages: includeMessages, users: true },
+      cache: {
+        id: `getChatById?chatId=${chatId}`,
+        milliseconds: ONE_HOUR
+      }
     });
 
     if (chat.users.every(user => user.id !== userId)) {
