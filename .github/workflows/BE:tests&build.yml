@@ -1,9 +1,10 @@
-name: tests&build
+name: BE test & build
 
 on:
   push:
     branches:
       - '*'
+      - '!aws-test'
 
 env:
   DATABASE_HOST: localhost
@@ -24,8 +25,6 @@ jobs:
       - run: yarn install
       - name: MAKE a BE BUILD
         run: yarn build
-      - name: MAKE a FE BUILD
-        run: yarn build:fe
 
   tests:
     runs-on: ubuntu-latest
