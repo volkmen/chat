@@ -74,7 +74,7 @@
     "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/typeorm.migration.config.ts",
     "test": "NODE_ENV=testing jest",
     "test:teardown": "npx kill-port 3300",
-    "build": "rm -rf build && tsc && yarn codegen && yarn gql2types && cp src/schema.graphql build/schema.graphql",
+    "build": "rm -rf build && tsc -p tsconfig.prod.json && yarn codegen && yarn gql2types && cp src/schema.graphql build/schema.graphql",
     "build:fe": "cd front-end && yarn build"
   }
 }
