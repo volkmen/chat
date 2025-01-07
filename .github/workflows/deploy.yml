@@ -23,43 +23,27 @@ jobs:
           role-to-assume: arn:aws:iam::017820662130:role/GITHUB_WORKFLOW
           aws-region: ${{ vars.AWS_REGION }}
           role-session-name: github-verify-connection
-#
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         with:
           mask-password: 'false'
-#
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: check image
-#        run: echo  ${{ env.IMAGE_PATH }}
-#
-#      - name: Build Docker image
-#        run: |
-#          docker build -t ${{ env.IMAGE_PATH }} .
-#
-#      - name: Push Docker image to Amazon ECR
-#        run: |
-#          docker push ${{ env.IMAGE_PATH }}
 
-#      - name: Fill in the new image ID in the Amazon ECS task definition
-#        id: task-def
-#        uses: aws-actions/amazon-ecs-render-task-definition@v1
-#        with:
-#          task-definition: ${{ env.TASK_DEFINITION }}
-#          container-name: chat
-#          image: ${{ env.IMAGE_PATH }}
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-#      - name: Deploy Amazon ECS task definition
-#        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#        with:
-#          task-definition: ${{ steps.task-def.outputs.task-definition }}
-#          service: ${{ env.ECS_SERVICE }}
-#          cluster: ${{ env.ECS_CLUSTER }}
-#          wait-for-service-stability: true
+      - name: check image
+        run: echo  ${{ env.IMAGE_PATH }}
 
-      - name: Force deployment
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.IMAGE_PATH }} .
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push ${{ env.IMAGE_PATH }}
+
+      - name: Redeploy service
         run: |
           aws ecs update-service --cluster ${{ vars.ECS_CLUSTER }} --service ${{ vars.ECS_SERVICE }} --force-new-deployment
