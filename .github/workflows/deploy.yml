@@ -65,6 +65,6 @@ jobs:
         with:
           cluster: chat
           service: chat-service
-          task-definition: arn:aws:ecs:us-east-1:017820662130:task-definition/chat-task:2
+          task-definition: arn:aws:ecs:us-east-1:017820662130:task-definition/nginx-hello:1
           force-new-deployment: true
 
