@@ -60,11 +60,6 @@ jobs:
 #          cluster: ${{ env.ECS_CLUSTER }}
 #          wait-for-service-stability: true
 
-      - name: Deploy to Amazon ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          cluster: chat
-          service: chat-service
-          task-definition: arn:aws:ecs:us-east-1:017820662130:task-definition/nginx-hello:1
-          force-new-deployment: true
-
+      - name: Force deployment
+        run: |
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE }} --force-new-deployment
