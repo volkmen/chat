@@ -5,7 +5,7 @@ on:
     branches:
       - aws-test
 env:
-  IMAGE_PATH: ${{ vars.ECR_REGISTRY }}/${{vars.ECR_REPOSITORY}}:latest
+  IMAGE_PATH: ${{ vars.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY }}:latest
 
 permissions:
   id-token: write   # This is required for requesting the JWT
