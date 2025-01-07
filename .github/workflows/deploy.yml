@@ -49,6 +49,6 @@ jobs:
         with:
           cluster: ${{ vars.ECS_CLUSTER }}
           service: ${{ vars.ECS_SERVICE }}
-#          task-definition: ${{ vars.TASK_DEFINITION }}
+          task-definition: ${{ vars.TASK_DEFINITION }}
           image: ${{ env.IMAGE_PATH }}
 
