@@ -47,8 +47,8 @@ jobs:
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          cluster: ${{ vars.ECS_CLUSTER }}
-          service: ${{ vars.ECS_SERVICE }}
-          task-definition: ${{ vars.TASK_DEFINITION }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+          task-definition: arn:aws:ecs:us-east-1:017820662130:task-definition/chat-task:2  # Full ARN of the task definition
           image: ${{ env.IMAGE_PATH }}
 
