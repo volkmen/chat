@@ -44,11 +44,27 @@ jobs:
 #        run: |
 #          docker push ${{ env.IMAGE_PATH }}
 
+#      - name: Fill in the new image ID in the Amazon ECS task definition
+#        id: task-def
+#        uses: aws-actions/amazon-ecs-render-task-definition@v1
+#        with:
+#          task-definition: ${{ env.TASK_DEFINITION }}
+#          container-name: chat
+#          image: ${{ env.IMAGE_PATH }}
+
+#      - name: Deploy Amazon ECS task definition
+#        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#        with:
+#          task-definition: ${{ steps.task-def.outputs.task-definition }}
+#          service: ${{ env.ECS_SERVICE }}
+#          cluster: ${{ env.ECS_CLUSTER }}
+#          wait-for-service-stability: true
+
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          cluster: ${{ env.ECS_CLUSTER }}
-          service: ${{ env.ECS_SERVICE }}
-          task-definition: arn:aws:ecs:us-east-1:017820662130:task-definition/chat-task:2  # Full ARN of the task definition
+          cluster: ${{ vars.ECS_CLUSTER }}
+          service: ${{ vars.ECS_SERVICE }}
+          task-definition: chat-task
           image: ${{ env.IMAGE_PATH }}
 
