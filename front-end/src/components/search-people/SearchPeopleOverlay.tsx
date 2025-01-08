@@ -81,11 +81,10 @@ const SearchPeopleOverlay: React.FC<SearchPeopleOverlayProps> = ({ searchPattern
       })
         .then(async response => {
           await refetch();
-
-          console.log(response);
+          const newChatId = response.data.AddChat;
 
           showToastSuccess(`Chat was added successfully with ${user.username}`);
-          navigate(PageRoutes.Chats + `/${user.chat}`);
+          navigate(PageRoutes.Chats + `/${newChatId}`);
         })
         .catch(() => {
           showToastError('Error adding chat');

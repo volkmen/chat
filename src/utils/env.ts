@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 export const getIsDevelopment = () => {
   return process.env.NODE_ENV === 'DEVELOPMENT';
 };
