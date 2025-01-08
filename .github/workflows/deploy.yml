@@ -2,11 +2,14 @@ name: Deploy to Amazon ECS
 
 on:
   workflow_run:
-    workflows: ["BE test & build"]
+    workflows: [ "BE test & build" ]
     types:
       - completed
     branches:
       - main
+
+env:
+  IMAGE_PATH: ${{ vars.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY }}:latest
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -31,7 +34,20 @@ jobs:
         with:
           mask-password: 'false'
 
-    outputs:
-      registry: ${{ steps.login-ecr.outputs.registry }}
-      docker_username: ${{ steps.login-ecr.outputs.docker_username_123456789012_dkr_ecr_us_east_1_amazonaws_com }} # More information on these outputs can be found below in the 'Docker Credentials' section
-      docker_password: ${{ steps.login-ecr.outputs.docker_password_123456789012_dkr_ecr_us_east_1_amazonaws_com }}
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: check image
+        run: echo  ${{ env.IMAGE_PATH }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.IMAGE_PATH }} .
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push ${{ env.IMAGE_PATH }}
+
+      - name: Redeploy service
+        run: |
+          aws ecs update-service --cluster ${{ vars.ECS_CLUSTER }} --service ${{ vars.ECS_SERVICE }} --force-new-deployment
