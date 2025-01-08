@@ -4,16 +4,17 @@ export const getIsDevelopment = () => {
   return process.env.NODE_ENV === 'DEVELOPMENT';
 };
 
-export function getEnvVariablesPath() {
-  function getEnvFileName() {
-    switch (process.env.NODE_ENV) {
-      case 'DEVELOPMENT':
-        return 'development.env';
-      case 'STAGING':
-        return 'staging.env';
-      default:
-        return 'production.env';
-    }
+export const getIsStaging = () => {
+  return process.env.NODE_ENV === 'STAGING';
+};
+
+export function getEnv() {
+  if (getIsDevelopment()) {
+    return 'development';
   }
-  return path.resolve(process.cwd(), 'src', 'envs', getEnvFileName());
+  if (getIsStaging()) {
+    return 'staging';
+  }
+
+  return 'production';
 }

@@ -1,0 +1,37 @@
+name: Deploy to Amazon ECS
+
+on:
+  workflow_run:
+    workflows: ["BE test & build"]
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  login-to-amazon-ecr:
+    name: login-aws
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::017820662130:role/GITHUB_WORKFLOW
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: github-verify-connection
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
+
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+      docker_username: ${{ steps.login-ecr.outputs.docker_username_123456789012_dkr_ecr_us_east_1_amazonaws_com }} # More information on these outputs can be found below in the 'Docker Credentials' section
+      docker_password: ${{ steps.login-ecr.outputs.docker_password_123456789012_dkr_ecr_us_east_1_amazonaws_com }}

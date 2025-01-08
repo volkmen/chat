@@ -22,6 +22,7 @@ export default class UsersDataSource {
       }
     });
 
+
     if (!User) {
       throw new UnAuthorisedError('Unauthorised');
     }

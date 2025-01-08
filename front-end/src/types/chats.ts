@@ -23,7 +23,8 @@ export interface Chat {
   };
 }
 
-export type ChatMessagesResponse = ApolloSuccessDataResponse<'GetMessages', Paginated<MessageType>>;
+export type GetMessagesResponse = ApolloSuccessDataResponse<'GetMessages', Paginated<MessageType>>;
 export type SubscriptionMessageReceive = { MessageReceived: MessageType };
+export type SubscriptionMessageIsRead = { MessageIsRead: MessageType };
 
 export type GetChatsResponse = ApolloSuccessDataResponse<'GetChats', Chat[]>;
