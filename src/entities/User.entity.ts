@@ -2,7 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany, Ma
 import { IsDate, IsEmail, IsInt } from 'class-validator';
 import { ChatEntity } from './Chat.entity';
 import { MessageEntity } from './Message.entity';
-import { Expose } from 'class-transformer';
 
 @Entity({ name: 'Users' })
 export class UserEntity {
@@ -26,15 +25,13 @@ export class UserEntity {
   @Column({ type: 'boolean', default: false })
   is_verified: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   @IsDate()
-  @Expose({ name: 'createdAt' }) // Transform field name
-  created_at: Date;
+  createdAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'updated_at' })
   @IsDate()
-  @Expose({ name: 'updatedAt' })
-  updated_at: Date;
+  updatedAt: Date;
 
   @OneToMany(() => MessageEntity, msg => msg.owner)
   messages: MessageEntity[];

@@ -1,7 +1,8 @@
-import { createAuthResolver } from 'utils/resolvers';
+import { createAuthResolver, parseQueryFields } from 'utils/resolvers';
 import { Context } from 'types/server';
 import { getDataSourceAndUserId } from 'utils/context';
 import { MessageEvents } from './events';
+import { get } from 'lodash';
 
 const resolver = {
   Query: {
@@ -9,10 +10,18 @@ const resolver = {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
       return dataSource.getMessageById(userId, args.messageId);
     }),
-    GetMessages: createAuthResolver<{ chatId: number; page: number; size: number }>((_, args, context: Context) => {
-      const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
-      return dataSource.getMessages(userId, { chatId: args.chatId, page: args.page, size: args.size });
-    })
+    GetMessages: createAuthResolver<{ chatId: number; page: number; size: number }>(
+      (_, args, context: Context, info) => {
+        const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
+        const queryFields = parseQueryFields(info);
+
+        return dataSource.getMessages(
+          userId,
+          { chatId: args.chatId, page: args.page, size: args.size },
+          get(queryFields, 'data.fieldsByTypeName.Message')
+        );
+      }
+    )
   },
   Mutation: {
     AddMessage: createAuthResolver<{ content: string; chatId: number }>(async (_, args, context: Context) => {
@@ -32,7 +41,7 @@ const resolver = {
     ReadMessage: createAuthResolver<{ id: number }>(async (_, args, context: Context) => {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
       const result = await dataSource.doReadMessage(userId, args.id);
-      context.pubsub.publish(`${result.senderId}_${MessageEvents.MESSAGE_IS_READ}`, result);
+      context.pubsub.publish(`${result.owner.id}_${MessageEvents.MESSAGE_IS_READ}`, result);
 
       return args.id;
     })

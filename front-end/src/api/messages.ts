@@ -5,7 +5,12 @@ export const MESSAGE_FRAGMENT = gql`
     id
     content
     createdAt
-    senderId
+    owner {
+      ... on User {
+        id
+        username
+      }
+    }
     isRead
   }
 `;

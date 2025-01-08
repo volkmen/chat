@@ -4,7 +4,7 @@ type Message {
     isRead: Boolean!
     createdAt: String!
     updatedAt: String!
-    senderId: ID!
+    owner: User!
 }
 
 type Correspondent {
@@ -15,7 +15,7 @@ type Correspondent {
 type Chat {
     id: ID!
     messages: [Message!]!
-    is_group: Boolean!
+    isGroup: Boolean!
     correspondent: Correspondent
 }
 

@@ -61,7 +61,7 @@ const Chat = () => {
     } else if (data && lastElem) {
       lastElem.scrollIntoView();
     } else if (messagesEndRef.current) {
-      const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].senderId === me.id;
+      const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].owner.id === me.id;
 
       if (lastMessageIsMine) {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -18,7 +18,7 @@ export type Chat = {
   __typename?: 'Chat';
   correspondent?: Maybe<Correspondent>;
   id: Scalars['ID']['output'];
-  is_group: Scalars['Boolean']['output'];
+  isGroup: Scalars['Boolean']['output'];
   messages: Array<Message>;
 };
 
@@ -34,7 +34,7 @@ export type Message = {
   createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   isRead: Scalars['Boolean']['output'];
-  senderId: Scalars['ID']['output'];
+  owner: User;
   updatedAt: Scalars['String']['output'];
 };
 
@@ -107,8 +107,8 @@ export type MutationVerifyEmailArgs = {
   token: Scalars['Int']['input'];
 };
 
-export type PaginatedMessaged = {
-  __typename?: 'PaginatedMessaged';
+export type PaginatedMessages = {
+  __typename?: 'PaginatedMessages';
   data: Array<Message>;
   page: Scalars['Int']['output'];
   size: Scalars['Int']['output'];
@@ -123,7 +123,7 @@ export type Query = {
   GetChats: Array<Chat>;
   GetMe: User;
   GetMessage?: Maybe<Message>;
-  GetMessages: PaginatedMessaged;
+  GetMessages: PaginatedMessages;
   GetUsers: Array<User>;
   ResendVerificationToken: Scalars['ID']['output'];
   ResetPassword: Scalars['ID']['output'];

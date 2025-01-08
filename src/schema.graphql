@@ -18,7 +18,7 @@ type Query {
   GetChat(id: ID!): Chat
   DoTyping(chatId: ID!, isTyping: Boolean!): Boolean
   GetMessage(messageId: ID!): Message
-  GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessaged!
+  GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessages!
   GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
@@ -42,7 +42,7 @@ type Message {
   isRead: Boolean!
   createdAt: String!
   updatedAt: String!
-  senderId: ID!
+  owner: User!
 }
 
 type Correspondent {
@@ -53,7 +53,7 @@ type Correspondent {
 type Chat {
   id: ID!
   messages: [Message!]!
-  is_group: Boolean!
+  isGroup: Boolean!
   correspondent: Correspondent
 }
 
@@ -70,7 +70,7 @@ type Subscription {
   MessageIsRead: Message!
 }
 
-type PaginatedMessaged {
+type PaginatedMessages {
   page: Int!
   size: Int!
   total: Int!

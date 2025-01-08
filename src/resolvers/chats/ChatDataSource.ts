@@ -2,12 +2,18 @@ import { DataSource as ORMDataSource } from 'typeorm/data-source/DataSource';
 import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
 import { BadRequestError, ForbiddenError } from 'utils/errors';
+import { Correspondent } from 'types/graphql';
+import { FieldsByTypeName } from 'graphql-parse-resolve-info';
 
 export default class ChatDataSource {
   constructor(private dbConnection: ORMDataSource) {}
 
   private get repository() {
     return this.dbConnection.getRepository(ChatEntity);
+  }
+
+  private get userRepository() {
+    return this.dbConnection.getRepository(UserEntity);
   }
 
   private createChatIdsQueryForUser(userId: number) {
@@ -19,66 +25,62 @@ export default class ChatDataSource {
       .where('U.id = :userId', { userId });
   }
 
+  private getCorrespondentFromUser(user: UserEntity) {
+    return {
+      id: user.id,
+      username: user.username
+    };
+  }
+
   getChats = async (userId: number) => {
     const chatIdsQuery = this.createChatIdsQueryForUser(userId);
 
-    return this.repository
-      .createQueryBuilder('C')
-      .select('C.id', 'id')
-      .addSelect("json_build_object('id', U.id, 'username', U.username)", 'correspondent')
-      .innerJoin('UsersChats', 'US', 'US.chatsId = C.id')
-      .innerJoin('Users', 'U', 'U.id = US.usersId')
-      .where(`C.id IN (${chatIdsQuery.getQuery()}) and U.id != :id`, { id: userId })
+    const chats = await this.repository
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.users', 'user')
+      .leftJoinAndSelect('c.messages', 'message')
+      .where(`c.id IN (${chatIdsQuery.getQuery()})`)
       .setParameters(chatIdsQuery.getParameters())
-      .execute();
+      .getMany();
+
+    return chats.map(chat => ({
+      ...chat,
+      correspondent: chat.users.reduce(
+        (acc, user) => (user.id !== userId ? this.getCorrespondentFromUser(user) : acc),
+        {}
+      )
+    }));
   };
 
-  async selectChatIdWithUsername(userId: number, { chatId }: { chatId: number }) {
-    const chats = await this.repository
-      .createQueryBuilder('C')
-      .select('C.id', 'id')
-      .addSelect('U.username', 'username')
-      .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
-      .innerJoin('Users', 'U', 'U.id = UC.usersId')
-      .where('U.id = :id and C.id = :chatId', { id: userId, chatId })
-      .execute();
-
-    return chats[0];
+  async getUserThatTypingAtChat(userId: number, { chatId }: { chatId: number }) {
+    return this.userRepository.findOne({
+      where: { id: userId, chats: { id: chatId } },
+      select: {
+        id: true,
+        username: true
+      }
+    });
   }
 
-  getChatById = async (userId: number, { chatId }: { chatId: number }, include: Record<string, boolean> = {}) => {
+  getChatById = async (userId: number, { chatId }: { chatId: number }, include: FieldsByTypeName) => {
     const includeMessages = 'messages' in include && Boolean(include.messages);
 
-    const chats = await this.repository
-      .createQueryBuilder('C')
-      .select('C.id', 'id')
-      .addSelect("json_build_object('id', U.id, 'username', U.username)", 'correspondent')
-      .innerJoin('UsersChats', 'UC', 'UC.chatsId = C.id')
-      .innerJoin('Users', 'U', 'U.id = UC.usersId')
-      .where('U.id != :id and C.id = :chatId', { id: userId, chatId })
-      .execute();
+    const chat = await this.repository.findOne({
+      where: { id: chatId },
+      relations: { messages: includeMessages, users: true }
+    });
 
-    const chat = chats[0];
-
-    if (!chat) {
-      throw new ForbiddenError('not allowed');
+    if (chat.users.every(user => user.id !== userId)) {
+      throw new ForbiddenError('Not allowed');
     }
 
-    if (includeMessages) {
-      const messages = await this.dbConnection
-        .createQueryBuilder('Messages', 'M')
-        .select('M.id', 'id')
-        .addSelect('M.content', 'content')
-        .where('M.chatId = :chatId', { chatId })
-        .execute();
-
-      return {
-        ...chat,
-        messages
-      };
-    }
-
-    return chat;
+    return {
+      ...chat,
+      correspondent: chat.users.reduce(
+        (acc, user) => (user.id !== userId ? this.getCorrespondentFromUser(user) : acc),
+        {}
+      )
+    };
   };
 
   async addChat(userId: number, { receiverId }: { receiverId: number }) {
@@ -119,7 +121,7 @@ export default class ChatDataSource {
         .into(ChatEntity) // The table name, as defined in your entity
         .values([
           {
-            is_group: false
+            isGroup: false
           }
         ])
         .execute();

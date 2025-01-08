@@ -1,0 +1,49 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches:
+      - aws-test
+env:
+  IMAGE_PATH: ${{ vars.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY }}:latest
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  login-to-amazon-ecr:
+    name: login-aws
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::017820662130:role/GITHUB_WORKFLOW
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: github-verify-connection
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: check image
+        run: echo  ${{ env.IMAGE_PATH }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.IMAGE_PATH }} .
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker push ${{ env.IMAGE_PATH }}
+
+      - name: Redeploy service
+        run: |
+          aws ecs update-service --cluster ${{ vars.ECS_CLUSTER }} --service ${{ vars.ECS_SERVICE }} --force-new-deployment

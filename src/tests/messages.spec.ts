@@ -76,7 +76,7 @@ describe('chat', () => {
     expect(msgResult.data.GetMessage.isRead).toBeFalsy();
     const executorReceiver = getExecutor(jwtToken);
 
-    const doTypingResult = await executorReceiver({
+    const readMsgResult = await executorReceiver({
       document: parse(/* GraphQL */ `
         mutation ReadMessage {
           ReadMessage(id: ${msgId}) 
@@ -84,7 +84,7 @@ describe('chat', () => {
       `)
     });
 
-    expect(doTypingResult.data.ReadMessage).toBe(msgId);
+    expect(readMsgResult.data.ReadMessage).toBe(msgId);
   });
 
   it('pagination for messages. Should return messages paginated', async () => {

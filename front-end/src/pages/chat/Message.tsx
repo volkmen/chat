@@ -5,7 +5,7 @@ import { User } from 'types/users';
 import relativeDate from 'relative-date';
 import { IoCheckmarkDoneOutline } from 'react-icons/io5';
 import { IoCheckmarkOutline } from 'react-icons/io5';
-import { useMutation, useSubscription } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { READ_MESSAGE } from 'api/messages';
 import { useIsVisible } from 'hooks';
 
@@ -19,7 +19,7 @@ interface MessageProps {
 }
 
 const Message: React.FC<MessageProps> = ({ message, correspondent, className, me }) => {
-  const isMineMessage = me.id === message.senderId;
+  const isMineMessage = me.id === message.owner.id;
   const senderName = isMineMessage ? 'Me' : correspondent.username;
   const relTime = relativeDate(message.createdAt);
   const status = message.isRead ? <IoCheckmarkDoneOutline color='#0000E7' /> : <IoCheckmarkOutline color='#888' />;

@@ -1,6 +1,7 @@
 import { DataSource as ORMDataSource, Not } from 'typeorm';
 import { UserEntity } from 'entities/User.entity';
 import { UnAuthorisedError } from 'utils/errors';
+import { FieldsByTypeName } from 'graphql-parse-resolve-info';
 
 export default class UsersDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -9,9 +10,8 @@ export default class UsersDataSource {
     return this.dbConnection.getRepository(UserEntity);
   }
 
-  async getUserById(id: number, fieldsMap: object = {}) {
-    const includeChats = fieldsMap['chats'] === true;
-    const User = await this.repository.findOne({ where: { id }, relations: { chats: includeChats } });
+  async getUserById(id: number, fieldsMap: FieldsByTypeName) {
+    const User = await this.repository.findOne({ where: { id }, relations: { chats: Boolean(fieldsMap['chats']) } });
 
     if (!User) {
       throw new UnAuthorisedError('Unauthorised');
@@ -19,12 +19,12 @@ export default class UsersDataSource {
     return User;
   }
 
-  getUsers(userId: number, fieldsMap: object) {
-    const includeChats = fieldsMap['chats'] === true;
-
+  getUsers(userId: number, fieldsMap: FieldsByTypeName) {
     return this.repository.find({
       relations: {
-        chats: includeChats
+        chats: {
+          messages: true
+        }
       },
       where: {
         id: Not(userId)

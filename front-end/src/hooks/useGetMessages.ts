@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery, useSubscription } from '@apollo/client';
 import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_MESSAGE_IS_READ, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
-import { ChatMessagesResponse, SubscriptionMessageReceive } from 'types/chats';
+import { GetMessagesResponse, MessageType, SubscriptionMessageIsRead, SubscriptionMessageReceive } from 'types/chats';
 import { uniqBy } from 'lodash';
 
 export default function useGetMessages({ chatId }: { chatId: number }) {
@@ -10,7 +10,7 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     loading,
     error,
     fetchMore
-  } = useQuery<ChatMessagesResponse>(GET_MESSAGES, {
+  } = useQuery<GetMessagesResponse>(GET_MESSAGES, {
     fetchPolicy: 'cache-and-network',
     variables: {
       chatId,
@@ -27,7 +27,7 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     const responseData = ref.current?.GetMessages;
 
     if (responseData && responseData.page * responseData.size < responseData.total) {
-      fetchMore({
+      fetchMore<GetMessagesResponse>({
         variables: {
           chatId,
           page: responseData.page + 1,
@@ -47,22 +47,20 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
             }
           };
         }
-      }).then(result => {
-        console.log(result.data.GetMessages);
       });
     }
   }, [chatId]);
 
-  useSubscription(SUBSCRIBE_MESSAGE_IS_READ, {
+  useSubscription<SubscriptionMessageIsRead>(SUBSCRIBE_MESSAGE_IS_READ, {
     onData: ({ data, client }) => {
       if (dataMessages) {
         client.cache.modify({
           fields: {
-            GetMessages(existingMessages = [], { readField }) {
-              return existingMessages.data.map((message: any) => {
-                if (readField('id', message) === data.data.MessageIsRead.id) {
+            GetMessages(existingMessages, { readField }) {
+              return existingMessages.data.map((message: MessageType) => {
+                if (readField('id', message) === data.data?.MessageIsRead.id) {
                   return client.cache.writeFragment({
-                    data: data.data.MessageIsRead,
+                    data: data.data?.MessageIsRead,
                     fragment: MESSAGE_FRAGMENT
                   });
                 }
@@ -81,10 +79,9 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     onData: ({ data: newMessage, client }) => {
       client.cache.modify({
         fields: {
-          GetMessages(existingMessages = [], { readField }) {
+          GetMessages(existingMessages: { data: { __ref: string }[] }, { readField }) {
             const newMessageData = newMessage.data?.['MessageReceived'];
 
-            console.log('existingMessages', existingMessages);
             const isMessageExists = existingMessages.data.some(
               (messageRef: { __ref: string }) => readField('id', messageRef) === newMessageData?.id
             );
