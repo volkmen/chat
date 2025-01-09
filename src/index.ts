@@ -1,7 +1,8 @@
 import './moduleAliases';
 import dotenv from 'dotenv';
 import { getEnv, getIsDevelopment } from './utils/env';
-dotenv.config({ path: `./envs/${getEnv()}.env` });
+import path from 'node:path';
+dotenv.config({ path: path.resolve(__dirname, `./envs/${getEnv()}.env`) });
 
 import App from './server';
 import { connectToDatabase } from './services/typeorm';

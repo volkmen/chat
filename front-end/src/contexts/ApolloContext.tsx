@@ -6,13 +6,14 @@ import { createClient } from 'graphql-ws';
 import { split } from '@apollo/client';
 import { getMainDefinition } from '@apollo/client/utilities';
 
+const hostIp = process.env.HOST_IP || 'localhost:4000';
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql'
+  uri: `http://${hostIp}/graphql`
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: 'ws://localhost:4000/graphql',
+    url: `ws://${hostIp}/graphql`,
     lazy: true,
     connectionParams: async () => {
       const token = localStorage.getItem('token');
