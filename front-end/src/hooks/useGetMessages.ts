@@ -1,7 +1,7 @@
 import React from 'react';
-import { useQuery, useSubscription } from '@apollo/client';
+import { StoreObject, useQuery, useSubscription } from '@apollo/client';
 import { GET_MESSAGES, MESSAGE_FRAGMENT, SUBSCRIBE_MESSAGE_IS_READ, SUBSCRIBE_TO_RECEIVE_MESSAGE } from 'api/messages';
-import { GetMessagesResponse, MessageType, SubscriptionMessageIsRead, SubscriptionMessageReceive } from 'types/chats';
+import { GetMessagesResponse, SubscriptionMessageIsRead, SubscriptionMessageReceive } from 'types/chats';
 import { uniqBy } from 'lodash';
 
 export default function useGetMessages({ chatId }: { chatId: number }) {
@@ -19,7 +19,7 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     }
   });
 
-  const ref = React.useRef<any>(null);
+  const ref = React.useRef<GetMessagesResponse | undefined>(undefined);
 
   ref.current = dataMessages;
 
@@ -57,7 +57,7 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
         client.cache.modify({
           fields: {
             GetMessages(existingMessages, { readField }) {
-              return existingMessages.data.map((message: MessageType) => {
+              return existingMessages.data.map((message: StoreObject) => {
                 if (readField('id', message) === data.data?.MessageIsRead.id) {
                   return client.cache.writeFragment({
                     data: data.data?.MessageIsRead,
@@ -79,11 +79,11 @@ export default function useGetMessages({ chatId }: { chatId: number }) {
     onData: ({ data: newMessage, client }) => {
       client.cache.modify({
         fields: {
-          GetMessages(existingMessages: { data: { __ref: string }[] }, { readField }) {
+          GetMessages(existingMessages, { readField }) {
             const newMessageData = newMessage.data?.['MessageReceived'];
 
             const isMessageExists = existingMessages.data.some(
-              (messageRef: { __ref: string }) => readField('id', messageRef) === newMessageData?.id
+              (messageRef: StoreObject) => readField('id', messageRef) === newMessageData?.id
             );
 
             if (isMessageExists) {

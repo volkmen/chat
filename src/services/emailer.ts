@@ -2,6 +2,7 @@ import { createTransport } from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';
 import type SMTPPool from 'nodemailer/lib/smtp-pool';
 
+const emailUrl = `http://${process.env.HOST_IP}/#verify-email`;
 class EmailVerificationService {
   private transporter: Mail<SMTPPool.SentMessageInfo, SMTPPool.Options>;
 
@@ -61,7 +62,7 @@ class EmailVerificationService {
                 <p>You succeffuly signed up to the best app in the world! </p>
                 <br />
                 <p>Pls verify your email address. Pls input this verification code <b style="color: #2563eb">${token}</b> into the
-                    <a href="http://localhost:4000/#verify-email" />
+                    <a href={emailUrl} />
                 </p>
             </div>`
     });
