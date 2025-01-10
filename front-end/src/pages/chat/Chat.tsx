@@ -16,7 +16,7 @@ import './Chat.scss';
 const Chat = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const messagesEndRef = React.useRef<HTMLDivElement>();
   const [isFirstLoaded, setIsFirstLoad] = React.useState(false);
 
   useCheckChatsPage();
@@ -54,22 +54,30 @@ const Chat = () => {
     fetchMessages();
   }, [fetchMessages]);
 
+  // React.useEffect(() => {
+  //   if (messagesEndRef.current) {
+  //     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // }, [chatId]);
+
   React.useEffect(() => {
-    if (!isFirstLoaded && data) {
-      setIsFirstLoad(true);
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    } else if (data && lastElem) {
-      lastElem.scrollIntoView();
-    } else if (messagesEndRef.current) {
-      const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].owner.id === me.id;
+    if (messagesEndRef.current) {
+      if (!isFirstLoaded && data) {
+        setIsFirstLoad(true);
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      } else if (data && lastElem) {
+        lastElem.scrollIntoView();
+      } else if (messagesEndRef.current) {
+        const lastMessageIsMine = me && messages?.length > 0 && messages[messages.length - 1].owner.id === me.id;
 
-      if (lastMessageIsMine) {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        const { top } = messagesEndRef.current?.getBoundingClientRect();
+        if (lastMessageIsMine) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          const { top } = messagesEndRef.current.getBoundingClientRect();
 
-        if (top < window.innerHeight - 26) {
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          if (top < window.innerHeight - 26) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+          }
         }
       }
     }
@@ -89,7 +97,7 @@ const Chat = () => {
     }
   }, []);
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
 
   const onSendMessage = React.useCallback(() => {
     setLastElem(null);
@@ -121,7 +129,7 @@ const Chat = () => {
       <div>
         {username && <div className='sticky bottom-0 w-full text-xs italic'>{username}'s typing...</div>}
         <div
-          className='sticky bottom-0 w-full p-3 border-t border-t-gray-200 bg-gray-50'
+          className='sticky bottom-0 w-full p-3 border-t border-t-gray-200 bg-gray-50 z-10'
           style={{ boxShadow: ' 0px -6px 12px -12px rgba(0, 0, 0, 0.45)' }}
         >
           <SendMessage chatId={chatId} onSendMessage={onSendMessage} />

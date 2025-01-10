@@ -7,7 +7,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { PageRoutes } from '../consts/routes';
 import classNames from 'classnames';
 
-const SidebarComponent = () => {
+interface SidebarComponentProps {
+  isCollapsed: boolean;
+  closeSidebar: () => void;
+}
+
+const SidebarComponent: React.FC<SidebarComponentProps> = ({ isCollapsed, closeSidebar }) => {
   const { data, loading } = useQuery<GetChatsResponse>(GET_CHATS, { variables: { includeCorrespondent: true } });
   const params = useParams();
   const selectedChatId = params.chatId && +params.chatId;
@@ -16,6 +21,7 @@ const SidebarComponent = () => {
   const navigate = useNavigate();
 
   const onSelectChat = (chatId: number) => () => {
+    closeSidebar();
     navigate(`${PageRoutes.Chats}/${chatId}`);
   };
 
@@ -26,11 +32,15 @@ const SidebarComponent = () => {
   return (
     <aside
       id='default-sidebar'
-      className='w-64 transition-transform -translate-x-full sm:translate-x-0  bg-gray-50'
+      className={classNames(
+        'w-64 transition-transform sm:translate-x-0 bg-gray-50 border-r border-gray-200 absolute sm:relative h-full sm:h-auto z-10',
+        isCollapsed && '-translate-x-full'
+      )}
+      style={{ zIndex: 1 }}
       aria-label='Sidenav'
     >
-      <div className='overflow-y-auto py-5 px-3 h-full dark:bg-gray-800 dark:border-gray-700'>
-        <ul className=''>
+      <div className='py-5 px-3 h-full dark:bg-gray-800 dark:border-gray-700 relative overflow-visible'>
+        <ul className='overflow-y-auto'>
           {chats?.map(chat => (
             <li
               onClick={onSelectChat(chat.id)}

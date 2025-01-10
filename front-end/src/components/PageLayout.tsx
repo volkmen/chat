@@ -4,7 +4,6 @@ import SidebarComponent from './SidebarComponent';
 import Header from './Header';
 import { throttle } from 'lodash';
 import classNames from 'classnames';
-import useCheckChatsPage from '../hooks/useCheckChatsPage';
 
 interface PageLayoutProps extends PropsWithChildren {
   loading: boolean;
@@ -16,6 +15,7 @@ interface PageLayoutProps extends PropsWithChildren {
 const PageLayout: React.FC<PageLayoutProps> = ({ loading, children, mainClassName }) => {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const [height, setHeight] = React.useState(0);
+  const [isSidebarCollapsed, setSidebarIsCollapsed] = React.useState(true);
 
   React.useEffect(() => {
     const cb = throttle(() => {
@@ -37,12 +37,12 @@ const PageLayout: React.FC<PageLayoutProps> = ({ loading, children, mainClassNam
   return (
     <div className='bg-gray-50'>
       <div ref={ref}>
-        <Header />
+        <Header onCollapse={() => setSidebarIsCollapsed(!isSidebarCollapsed)} isCollapsed={isSidebarCollapsed} />
       </div>
-      <div className='flex relative container mx-auto'>
-        <SidebarComponent />
+      <div className='flex relative md:container mx-auto'>
+        <SidebarComponent isCollapsed={isSidebarCollapsed} closeSidebar={() => setSidebarIsCollapsed(true)} />
         <div
-          className={classNames('w-full relative h-full bg-white border border-gray-200', mainClassName)}
+          className={classNames('w-full relative h-full bg-white', mainClassName)}
           style={{ maxHeight: `calc(100vh - ${height}px`, minHeight: `calc(100vh - ${height}px)` }}
         >
           {loading ? (
