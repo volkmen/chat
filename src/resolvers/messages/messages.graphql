@@ -1,3 +1,18 @@
+type MessageUploadType {
+    id: ID!
+    url: String
+    contentType: String
+    fileName: String
+    size: Int
+}
+
+input MessageUpload {
+    url: String
+    contentType: String
+    fileName: String
+    size: Int
+}
+
 type Message {
     id: ID!
     content: String!
@@ -5,6 +20,7 @@ type Message {
     createdAt: String!
     updatedAt: String!
     owner: User
+    uploads: [MessageUploadType]
 }
 
 type PaginatedMessages {
@@ -17,10 +33,11 @@ type PaginatedMessages {
 type Query {
     GetMessage(messageId: ID!): Message
     GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessages!
+    GetS3PutObjectUrl(type:String): String!
 }
 
 type Mutation {
-    AddMessage(chatId: ID!, content: String!): Message
+    AddMessage(chatId: ID!, content: String!, uploads: [MessageUpload]): Message
     UpdateMessage(msgId: ID!): Message!
     DeleteMessage(id: ID!): ID!
     ReadMessage(id: ID!): ID!

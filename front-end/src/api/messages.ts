@@ -5,6 +5,15 @@ export const MESSAGE_FRAGMENT = gql`
     id
     content
     createdAt
+    uploads {
+      ... on MessageUploadType {
+        id
+        size
+        contentType
+        fileName
+        url
+      }
+    }
     owner {
       ... on User {
         id
@@ -16,8 +25,8 @@ export const MESSAGE_FRAGMENT = gql`
 `;
 
 export const SEND_MESSAGE = gql`
-  mutation SendMessage($chatId: ID!, $content: String!) {
-    AddMessage(chatId: $chatId, content: $content) {
+  mutation SendMessage($chatId: ID!, $content: String!, $uploads: [MessageUpload]) {
+    AddMessage(chatId: $chatId, content: $content, uploads: $uploads) {
       id
       content
       createdAt
@@ -66,5 +75,11 @@ export const SUBSCRIBE_MESSAGE_IS_READ = gql`
     MessageIsRead {
       ...Message
     }
+  }
+`;
+
+export const GET_S3_PUT_OBJECT_URL = gql`
+  query GetS3PutObjectUrl {
+    GetS3PutObjectUrl
   }
 `;

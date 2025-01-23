@@ -3,6 +3,7 @@ import { Context } from 'types/server';
 import { getDataSourceAndUserId } from 'utils/context';
 import { MessageEvents } from './events';
 import { get } from 'lodash';
+import { MessageUpload } from 'types/messages';
 
 const resolver = {
   Query: {
@@ -21,19 +22,26 @@ const resolver = {
           get(queryFields, 'data.fieldsByTypeName.Message')
         );
       }
-    )
+    ),
+    GetS3PutObjectUrl: createAuthResolver<{ type: string }>((_, args, context: Context, info) => {
+      const { dataSource } = getDataSourceAndUserId(context, 's3Provider');
+      return dataSource.generateS3PutObject(args.type);
+    })
   },
   Mutation: {
-    AddMessage: createAuthResolver<{ content: string; chatId: number }>(async (_, args, context: Context) => {
-      const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
+    AddMessage: createAuthResolver<{ content: string; chatId: number; uploads: MessageUpload[] }>(
+      async (_, args, context: Context) => {
+        const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
 
-      const msg = await dataSource.addMessage(userId, {
-        chatId: args.chatId,
-        content: args.content
-      });
-      context.pubsub.publish(`${MessageEvents.MESSAGE_WAS_ADDED}_${args.chatId}`, { msg });
-      return msg;
-    }),
+        const msg = await dataSource.addMessage(userId, {
+          chatId: args.chatId,
+          content: args.content,
+          uploads: args.uploads
+        });
+        context.pubsub.publish(`${MessageEvents.MESSAGE_WAS_ADDED}_${args.chatId}`, { msg });
+        return msg;
+      }
+    ),
     DeleteMessage: createAuthResolver<{ id: number }>((_, args, context: Context) => {
       const { dataSource, userId } = getDataSourceAndUserId(context, 'messages');
       return dataSource.deleteMessage(userId, args.id);

@@ -1,13 +1,15 @@
 import { DataSource as ORMDataSource } from 'typeorm/data-source/DataSource';
 import { ChatEntity } from 'entities/Chat.entity';
 import { UserEntity } from 'entities/User.entity';
+import MessageUploadEntity from 'entities/MessageUpload.entity';
 import { ForbiddenError } from 'utils/errors';
 import { MessageEntity } from 'entities/Message.entity';
 import { Paginated } from 'types/pagination';
 import { get } from 'lodash';
 import { type FieldsByTypeName } from 'graphql-parse-resolve-info';
-import { ONE_HOUR, ONE_MINUTE } from 'utils/date';
+import { ONE_HOUR } from 'utils/date';
 import { createCacheTagsToRemove } from 'utils/typerom';
+import { MessageUpload as MessageUploadType } from 'types/messages';
 
 export default class MessagesDataSource {
   constructor(private dbConnection: ORMDataSource) {}
@@ -19,7 +21,7 @@ export default class MessagesDataSource {
   async getMessageById(userId: number, id: number) {
     return this.repository.findOne({
       where: { id, owner: { id: userId } },
-      relations: { chat: true },
+      relations: { chat: true, uploads: true },
       cache: {
         id: `getMessageById?id=${id}`,
         milliseconds: ONE_HOUR
@@ -33,17 +35,26 @@ export default class MessagesDataSource {
     fieldsMap: FieldsByTypeName
   ): Promise<Paginated<MessageEntity>> {
     const ownerFields = get(fieldsMap, 'owner.fieldsByTypeName.User');
+    const uploadsFields = get(fieldsMap, 'uploads.fieldsByTypeName.MessageUploadType');
 
     const [messages, total] = await this.repository.findAndCount({
       where: { chat: { id: chatId, users: { id: userId } } },
       relations: {
-        owner: Boolean(ownerFields)
+        owner: Boolean(ownerFields),
+        uploads: Boolean(uploadsFields)
       },
       select: {
         id: true,
         content: Boolean(fieldsMap['content']),
         createdAt: true,
         isRead: Boolean(fieldsMap['isRead']),
+        uploads: {
+          id: !!get(uploadsFields, 'id'),
+          url: !!get(uploadsFields, 'url'),
+          contentType: !!get(uploadsFields, 'contentType'),
+          fileName: !!get(uploadsFields, 'fileName'),
+          size: !!get(uploadsFields, 'size')
+        },
         owner: {
           id: Boolean(get(ownerFields, 'id')),
           username: Boolean(get(ownerFields, 'username'))
@@ -64,7 +75,10 @@ export default class MessagesDataSource {
     };
   }
 
-  addMessage(userId: number, { chatId, content }: { chatId: number; content: string }): Promise<MessageEntity> {
+  addMessage(
+    userId: number,
+    { chatId, content, uploads = [] }: { chatId: number; content: string; uploads: MessageUploadType[] }
+  ): Promise<MessageEntity> {
     return this.dbConnection.transaction(async entityManager => {
       const msgResult = await entityManager
         .createQueryBuilder()
@@ -79,6 +93,15 @@ export default class MessagesDataSource {
         .createQueryBuilder(MessageEntity, 'msg')
         .where('msg.id = :newMsgId', { newMsgId })
         .getOne();
+
+      if (uploads.length > 0) {
+        await entityManager
+          .createQueryBuilder()
+          .insert()
+          .into(MessageUploadEntity)
+          .values(uploads.map(field => ({ ...field, message: newMsg })))
+          .execute();
+      }
 
       const user = await entityManager
         .createQueryBuilder(UserEntity, 'user')
@@ -95,7 +118,8 @@ export default class MessagesDataSource {
       return entityManager.findOne(MessageEntity, {
         where: { id: newMsgId },
         relations: {
-          owner: true
+          owner: true,
+          uploads: true
         }
       });
     });
