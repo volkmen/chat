@@ -11,17 +11,16 @@ import Message from './Message';
 import { ME_QUERY } from 'api/account';
 import { useCheckChatsPage, useGetMessages } from 'hooks';
 import useGetTypingUsername from 'hooks/useGetTypingUsername';
+import { NewMessageContext, NewMessageProvider } from 'contexts/NewMessage';
+import NewUploads from 'components/send-message/NewUploads';
 import './Chat.scss';
 
-const Chat = () => {
-  const params = useParams();
-  const navigate = useNavigate();
+const ChatUI = ({ chatId }: { chatId: number }) => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const [isFirstLoaded, setIsFirstLoad] = React.useState(false);
+  const { uploads: newUploads } = React.useContext(NewMessageContext);
 
   useCheckChatsPage();
-
-  const chatId = params.chatId && (+params.chatId as number);
 
   const username = useGetTypingUsername(chatId as number);
 
@@ -29,13 +28,6 @@ const Chat = () => {
     setIsFirstLoad(false);
     setLastElem(null);
   }, [chatId]);
-
-  if (!isNumber(chatId)) {
-    console.warn('was navigated form chat page', params);
-    navigate(PageRoutes.Home);
-
-    return null;
-  }
 
   const { data, fetchMessages, loading } = useGetMessages({ chatId });
 
@@ -98,7 +90,7 @@ const Chat = () => {
   return (
     <PageLayout loading={false} mainClassName='flex flex-col justify-between border-r border-r-gray-200'>
       <Pagination callback={onFetchMsg} className='bg-blend-screen overflow-auto' loading={loading} isReversed>
-        {isEmpty ? (
+        {isEmpty && newUploads.length === 0 ? (
           <>
             <div />
             <div className='absolute-centered text-centered'>
@@ -112,12 +104,13 @@ const Chat = () => {
               messages?.map(msg => (
                 <Message key={msg.id} me={me} message={msg} correspondent={chat.correspondent} className='mb-2' />
               ))}
+            <NewUploads className='mt-6' />
             <div ref={messagesEndRef as React.RefObject<HTMLDivElement>} style={{ height: '1px' }} className='mb-6' />
+
             {/*{true && <div className='sticky bottom-0 w-full '>{'username'}</div>}*/}
           </div>
         )}
       </Pagination>
-
       <div>
         {username && <div className='sticky bottom-0 w-full text-xs italic'>{username}'s typing...</div>}
         <div
@@ -131,4 +124,21 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default function Chat() {
+  const params = useParams();
+  const chatId = params.chatId && (+params.chatId as number);
+  const navigate = useNavigate();
+
+  if (!isNumber(chatId)) {
+    console.warn('was navigated form chat page', params);
+    navigate(PageRoutes.Home);
+
+    return null;
+  }
+
+  return (
+    <NewMessageProvider chatId={chatId}>
+      <ChatUI chatId={chatId} />
+    </NewMessageProvider>
+  );
+}

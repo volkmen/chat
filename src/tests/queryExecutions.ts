@@ -5,6 +5,7 @@ import { SyncExecutor } from '@graphql-tools/utils';
 import { HTTPExecutorOptions } from '@graphql-tools/executor-http/typings';
 import { Paginated } from '../types/pagination';
 import { MessageEntity } from '../entities/Message.entity';
+import { MessageUpload } from '../types/messages';
 
 export function getChatsExecution(executor = globalThis.defaultUserExecutor) {
   return executor({
@@ -64,22 +65,36 @@ export function getExecutor(jwtToken) {
 }
 
 export function addMessageExecution(
-  { content, chatId }: { content: string; chatId: number },
+  { content, chatId, uploads = [] }: { content: string; chatId: number; uploads?: MessageUpload[] },
   executor = globalThis.defaultUserExecutor
 ) {
   return executor({
     document: parse(/* GraphQL */ `
-      mutation AddMessage($chatId: ID!, $content: String!) {
-        AddMessage(chatId: $chatId, content: $content) {
+      mutation AddMessage($chatId: ID!, $content: String!, $uploads: [MessageUpload]) {
+        AddMessage(chatId: $chatId, content: $content, uploads: $uploads) {
           id
         }
       }
     `),
     variables: {
       chatId,
-      content
+      content,
+      uploads
     }
   });
+}
+
+export async function addChatAndMessage(content: string, uploads?: MessageUpload[]) {
+  const result = await makeSignUpExecution();
+  expect(result.data).toBeTruthy();
+
+  const receiverId = result.data.SignUp.id;
+  const resultAddChat = await addChatExecution(receiverId);
+
+  const chatId: number = +resultAddChat.data.AddChat;
+
+  const addMessageResult = await addMessageExecution({ chatId, content, uploads });
+  return { addMessageResult, chatId };
 }
 
 export function getMessageExecution(messageId: number, executor = globalThis.defaultUserExecutor) {
@@ -121,6 +136,13 @@ export async function getMessagesExecution(
           total
           data {
             id
+            owner {
+              id
+            }
+            uploads {
+              id
+              url
+            }
           }
         }
       }

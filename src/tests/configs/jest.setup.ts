@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(process.cwd(), `src/envs/testing.env`) });
+
 import nodemailer from 'nodemailer';
 import { buildHTTPExecutor } from '@graphql-tools/executor-http';
 import { connectToDatabase } from '../../services/typeorm';
@@ -9,6 +13,10 @@ jest.spyOn<any, any>(nodemailer, 'createTransport').mockImplementation(() => {
     sendMail: jest.fn().mockResolvedValue(true)
   };
 });
+//
+// jest.mock('@aws-sdk/s3-request-presigner', () => ({
+//   getSignedUrl: jest.fn().mockResolvedValue('some-url')
+// }));
 
 let dbConnection;
 // let signedInExecutor;

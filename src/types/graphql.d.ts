@@ -36,6 +36,7 @@ export type Message = {
   isRead: Scalars['Boolean']['output'];
   owner: User;
   updatedAt: Scalars['String']['output'];
+  uploads?: Maybe<Array<Maybe<MessageUploadType>>>;
 };
 
 export type MessageIsTyping = {
@@ -43,6 +44,22 @@ export type MessageIsTyping = {
   isTyping: Scalars['Boolean']['output'];
   userId: Scalars['ID']['output'];
   username: Scalars['String']['output'];
+};
+
+export type MessageUpload = {
+  contentType?: InputMaybe<Scalars['String']['input']>;
+  fileName?: InputMaybe<Scalars['String']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MessageUploadType = {
+  __typename?: 'MessageUploadType';
+  contentType?: Maybe<Scalars['String']['output']>;
+  fileName?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  size?: Maybe<Scalars['Int']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 export type Mutation = {
@@ -67,6 +84,7 @@ export type MutationAddChatArgs = {
 export type MutationAddMessageArgs = {
   chatId: Scalars['ID']['input'];
   content: Scalars['String']['input'];
+  uploads?: InputMaybe<Array<InputMaybe<MessageUpload>>>;
 };
 
 
@@ -124,6 +142,7 @@ export type Query = {
   GetMe: User;
   GetMessage?: Maybe<Message>;
   GetMessages: PaginatedMessages;
+  GetS3PutObjectUrl: Scalars['String']['output'];
   GetUsers: Array<User>;
   ResendVerificationToken: Scalars['ID']['output'];
   ResetPassword: Scalars['ID']['output'];
@@ -150,6 +169,11 @@ export type QueryGetMessagesArgs = {
   chatId: Scalars['ID']['input'];
   page?: InputMaybe<Scalars['Int']['input']>;
   size?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetS3PutObjectUrlArgs = {
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Subscription = {

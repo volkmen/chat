@@ -8,6 +8,7 @@ import { IoCheckmarkOutline } from 'react-icons/io5';
 import { useMutation } from '@apollo/client';
 import { READ_MESSAGE } from 'api/messages';
 import { useIsVisible } from 'hooks';
+import UploadsLayout from 'components/design-system/UploadsLayout';
 
 interface MessageProps {
   message: MessageType;
@@ -55,6 +56,16 @@ const Message: React.FC<MessageProps> = ({ message, correspondent, className, me
             <span className='font-normal text-gray-500 dark:text-gray-400 text-xs'>{relTime}</span>
           </div>
           <p className='text-sm font-normal py-2.5 text-gray-900 dark:text-white'>{message.content}</p>
+          {message.uploads?.length > 0 && (
+            <div className={`flex ${isMineMessage && 'justify-end'}`}>
+              <UploadsLayout>
+                {message.uploads.map(upl => (
+                  <img key={upl.url} src={upl.url} width={40} />
+                ))}
+              </UploadsLayout>
+            </div>
+          )}
+
           {isMineMessage && (
             <div className='flex justify-end text-end font-normal text-gray-500 dark:text-gray-400'>{status}</div>
           )}

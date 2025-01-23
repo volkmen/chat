@@ -1,17 +1,16 @@
 import {
-  addChatExecution,
+  addChatAndMessage,
   addMessageExecution,
   getExecutor,
   getMessageExecution,
   getMessagesExecution,
-  makeSignUpExecution,
   signUpAddChat
 } from './queryExecutions';
 import { parse } from 'graphql/index';
 import { SyncExecutor } from '@graphql-tools/utils/typings';
 import { HTTPExecutorOptions } from '@graphql-tools/executor-http';
 
-describe('chat', () => {
+describe('messages', () => {
   let pubsub;
   let executor: SyncExecutor<any, HTTPExecutorOptions>;
 
@@ -29,31 +28,15 @@ describe('chat', () => {
   });
 
   it('add message', async () => {
-    const result = await makeSignUpExecution();
-    expect(result.data).toBeTruthy();
-
-    const receiverId = result.data.SignUp.id;
-    const resultAddChat = await addChatExecution(receiverId);
-
-    const chatId: number = +resultAddChat.data.AddChat;
-
-    const addMessage = await addMessageExecution({ chatId, content: 'I am message here' });
-    expect(addMessage.data.AddMessage).toBeTruthy();
+    const { addMessageResult } = await addChatAndMessage('I am message here');
+    expect(addMessageResult.data.AddMessage).toBeTruthy();
   });
 
   it('delete message', async () => {
-    const result = await makeSignUpExecution();
-    expect(result.data).toBeTruthy();
+    const { addMessageResult } = await addChatAndMessage('I am message here');
+    expect(addMessageResult.data.AddMessage).toBeTruthy();
 
-    const receiverId = result.data.SignUp.id;
-    const resultAddChat = await addChatExecution(receiverId);
-
-    const chatId: number = +resultAddChat.data.AddChat;
-
-    const addMessage = await addMessageExecution({ chatId, content: 'I am message here' });
-    expect(addMessage.data.AddMessage).toBeTruthy();
-
-    const msgId = addMessage.data.AddMessage.id;
+    const msgId = addMessageResult.data.AddMessage.id;
 
     const delMsgResult = await globalThis.defaultUserExecutor({
       document: parse(/* GraphQL */ `
@@ -108,5 +91,68 @@ describe('chat', () => {
 
     const resultPage2 = await getMessagesExecution({ chatId, page: 2, size: pageSize });
     expect(resultPage2.data.length).toBe(totalMesgs - pageSize);
+  });
+});
+
+describe('upload message', () => {
+  let executor: SyncExecutor<any, HTTPExecutorOptions>;
+
+  beforeAll(() => {
+    executor = globalThis.defaultUserExecutor;
+  });
+
+  it('should return signedUrl', async () => {
+    const result = await executor({
+      document: parse(/* GraphQL */ `
+        query GetS3PutObjectUrl {
+          GetS3PutObjectUrl(type: "image")
+        }
+      `)
+    });
+
+    expect(result.data.GetS3PutObjectUrl).toBeTruthy();
+  });
+
+  it('should add upload into database', async () => {
+    const result = await executor({
+      document: parse(/* GraphQL */ `
+        query GetS3PutObjectUrl {
+          GetS3PutObjectUrl(type: "image")
+        }
+      `)
+    });
+
+    const url = result.data.GetS3PutObjectUrl.split('?')[0];
+    const uploads = [
+      {
+        url,
+        fileName: 'test',
+        contentType: 'image',
+        size: 1024
+      }
+    ];
+
+    await addChatAndMessage('I am message here', uploads);
+    const val = await globalThis.dbConnection.query(
+      `SELECT * FROM "MessageUploads" ORDER BY "created_at" DESC LIMIT 1`
+    );
+    expect(val[0].url).toBe(url);
+  });
+
+  it('should return messages with uploads', async () => {
+    const uploads = [
+      {
+        url: 'some-url',
+        fileName: 'test',
+        contentType: 'image',
+        size: 1024
+      }
+    ];
+
+    const { chatId } = await addChatAndMessage('I am message here', uploads);
+
+    const resultPage1 = await getMessagesExecution({ chatId, page: 1, size: 10 });
+    expect(resultPage1.data).toBeTruthy();
+    expect(resultPage1.data[0].uploads.length > 0).toBe(true);
   });
 });

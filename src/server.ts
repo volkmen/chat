@@ -17,6 +17,7 @@ import EmailVerificationService from './services/emailer';
 import JwtService from './services/jwtService';
 import { Context } from './types/server';
 import { ConnectionParams } from 'subscriptions-transport-ws';
+import { S3Provider } from './services/s3';
 
 class App {
   yoga: YogaServerInstance<Context, Context>;
@@ -42,7 +43,8 @@ class App {
         auth: new AuthDataSource(dbConnection),
         users: new UsersDataSource(dbConnection),
         chats: new ChatsDataSource(dbConnection),
-        messages: new MessagesDataSource(dbConnection)
+        messages: new MessagesDataSource(dbConnection),
+        s3Provider: new S3Provider()
       },
       tokenPayload: null
     };

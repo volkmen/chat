@@ -19,6 +19,7 @@ type Query {
   DoTyping(chatId: ID!, isTyping: Boolean!): Boolean
   GetMessage(messageId: ID!): Message
   GetMessages(chatId: ID!, page: Int, size: Int): PaginatedMessages!
+  GetS3PutObjectUrl(type: String): String!
   GetMe: User!
   GetUsers: [User!]!
   DeleteMe: ID!
@@ -29,7 +30,7 @@ type Mutation {
   VerifyEmail(token: Int!): User
   SignIn(email: String!, password: String!): User
   AddChat(receiverId: ID!): ID!
-  AddMessage(chatId: ID!, content: String!): Message
+  AddMessage(chatId: ID!, content: String!, uploads: [MessageUpload]): Message
   UpdateMessage(msgId: ID!): Message!
   DeleteMessage(id: ID!): ID!
   ReadMessage(id: ID!): ID!
@@ -43,6 +44,7 @@ type Message {
   createdAt: String!
   updatedAt: String!
   owner: User!
+  uploads: [MessageUploadType]
 }
 
 type Correspondent {
@@ -68,6 +70,21 @@ type Subscription {
   OnTyping(chatId: ID!): MessageIsTyping
   MessageReceived(chatId: ID!): Message!
   MessageIsRead: Message!
+}
+
+type MessageUploadType {
+  id: ID!
+  url: String
+  contentType: String
+  fileName: String
+  size: Int
+}
+
+input MessageUpload {
+  url: String
+  contentType: String
+  fileName: String
+  size: Int
 }
 
 type PaginatedMessages {
