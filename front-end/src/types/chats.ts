@@ -6,12 +6,20 @@ type User = {
   username: string;
 };
 
+export type MessageUploadType = {
+  url: string;
+  contentType: string;
+  fileName: string;
+  size: number;
+};
+
 export interface MessageType {
   content: string;
   id: number;
   createdAt: number;
   owner: Partial<User>;
   isRead: boolean;
+  uploads: MessageUploadType[];
 }
 
 export interface Chat {
